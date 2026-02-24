@@ -1,0 +1,1182 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Job Details Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: =UpdateContext({locCurrentJobDetailsPage:1})
+      OnVisible: |-
+        =// check if job is closed
+        If(
+            // open the closed job modal
+            gblRecordJobCurrent.Completed = gblOptionSets.Job.CompletedJob.Yes And locReOpenClosedJobDecisionMade = false,
+            UpdateContext({locShowClosedJobPrompt: true}),
+            With(
+                {
+                    varType: "colCdsJobs",
+                    varRecordRef: gblRecordJobCurrent.Job
+                },
+                If(
+                    IsBlank(
+                        LookUp(
+                            colAUDRecords,
+                            Type = varType
+                            And RecordRef = varRecordRef
+                        )
+                    ),
+                    Collect(
+                        colAUDRecords,
+                        {
+                            Type: varType,
+                            RecordRef: varRecordRef,
+                            Job: gblRecordJobCurrent.Job,
+                            Operation: "U"
+                        }
+                    )
+                )
+            );
+            If(
+                gblAppLoadOffline,
+                SaveData(
+                    colAUDRecords,
+                    "localAUDRecords"
+                )
+            )
+        )
+    Children:
+      - cmp_JobDetails_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Job"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =App.Height-cmp_JobDetails_Titlebar.Height
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =cmp_JobDetails_Titlebar.Y+cmp_JobDetails_Titlebar.Height
+      - cmp_JobDetails_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Jobs Screen'
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - con_JobDetails_Main__1stPage:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locCurrentJobDetailsPage=1
+            Width: =944
+            X: =80
+            Y: =60
+          Children:
+            - cmp_JobDetails_AdvanceButton:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.ArrowRight}
+                  IconColor: =Color.White
+                  IconFill: =gblAppStyles.Status.Disabled
+                  NavigateScreen: =
+                  Text: ="Go To Owner"
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                  Width: =253
+                  X: =648
+                  Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+            - lbl_JobDetails_Notes:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Sales Rep"
+                  Width: =130
+                  X: =40
+                  Y: =455
+            - lbl_JobDetails_WindowRemoval:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  LineHeight: =1.3
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Window Removal"
+                  Width: =188
+                  X: =477
+                  Y: =370
+            - txt_JobDetails_WindowRemoval:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =gblRecordJobCurrent.'Window Removal'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  Width: =215
+                  X: =665
+                  Y: =370
+            - btn_JobDetails_Market:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =gblAppStyles.Text.Color
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =DisplayMode.View
+                  Fill: =Color.White
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: |-
+                    =LookUp(
+                        colCdsMarketSegments,
+                        colCdsMarketSegments[@'Market Segment'] = gblRecordJobCurrent.'Market Segment'.'Market Segment',
+                        Name
+                    )
+                  Width: =253
+                  X: =180
+                  Y: =368
+            - lbl_JobDetails_Market:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Market"
+                  Width: =130
+                  X: =40
+                  Y: =368
+            - lbl_JobDetails_ExteriorCoverage:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  LineHeight: =1.3
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Exterior Coverage"
+                  Width: =188
+                  X: =477
+                  Y: =285
+            - txt_JobDetails_ExteriorCoverage:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =gblRecordJobCurrent.'Exterior Coverage'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  Width: =214
+                  X: =665
+                  Y: =285
+            - txt_JobDetails_YearBuilt:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =gblRecordJobCurrent.'Year Built'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Format: =TextFormat.Number
+                  Height: =50
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PaddingLeft: =20
+                  Width: =253
+                  X: =180
+                  Y: =285
+            - lbl_JobDetails_YearBuilt:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Year Built"
+                  Width: =130
+                  X: =40
+                  Y: =285
+            - lbl_JobDetails_RecissionDate:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  LineHeight: =1.3
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Recission Date"
+                  Width: =188
+                  X: =477
+                  Y: =200
+            - btn_JobDetails_RecissionDate:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =gblAppStyles.Text.Color
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =DisplayMode.View
+                  Fill: =Color.White
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: |-
+                    =If(
+                        IsBlank(
+                            Text(
+                                gblRecordJobCurrent.'Rescission Date',
+                                "[$-en-US]mmm d"
+                            )
+                        ),
+                        "None",
+                        Text(
+                            gblRecordJobCurrent.'Rescission Date',
+                            "[$-en-US]mmm d"
+                        )
+                    )
+                  Width: =217
+                  X: =665
+                  Y: =200
+            - txt_JobDetails_Date:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: |-
+                    =Text(
+                        gblRecordJobCurrent.'Start Date Time',
+                        "[$-en-US]mmm d, h:mm AM/PM"
+                    )
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PaddingLeft: =20
+                  Width: =253
+                  X: =180
+                  Y: =200
+            - lbl_JobDetails_Date:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Date"
+                  Width: =130
+                  X: =40
+                  Y: =200
+            - txt_JobDetails_Address:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: |-
+                    =gblRecordJobCurrent.'Address Street 1' 
+                    & If(!IsBlank(gblRecordJobCurrent.'Address Street 2'),",")& gblRecordJobCurrent.'Address Street 2'
+                    & If(!IsBlank(gblRecordJobCurrent.'Address Street 3'),",")& gblRecordJobCurrent.'Address Street 3'
+                    & If(!IsBlank(gblRecordJobCurrent.City),", ")& gblRecordJobCurrent.City
+                    & If(!IsBlank(gblRecordJobCurrent.State),", ")& gblRecordJobCurrent.State
+                    & If(!IsBlank(gblRecordJobCurrent.'Zip Code'),", ")&gblRecordJobCurrent.'Zip Code'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="street number and name"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  Width: =704
+                  X: =180
+                  Y: =116
+            - lbl_JobDetails_Address:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Address"
+                  Width: =130
+                  X: =40
+                  Y: =116
+            - lbl_JobDetails_Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =49
+                  PaddingLeft: =25
+                  Size: =gblAppStyles.Text.TitleSize
+                  Text: ="Job Details"
+                  Width: =685
+                  X: =92
+                  Y: =25
+            - ico_JobDetails_Title:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Disabled
+                  DisplayMode: =DisplayMode.View
+                  Height: =49
+                  Icon: =Icon.Waypoint
+                  Width: =49
+                  X: =43
+                  Y: =25
+            - btn_JobDetails_SalesRep:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =gblAppStyles.Text.Color
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =DisplayMode.View
+                  Fill: =Color.White
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: =gblRecordJobCurrent.'Sales Representative'
+                  Width: =253
+                  X: =180
+                  Y: =455
+            - lbl_JobDetails_CoilColor:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  LineHeight: =1.3
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Coil Color"
+                  Width: =188
+                  X: =476
+                  Y: =455
+            - txt_JobDetails_CoilColor:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =gblRecordJobCurrent.'Coil Color'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  Width: =215
+                  X: =664
+                  Y: =455
+            - btn_JobDetails_AdvanceButton:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  AutoDisableOnSelect: =false
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                  DisabledColor: =RGBA(0, 0, 0, 0)
+                  Fill: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_JobDetails_AdvanceButton.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Color.Transparent
+                  HoverFill: =Color.Transparent
+                  OnSelect: |
+                    =UpdateContext({locCurrentJobDetailsPage: 2});
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.Transparent
+                  PressedFill: =Color.Transparent
+                  Text: =
+                  Visible: =cmp_JobDetails_AdvanceButton.Visible
+                  Width: =cmp_JobDetails_AdvanceButton.Width
+                  X: =cmp_JobDetails_AdvanceButton.X
+                  Y: =cmp_JobDetails_AdvanceButton.Y
+      - con_JobDetails_Main__2ndPage:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =gblAppColors.Secondary.GrayLight
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locCurrentJobDetailsPage=2
+            Width: =944
+            X: =80
+            Y: =60
+          Children:
+            - cmp_JobDetails_AdvanceButton__2ndPage:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.ArrowRight}
+                  IconColor: =Color.White
+                  IconFill: =gblAppStyles.Status.Disabled
+                  NavigateScreen: ='Rooms Screen'
+                  Text: ="Go To Job Notes"
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                  Width: =262
+                  X: =Parent.Width - Self.Width - gblAppStyles.Padding.ButtonMargin
+                  Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+            - cmp_JobDetails_BackButton__2ndPage:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.ArrowLeft}
+                  IconColor: =Color.White
+                  IconFill: =gblAppStyles.Status.Disabled
+                  NavigateScreen: ='Job Details Screen'
+                  Text: ="Back to Job"
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                  Width: =225
+                  X: =gblAppStyles.Padding.ButtonMargin
+                  Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+            - txt_ContactDetails_Email2:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =gblRecordJobCurrent.'Email (2)'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="email"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PaddingLeft: =20
+                  Visible: =!IsBlank(Self.Text)
+                  Width: =297
+                  X: =583
+                  Y: =371
+            - lbl_ContactDetails_Email2:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Text: ="Email 2"
+                  Visible: =txt_ContactDetails_Email2.Visible
+                  Width: =116
+                  X: =464
+                  Y: =371
+            - txt_ContactDetails_Email:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =gblRecordJobCurrent.'Email (1)'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="email"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PaddingLeft: =20
+                  Width: =300
+                  X: =580
+                  Y: =285
+            - lbl_ContactDetails_Email:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Text: ="Email"
+                  Width: =116
+                  X: =464
+                  Y: =285
+            - txt_ContactDetails_Phone3:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =gblRecordJobCurrent.'Phone (3)'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="phone number"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PaddingLeft: =20
+                  Visible: =!IsBlank(Self.Text)
+                  Width: =236
+                  X: =176
+                  Y: =456
+            - lbl_ContactDetails_Phone3:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Text: =gblRecordJobCurrent.'Phone (3) Type'
+                  Visible: =!IsBlank(txt_ContactDetails_Phone3.Text)
+                  Width: =136
+                  X: =40
+                  Y: =456
+            - txt_ContactDetails_Phone2:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =gblRecordJobCurrent.'Phone (2)'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="phone number"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PaddingLeft: =20
+                  Visible: =!IsBlank(Self.Text)
+                  Width: =236
+                  X: =176
+                  Y: =368
+            - lbl_ContactDetails_Phone2:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Text: =gblRecordJobCurrent.'Phone (2) Type'
+                  Visible: =txt_ContactDetails_Phone2.Visible
+                  Width: =136
+                  X: =40
+                  Y: =371
+            - txt_ContactDetails_Phone:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =gblRecordJobCurrent.'Phone (1)'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="phone number"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PaddingLeft: =20
+                  Width: =236
+                  X: =180
+                  Y: =285
+            - lbl_ContactDetails_Phone:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Text: =gblRecordJobCurrent.'Phone (1) Type'
+                  Width: =136
+                  X: =40
+                  Y: =285
+            - txt_ContactDetails_Address:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: |-
+                    =gblRecordJobCurrent.'Address Street 1' 
+                    & If(!IsBlank(gblRecordJobCurrent.'Address Street 2'),",")& gblRecordJobCurrent.'Address Street 2'
+                    & If(!IsBlank(gblRecordJobCurrent.'Address Street 3'),",")& gblRecordJobCurrent.'Address Street 3'
+                    & If(!IsBlank(gblRecordJobCurrent.City),", ")& gblRecordJobCurrent.City
+                    & If(!IsBlank(gblRecordJobCurrent.State),", ")& gblRecordJobCurrent.State
+                    & If(!IsBlank(gblRecordJobCurrent.'Zip Code'),", ")&gblRecordJobCurrent.'Zip Code'
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="street number and name"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  Width: =700
+                  X: =180
+                  Y: =197
+            - lbl_ContactDetails_Address:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Text: ="Address"
+                  Width: =140
+                  X: =40
+                  Y: =199
+            - txt_ContactDetails_Name:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: |-
+                    =With(
+                        {
+                            varPrimary: gblRecordJobCurrent.'Primary Contact',
+                            varSecondary: gblRecordJobCurrent.'Secondary Contact'
+                        },
+                        Concatenate(
+                            varPrimary.'Full Name',
+                            If(
+                                IsBlankOrError(varSecondary),
+                                Blank(),
+                                Concatenate(
+                                    "& ",
+                                    varSecondary.'Full Name'
+                                )
+                            )
+                        )
+                    )
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="client name"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PaddingLeft: =20
+                  Width: =700
+                  X: =180
+                  Y: =116
+            - lbl_ContactDetails_Name:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Text: ="Name"
+                  Width: =124
+                  X: =40
+                  Y: =116
+            - lbl_ContactDetails_Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =50
+                  PaddingLeft: =25
+                  Size: =gblAppStyles.Text.TitleSize
+                  Text: ="Owner Details"
+                  Width: =681
+                  X: =92
+                  Y: =25
+            - ico_Person_Title:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Disabled
+                  DisplayMode: =DisplayMode.View
+                  Height: =49
+                  Icon: =Icon.Person
+                  Width: =49
+                  X: =43*1
+                  Y: =25*1
+            - btn_JobDetails_AdvanceButton__2ndPage:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  AutoDisableOnSelect: =false
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                  DisabledColor: =RGBA(0, 0, 0, 0)
+                  Fill: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_JobDetails_AdvanceButton__2ndPage.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Color.Transparent
+                  HoverFill: =Color.Transparent
+                  OnSelect: |
+                    =UpdateContext({locCurrentJobDetailsPage: 3});
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.Transparent
+                  PressedFill: =Color.Transparent
+                  Text: =
+                  Visible: =cmp_JobDetails_AdvanceButton.Visible
+                  Width: =cmp_JobDetails_AdvanceButton__2ndPage.Width
+                  X: =cmp_JobDetails_AdvanceButton__2ndPage.X
+                  Y: =cmp_JobDetails_AdvanceButton__2ndPage.Y
+            - btn_JobDetails_BackButton__2ndPage:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  AutoDisableOnSelect: =false
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                  DisabledColor: =RGBA(0, 0, 0, 0)
+                  Fill: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_JobDetails_BackButton__2ndPage.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Color.Transparent
+                  HoverFill: =Color.Transparent
+                  OnSelect: |
+                    =UpdateContext({locCurrentJobDetailsPage: 1});
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.Transparent
+                  PressedFill: =Color.Transparent
+                  Text: =
+                  Visible: =cmp_JobDetails_AdvanceButton.Visible
+                  Width: =cmp_JobDetails_BackButton__2ndPage.Width
+                  X: =cmp_JobDetails_BackButton__2ndPage.X
+                  Y: =cmp_JobDetails_BackButton__2ndPage.Y
+      - con_JobDetails_Main__3rdPage:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =gblAppColors.Secondary.GrayLight
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locCurrentJobDetailsPage=3
+            Width: =944
+            X: =80
+            Y: =60
+          Children:
+            - cmp_JobDetails_AdvanceButton__3rdPage:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.Check}
+                  IconColor: =Color.White
+                  IconFill: =gblAppColors.Secondary.Green
+                  NavigateScreen: ='Rooms Screen'
+                  Text: ="Go To Project"
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                  Width: =239
+                  X: =Parent.Width-Self.Width-gblAppStyles.Padding.ButtonMargin
+                  Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+            - txt_JobDetails_Notes__3rdPage:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =Coalesce(gblRecordJobCurrent.'Salesperson Notes'  ,"(No Job Notes from Sales)")
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =202
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  LineHeight: =1.3
+                  Mode: =TextMode.MultiLine
+                  PaddingLeft: =20
+                  PaddingRight: =15
+                  PaddingTop: =15
+                  Width: =704
+                  X: =180
+                  Y: =116
+            - lbl_JobDetails_Notes__3rdPage:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Notes"
+                  Width: =140
+                  X: =40
+                  Y: =116
+            - lbl_JobDetails_Title__3rdPage:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =49
+                  PaddingLeft: =25
+                  Size: =gblAppStyles.Text.TitleSize
+                  Text: ="Job Notes"
+                  Width: =685
+                  X: =92
+                  Y: =25
+            - ico_JobDetails_Title__3rdPage:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Disabled
+                  DisplayMode: =DisplayMode.View
+                  Height: =49
+                  Icon: =Icon.Note
+                  Width: =49
+                  X: =43
+                  Y: =25
+            - cmp_JobDetails_BackButton__3rdPage:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.ArrowLeft}
+                  IconColor: =Color.White
+                  IconFill: =gblAppStyles.Status.Disabled
+                  NavigateScreen: =
+                  Text: ="Go To Owner"
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                  Width: =239
+                  X: =gblAppStyles.Padding.ButtonMargin
+                  Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+            - btn_JobDetails_BackButton__3rdPage:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  AutoDisableOnSelect: =false
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                  DisabledColor: =RGBA(0, 0, 0, 0)
+                  Fill: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_JobDetails_BackButton__3rdPage.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Color.Transparent
+                  HoverFill: =Color.Transparent
+                  OnSelect: |
+                    =UpdateContext({locCurrentJobDetailsPage:2});
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.Transparent
+                  PressedFill: =Color.Transparent
+                  Text: |-
+                    =Blank()//With({wCountRows: CountRows(colAddLaborItems)}, "Add "&wCountRows&" Item"&If(wCountRows>1, "s"))
+                  Visible: =cmp_JobDetails_BackButton__3rdPage.Visible
+                  Width: =cmp_JobDetails_BackButton__3rdPage.Width
+                  X: =cmp_JobDetails_BackButton__3rdPage.X
+                  Y: =cmp_JobDetails_BackButton__3rdPage.Y
+      - con_JobDetails_ClosedJob:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =768
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locShowClosedJobPrompt
+            Width: =1024
+          Children:
+            - btn_JobDetails_ClosedJob__Clickshield:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Fill: =RGBA(0, 0, 0, 0.5)
+                  Font: =Font.'Open Sans'
+                  Height: =768
+                  OnSelect: =
+                  Text: =""
+                  Width: =1024
+            - btn_JobDetails_ClosedJob__Base:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =
+                  EnableSpellCheck: =true
+                  Font: =gblAppStyles.Text.Font
+                  Height: =287
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  MaxLength: =2000
+                  Mode: =TextMode.MultiLine
+                  PaddingLeft: =20
+                  PaddingTop: =16
+                  Width: =643
+                  X: =225
+                  Y: =202
+            - btn_JobDetails_ClosedJob__OK:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =gblAppStyles.Status.Neutral
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =ColorFade(Self.Fill, -10%)
+                  OnSelect: |
+                    =UpdateContext(
+                        {
+                            locShowClosedJobPrompt: false,
+                            locReOpenClosedJobDecisionMade: true
+                        }
+                    );
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =ColorFade(Self.Fill,-30%)
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Size: =20
+                  Text: ="View-Only"
+                  Width: =180
+                  X: =668
+                  Y: =420
+            - btn_JobDetails_ClosedJob__Cancel:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =gblAppColors.Secondary.GrayMediumDark
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =gblAppColors.Secondary.White
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =ColorFade(Self.Fill, -10%)
+                  OnSelect: |
+                    =// change the jobs completed field to 'No'
+                    Patch(
+                        colCdsJobs,
+                        LookUp(
+                            colCdsJobs,
+                            appJobIDText = gblRecordJobCurrent.appJobIDText
+                        ),
+                        {Completed: gblOptionSets.Job.CompletedJob.No}
+                    );
+                    Set(
+                        gblRecordJobCurrent,
+                        LookUp(
+                            colCdsJobs,
+                            appJobIDText = gblRecordJobCurrent.appJobIDText
+                        )
+                    );
+                    // hide the prompt
+                    UpdateContext(
+                        {
+                            locShowClosedJobPrompt: false,
+                            locReOpenClosedJobDecisionMade: true
+                        }
+                    );
+                    // unsaved job
+                    Collect(
+                        colAUDRecords,
+                        {
+                            Type: "colCdsJobs",
+                            RecordRef: gblRecordJobCurrent.Job,
+                            Job: gblRecordJobCurrent.Job,
+                            Operation: "U"
+                        }
+                    );
+                    If(
+                        gblAppLoadOffline,
+                        SaveData(
+                            colAUDRecords,
+                            "localAUDRecords"
+                        )
+                    )
+                  PressedBorderColor: =Self.BorderColor
+                  PressedColor: =Self.Fill
+                  PressedFill: =ColorFade(Self.Fill,-30%)
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Size: =20
+                  Text: ="Make Changes"
+                  Width: =215
+                  X: =433
+                  Y: =420
+            - btn_JobDetails_ClosedJob__Message:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =121
+                  LineHeight: =1.5
+                  PaddingLeft: =30
+                  PaddingRight: =30
+                  Size: =gblAppStyles.Text.SubtitleSize
+                  Text: ="This job has already been completed.  It is suggested that you open the job in view-only mode unless you need to make changes."
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =643
+                  X: =225
+                  Y: =269
+            - btn_JobDetails_ClosedJob__Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =67
+                  PaddingLeft: =30
+                  Size: =gblAppStyles.Text.TitleSize
+                  Text: ="Do You Want To Make Changes To This Job?"
+                  Width: =643
+                  X: =225*1
+                  Y: =202*1

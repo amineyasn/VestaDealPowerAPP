@@ -1,0 +1,343 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Add Labor Items Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |-
+        =// Unblock user input and clear 'add labor items' collection
+        Clear(colAddLaborItems);
+      OnVisible: =Reset(gal_LaborAddItems__Filter)
+    Children:
+      - cmp_LaborAddItems__AdvanceButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_LaborAddItems_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Check}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Secondary.Green
+            NavigateScreen: =
+            Text: |-
+              =With({wCountRows: CountRows(colAddLaborItems)}, "Add "&wCountRows&" Item"&If(wCountRows>1, "s"))
+            Visible: =CountRows(colAddLaborItems)>0
+            Width: =225
+            X: =774*1
+            Y: =670*1
+      - btn_LaborAddItems__AdvanceButton:
+          Control: Classic/Button@2.2.0
+          Group: grp_LaborAddItems_Main
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =Color.Transparent
+            DisabledBorderColor: =Color.Transparent
+            DisabledColor: =Color.Transparent
+            DisabledFill: =Color.Transparent
+            Fill: =Color.Transparent
+            Font: =Font.'Open Sans'
+            Height: =cmp_LaborAddItems__AdvanceButton.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Color.Transparent
+            HoverFill: =Color.Transparent
+            OnSelect: |
+              =// add selected labor items to the job
+              ForAll(
+                  colAddLaborItems,
+                  With(
+                      {
+                          varType: "colCdsJobLaborItems",
+                          varRecordRef: GUID()
+                      },
+                      // insert new row in local labor items collection
+                      Patch(
+                          colCdsJobLaborItems,
+                          Defaults(colCdsJobLaborItems),
+                          {
+                              appJobIDText: gblRecordJobCurrent.appJobIDText,
+                              Job: LookUp(
+                                  colCdsJobs,
+                                  appJobIDText = gblRecordJobCurrent.appJobIDText
+                              ),
+                              'Job Labor Item': varRecordRef,
+                              'Market Labor Item': LookUp(
+                                  colCdsMarketLaborItems,
+                                  'Market Labor Item' = colAddLaborItems[@'Market Labor Item']
+                              ),
+                              Name: colAddLaborItems[@Name],
+                              Quantity: Blank()
+                          }
+                      );
+                      // add labor items to the AUD records collection
+                      Collect(
+                          colAUDRecords,
+                          {
+                              Type: varType,
+                              RecordRef: varRecordRef,
+                              Job: gblRecordJobCurrent.Job,
+                              Operation: "A"
+                          }
+                      );
+                  )
+              );
+              // save local data
+
+              IfError( // This line of code is added to hide the errors
+              If(
+                  gblAppLoadOffline,
+                  SaveData(
+                      colAUDRecords,
+                      "localAUDRecords"
+                  );
+                  SaveData(
+                      colCdsJobLaborItems,
+                      "localCdsJobLaborItems"
+                  );
+              )
+              ,Blank()) // This line of code is added to hide the errors
+
+              ;
+              // leave the screen and reset
+              Reset(gal_LaborAddItems);
+              Reset(gal_LaborAddItems__Filter);
+              Navigate('Labor Screen');
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Color.Transparent
+            PressedFill: =Color.Transparent
+            Text: |-
+              =Blank()//With({wCountRows: CountRows(colAddLaborItems)}, "Add "&wCountRows&" Item"&If(wCountRows>1, "s"))
+            Visible: =cmp_LaborAddItems__AdvanceButton.Visible
+            Width: =cmp_LaborAddItems__AdvanceButton.Width
+            X: =cmp_LaborAddItems__AdvanceButton.X*1
+            Y: =cmp_LaborAddItems__AdvanceButton.Y*1
+      - cmp_LaborAddItems__CancelButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_LaborAddItems_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Cancel}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Secondary.Red
+            NavigateScreen: ='Rooms Screen'
+            Text: ="Cancel"
+            Width: =200
+            X: =110*1
+            Y: =670*1
+      - btn_LaborAddItems__CancelButton:
+          Control: Classic/Button@2.2.0
+          Group: grp_LaborAddItems_Main
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =Color.Transparent
+            DisabledBorderColor: =RGBA(0, 0, 0, 0)
+            DisabledColor: =RGBA(0, 0, 0, 0)
+            DisabledFill: =RGBA(0, 0, 0, 0)
+            Fill: =Color.Transparent
+            Font: =Font.'Open Sans'
+            Height: =cmp_LaborAddItems__CancelButton.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Color.Transparent
+            HoverFill: =Color.Transparent
+            OnSelect: |-
+              =Reset(gal_LaborAddItems__Filter);
+              Navigate('Labor Screen');
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Color.Transparent
+            PressedFill: =Color.Transparent
+            Text: =""
+            Width: =cmp_LaborAddItems__CancelButton.Width
+            X: =110*1
+            Y: =670*1
+      - gal_LaborAddItems:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Group: grp_LaborAddItems_Main
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            DelayItemLoading: =false
+            Fill: =Color.Transparent
+            Height: =508
+            Items: |-
+              =SortByColumns(
+                  Filter(
+                      colCdsMarketLaborItems,
+                      'Labor Item'.Type = gal_LaborAddItems__Filter.Selected.Value And 'Market Segment'.'Market Segment' = gblRecordJobCurrent.'Market Segment'.'Market Segment'
+                  ),
+                  "appLaborDisplayOrder",
+                  SortOrder.Ascending
+              )
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: =
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplateFill: =Color.Transparent//If(txt_Homeowner_Dealer_1.Text=ThisItem.Value, gblAppStyles.Status.Neutral, gblAppStyles.Rolodex.Fill)
+            TemplateSize: =64
+            Width: =664
+            X: =335
+            Y: =136*1
+          Children:
+            - btn_LaborAddItems:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =gblAppColors.Secondary.GrayMedium
+                  BorderThickness: =1
+                  Color: =If(ThisItem.'Market Labor Item' in colAddLaborItems.'Market Labor Item', gblAppColors.Secondary.White,gblAppStyles.Card.TitleColor)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =If(ThisItem.'Market Labor Item' in colAddLaborItems.'Market Labor Item', gblAppStyles.Status.Neutral, gblAppStyles.Card.Fill)
+                  FocusedBorderThickness: =1
+                  Font: =gblAppStyles.Text.TitleFont
+                  FontWeight: =FontWeight.Normal
+                  Height: =Parent.TemplateHeight-((gblAppStyles.Card.MarginLeft-10)*2)-4
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =If(IsBlank(LookUp(colAddLaborItems, 'Market Labor Item'= ThisItem.'Market Labor Item')), Collect(colAddLaborItems, LookUp(colCdsMarketLaborItems, 'Market Labor Item'=ThisItem.'Market Labor Item')), Remove(colAddLaborItems, LookUp(colCdsMarketLaborItems, 'Market Labor Item'=ThisItem.'Market Labor Item')))
+                  PaddingRight: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =gblAppStyles.Text.Size
+                  Text: =ThisItem.Name
+                  Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                  X: =(Parent.TemplateWidth-Self.Width)/2
+                  Y: =(Parent.TemplateHeight-Self.Height)/2
+      - gal_LaborAddItems__Filter:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Group: grp_LaborAddItems_Main
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            DelayItemLoading: =false
+            Fill: =Color.Transparent
+            Height: =487
+            Items: =Choices(colCdsLaborItems.Type)
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: =
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplateFill: =Color.Transparent//If(txt_Homeowner_Dealer_1.Text=ThisItem.Value, gblAppStyles.Status.Neutral, gblAppStyles.Rolodex.Fill)
+            TemplateSize: =64
+            Width: =255
+            X: =95*1
+            Y: =136*1
+          Children:
+            - btn_LaborAddItems_Filter__Button:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =gblAppColors.Secondary.GrayMedium
+                  BorderThickness: =1
+                  Color: =If(ThisItem.IsSelected, gblAppColors.Secondary.White,gblAppStyles.Card.TitleColor)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =If(ThisItem.IsSelected, gblAppStyles.Status.Neutral, gblAppStyles.Card.Fill)
+                  FocusedBorderThickness: =1
+                  Font: =gblAppStyles.Text.TitleFont
+                  FontWeight: =FontWeight.Normal
+                  Height: =Parent.TemplateHeight-((gblAppStyles.Card.MarginLeft-10)*2)-4
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingRight: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =gblAppStyles.Text.Size
+                  Text: =ThisItem.Value
+                  Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                  X: =(Parent.TemplateWidth-Self.Width)/2
+                  Y: =(Parent.TemplateHeight-Self.Height)/2
+            - btn_LaborAddItems_Filter__Quantity:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =gblAppColors.Secondary.GrayMedium
+                  BorderThickness: =0
+                  Color: =If(ThisItem.IsSelected, gblAppColors.Secondary.White, gblAppStyles.Card.TitleColor)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =Color.Transparent
+                  FocusedBorderThickness: =1
+                  Font: =gblAppStyles.Text.TitleFont
+                  Height: =30
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingRight: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =Self.RadiusTopLeft
+                  RadiusBottomRight: =Self.RadiusTopLeft
+                  RadiusTopLeft: =180
+                  RadiusTopRight: =Self.RadiusTopLeft
+                  Size: =16
+                  Text: =CountRows(Filter(colAddLaborItems, ThisItem.Value in Text('Labor Item'.Type)))
+                  Visible: =Value(Self.Text)>0
+                  Width: =Self.Height
+                  X: =30*1
+                  Y: =17*1
+      - lbl_LaborAddItems_Title:
+          Control: Label@2.5.1
+          Group: grp_LaborAddItems_Main
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            Size: =gblAppStyles.Text.TitleSize
+            Text: ="Add Labor Items"
+            Width: =664
+            X: =cmp_LaborAddItems_Sidebar.X+cmp_LaborAddItems_Sidebar.Width+30*1
+            Y: =cmp_LaborAddItems_Titlebar.Y+cmp_LaborAddItems_Titlebar.Height+30*1
+      - cmp_LaborAddItems_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Labor"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =App.Height-cmp_LaborAddItems_Titlebar.Height
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =cmp_LaborAddItems_Titlebar.Y+cmp_LaborAddItems_Titlebar.Height
+      - cmp_LaborAddItems_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Labor Screen'
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024

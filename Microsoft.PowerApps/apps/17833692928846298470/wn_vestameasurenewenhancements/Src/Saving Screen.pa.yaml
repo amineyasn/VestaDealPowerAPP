@@ -1,0 +1,3644 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Saving Screen:
+    Properties:
+      Fill: =gblAppColors.Primary.WhiteSmoke
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |-
+        =UpdateContext({locShowPopUp: ""});
+        Clear(colSaveProgress);
+        Clear(colProgressBar);
+        Clear(colParentRecords);
+      OnVisible: |
+        =UpdateContext({locBoolean_ShowSavePrompt: false});
+        If(
+            gblAppAutoload,
+            Select(btn_Saving_Start)
+        );
+    Children:
+      - cmp_Saving_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: =
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - img_Saving_Spinner:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =132
+            Image: =Image_SavingSpinner
+            Visible: =true//gblAppAutoload
+            Width: =132
+            X: =(Parent.Width - Self.Width) / 2
+            Y: =((Parent.Height - Self.Height) / 2) - 44
+      - lbl_Saving_VestaMeasure:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Lighter
+            Height: =88
+            Size: =32
+            Text: ="Vesta Measure"
+            VerticalAlign: =VerticalAlign.Bottom
+            Visible: =true//gblAppAutoload
+            Width: =1024
+            Y: =img_Saving_Spinner.Y + img_Saving_Spinner.Height
+      - lbl_Saving_CurrentActivity:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppColors.Secondary.GrayMediumDark
+            Fill: =Color.Transparent
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Lighter
+            Height: =80
+            Size: =20
+            Text: =Last(colSaveProgress).ProgressText
+            VerticalAlign: =VerticalAlign.Top
+            Visible: =true//gblAppAutoload
+            Width: =1024
+            Y: =lbl_Saving_VestaMeasure.Y + lbl_Saving_VestaMeasure.Height
+      - btn_Saving_SaveRecords:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisplayMode: =DisplayMode.Disabled
+            Fill: =RGBA(255, 191, 0, 1)
+            Font: =Font.'Open Sans'
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnSelect: =
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Text: ="Save Job"
+            Visible: =!gblAppAutoload
+            X: =20
+            Y: =10
+      - tmr_Saving_Navigate:
+          Control: Timer@2.1.0
+          Properties:
+            AutoStart: =locStartTimer
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =ColorFade(Self.BorderColor, 70%)
+            DisabledColor: =ColorFade(Self.Fill, 90%)
+            DisabledFill: =ColorFade(Self.Fill, 70%)
+            Duration: =1500
+            Fill: =RGBA(0, 0, 0, 0)
+            Font: =Font.'Open Sans'
+            Height: =0
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =Color.Transparent
+            OnTimerEnd: |
+              =Navigate(
+                  'Loading Screen',
+                  ScreenTransition.Fade,
+                  {locLoadingSkipLocal: true}
+              );
+              UpdateContext({locStartTimer: false});
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Width: =0
+            X: =217
+            Y: =10
+      - con_Saving_Steps:
+          Control: GroupContainer@1.3.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =708
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutGap: =10
+            LayoutOverflowY: =LayoutOverflow.Scroll
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =10
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =!gblAppAutoload
+            Width: =230
+            Y: =60
+          Children:
+            - btn_Saving_Start:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Start
+                    Collect(
+                        colSaveProgress,
+                        {
+                            ProgressValue: 0,
+                            ProgressText: "Saving Your Data"
+                        }
+                    );
+                    Clear(colProgressBar);
+                    ForAll(
+                        Sequence(CountRows(colAUDRecords)+1),
+                        Collect(
+                            colProgressBar,
+                            {Saved: false}
+                        )
+                    );
+                    If(
+                        Connection.Connected,
+                        // Next Step
+                        If(
+                            gblAppAutoAdvance,
+                            Select(btn_Saving_Add__JobRooms)
+                        ),
+                        UpdateContext({locShowPopUp: "Not Connected"})
+                    )
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="Start"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =10
+            - btn_Saving_Add__JobRooms:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |
+                    =// Create Job Rooms
+                    With(
+                        {
+                            // Get job rooms with add operation
+                            varJobRooms:
+                                Filter(
+                                    colCdsJobRooms,
+                                    'Job Room' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobRooms",
+                                        Operation = "A"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobRooms),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 1,
+                                    ProgressText: "Creating Job Rooms"
+                                }
+                            );
+                            Clear(colParentRecords);
+                            ForAll(
+                                // Filter records to be added
+                                varJobRooms As tblRecordLoop,
+                                With(
+                                    {
+                                        // Write new records to datasource, excluding certain columns
+                                        varNewRecord: Patch(
+                                            'Job Rooms',
+                                            Defaults('Job Rooms'),
+                                            First(
+                                                DropColumns(
+                                                    Table(tblRecordLoop),
+                                                    appJobIdText,
+                                                    appJobRoomIdText,
+                                                    'Job Room'
+                                                )
+                                            )
+                                        )
+                                    },
+                                    If(
+                                        IsEmpty(Errors('Job Rooms')),
+                                        Collect(
+                                            colParentRecords,
+                                            {
+                                                Type: "colCdsJobRooms",
+                                                OriginalGUID: tblRecordLoop.'Job Room',
+                                                NewGUID: varNewRecord.'Job Room'
+                                            }
+                                        )
+                                    )
+                                )
+                            );
+                            // Update Child Records for new reference
+                            Refresh('Job Rooms');       
+                            ForAll(
+                                colParentRecords,
+                                With(
+                                    {varParentRecord: LookUp('Job Rooms', 'Job Room'=colParentRecords[@NewGUID])},
+                                    // Update Job Room GUID
+                                    Patch(
+                                        colCdsJobRooms,
+                                        LookUp(colCdsJobRooms, 'Job Room'=colParentRecords[@OriginalGUID]),
+                                        varParentRecord
+                                    );
+                                    // Update Child Records for new reference
+                                    // Job Entries
+                                    UpdateIf(
+                                        colCdsJobEntries,
+                                        'Job Room'.'Job Room' = colParentRecords[@OriginalGUID],
+                                        {'Job Room': varParentRecord}
+                                    );
+                                    // Window Mulls
+                                    UpdateIf(
+                                        colCdsWindowMulls,
+                                        'Job Room'.'Job Room' = colParentRecords[@OriginalGUID],
+                                        {'Job Room': varParentRecord}
+                                    )
+                                );
+                                // Remove from collection of records which would be processed
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobRooms",
+                                        RecordRef = colParentRecords[@OriginalGUID],
+                                        Operation = "A"
+                                    )
+                                );
+                            );
+                            // update progress bar
+                            Update(
+                                colProgressBar,
+                                LookUp(colProgressBar, Not(Saved)),
+                                {Saved: true}
+                            )
+                        );
+                        // Save Data
+                        If(
+                            gblAppLoadOffline,
+                            SaveData(
+                                colAUDRecords,
+                                "localAUDRecords"
+                            );
+                            SaveData(
+                                colCdsJobRooms,
+                                "localCdsJobRooms"
+                            );
+                            SaveData(
+                                colCdsJobEntries,
+                                "localCdsJobEntries"
+                            );
+                            SaveData(
+                                colCdsWindowMulls,
+                                "localCdsWindowMulls"
+                            );
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Add__JobEntries)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="+ Job Rooms"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =10
+            - btn_Saving_Add__JobEntries:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Create Job Entries
+                    With(
+                        {
+                            varJobEntries:
+                                Filter(
+                                    colCdsJobEntries,
+                                    'Job Entry' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobEntries",
+                                        Operation = "A"
+                                    ).RecordRef,
+                                    !('Job Room'.'Job Room' in Filter(colAUDRecords, Type="colCdsJobRooms").RecordRef),
+                                    !('Window Mull'.'Window Mulls' in Filter(colAUDRecords, Type="colCdsWindowMulls").RecordRef)
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobEntries),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 2,
+                                    ProgressText: "Creating Job Entries"
+                                }
+                            );
+                            Clear(colParentRecords);
+                            ForAll(
+                                // For all records to be added, excluding columns which should not be used in Add
+                                varJobEntries As tblRecordLoop,
+                                With(
+                                    { 
+                                        // Write new records to datasource
+                                        varNewRecord: Patch(
+                                            'Job Entries',
+                                            Defaults('Job Entries'),
+                                            First(
+                                                DropColumns(
+                                                    Table(tblRecordLoop),
+                                                    appFields,
+                                                    appJobIdText,
+                                                    appJobRoomIdText,
+                                                    '''Window Choice''',
+                                                    'Job Entry',
+                                                    'Measurement (Sales)',
+                                                    'Measurement (Tech)'
+                                                )
+                                            )
+                                        )
+                                    },
+                                    If(
+                                        IsEmpty(Errors('Job Entries')),
+                                        Collect(
+                                            colParentRecords,
+                                            {
+                                                Type: "colCdsJobEntries",
+                                                OriginalGUID: tblRecordLoop.'Job Entry',
+                                                NewGUID: varNewRecord.'Job Entry'
+                                            }
+                                        )
+                                    );
+                                    If(
+                                        !IsEmpty(Errors('Job Entries')),
+                                        Notify($"Job Entries: {First(Errors('Job Entries')).Error} {First(Errors('Job Entries')).Message} {First(Errors('Job Entries')).Column}")
+                                    )
+                                )
+                            );
+                            //// Update child records with new parent GUID 
+                            Refresh('Job Entries');
+                            ForAll(
+                                colParentRecords,
+                                With(
+                                    {varParentRecord: LookUp('Job Entries', 'Job Entry'=colParentRecords[@NewGUID])},
+                                    // Update job entries GUID
+                                    Patch(
+                                        colCdsJobEntries,
+                                        LookUp(colCdsJobEntries, 'Job Entry'=colParentRecords[@OriginalGUID]),
+                                        varParentRecord
+                                    );
+                                    // Job Entry Selections
+                                    UpdateIf(
+                                        colCdsJobEntrySelections,
+                                        'Job Entry'.'Job Entry' = colParentRecords[@OriginalGUID],
+                                        {'Job Entry': varParentRecord}
+                                    );
+                                    // Job Photos
+                                    UpdateIf(
+                                        colCdsJobPhotos,
+                                        'Job Entry'.'Job Entry' = colParentRecords[@OriginalGUID],
+                                        {'Job Entry': varParentRecord}
+                                    );
+                                    // Window Measurements
+                                    UpdateIf(
+                                        colCdsWindowMeasurements,
+                                        'Job Entry'.'Job Entry' = colParentRecords[@OriginalGUID],
+                                        {'Job Entry': varParentRecord}
+                                    );
+                                    // Window Mulls
+                                    UpdateIf(
+                                        colCdsWindowMeasurements,
+                                        'Job Entry'.'Job Entry' = colParentRecords[@OriginalGUID],
+                                        {'Job Entry': varParentRecord}
+                                    );
+                                    // Remove from list of new records
+                                    RemoveIf(
+                                        colAUDRecords,
+                                        And(
+                                            Type = "colCdsJobEntries",
+                                            RecordRef = colParentRecords[@OriginalGUID],
+                                            Operation = "A"
+                                        )
+                                    )
+                                )
+                            );
+                            // update progress bar
+                            Update(
+                                colProgressBar,
+                                LookUp(colProgressBar, Not(Saved)),
+                                {Saved: true}
+                            )
+                        );
+                        // Save Data
+                        IfError( // This line of code is added to hide the errors
+
+                        If(
+                            gblAppLoadOffline,
+                            SaveData(
+                                colAUDRecords,
+                                "localAUDRecords"
+                            );
+                            SaveData(
+                                colCdsJobEntries,
+                                "localCdsJobEntries"
+                            );
+                            SaveData(
+                                colCdsJobEntrySelections,
+                                "localCdsJobEntrySelections"
+                            );
+                            SaveData(
+                                colCdsJobPhotos,
+                                "localCdsJobPhotos"
+                            );
+                            SaveData(
+                                colCdsWindowMeasurements,
+                                "localCdsWindowMeasurements"
+                            );
+                        )
+                        ,Blank())  // This line of code is added to hide the errors
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Add__WindowMulls)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="+ Job Entries"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: '=10  '
+                  Y: =60
+            - btn_Saving_Add__WindowMulls:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |
+                    =// Create Window Mulls
+                    With(
+                        {
+                            // Get window mulls with add operation
+                            varWindowMulls:
+                            Filter(
+                                colCdsWindowMulls,
+                                'Window Mulls' in Filter(
+                                    colAUDRecords,
+                                    Type = "colCdsWindowMulls",
+                                    Operation = "A"
+                                ).RecordRef,
+                                !('Job Room'.'Job Room' in Filter(colAUDRecords, Type="colCdsJobRooms").RecordRef)
+                            )
+                        },
+                        If(
+                            !IsEmpty(varWindowMulls),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 2,
+                                    ProgressText: "Creating Window Mulls"
+                                }
+                            );
+                            Clear(colParentRecords);
+                            // Process Add (Create) Records
+                            ForAll(
+                                // Filter records to be added
+                                varWindowMulls As tblRecordLoop,
+                                With(
+                                    {
+                                        // Write new records to datasource, excluding certain columns
+                                        varNewRecord: Patch(
+                                            'Window Mulls',
+                                            Defaults('Window Mulls'),
+                                            First(
+                                                DropColumns(
+                                                    Table(tblRecordLoop),
+                                                    'Window Mulls',
+                                                    appJobRoomIdText
+                                                )
+                                            )
+                                        )
+                                    },
+                                    If(
+                                        IsEmpty(Errors('Window Mulls')),
+                                        Collect(
+                                            colParentRecords,
+                                            {
+                                                Type: "colCdsWindowMulls",
+                                                OriginalGUID: tblRecordLoop.'Window Mulls',
+                                                NewGUID: varNewRecord.'Window Mulls'
+                                            }
+                                        )
+                                    )
+                                )
+                            );
+                            // Update Child Records for new reference
+                            Refresh('Window Mulls');       
+                            ForAll(
+                                colParentRecords,
+                                With(
+                                    {varParentRecord: LookUp('Window Mulls', 'Window Mulls'=colParentRecords[@NewGUID])},
+                                    // Update Window Mulls GUID
+                                    Patch(
+                                        colCdsWindowMulls,
+                                        LookUp(colCdsWindowMulls, 'Window Mulls'=colParentRecords[@OriginalGUID]),
+                                        varParentRecord
+                                    );
+                                    // Job Entries
+                                    UpdateIf(
+                                        colCdsJobEntries,
+                                        'Window Mull'.'Window Mulls'=colParentRecords[@OriginalGUID],
+                                        {'Window Mull': varParentRecord}
+                                    );
+                                    // Window Measurements
+                                    UpdateIf(
+                                        colCdsWindowMeasurements,
+                                        'Window Mull'.'Window Mulls'=colParentRecords[@OriginalGUID],
+                                        {'Window Mull': varParentRecord}
+                                    );
+                                    // Remove from collection of records which would be processed
+                                    RemoveIf(
+                                        colAUDRecords,
+                                        And(
+                                            Type = "colCdsWindowMulls",
+                                            RecordRef = colParentRecords[@OriginalGUID],
+                                            Operation = "A"
+                                        )
+                                    )
+                                );
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save Data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsWindowMulls,
+                                    "localCdsWindowMulls"
+                                );
+                                SaveData(
+                                    colCdsJobEntries,
+                                    "localCdsJobEntries"
+                                );
+                                SaveData(
+                                    colCdsWindowMeasurements,
+                                    "localCdsWindowMeasurements"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Add__JobEntrySelections)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="+ Window Mulls"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =10
+            - btn_Saving_Add__JobEntrySelections:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Create Job Entry Selections
+                    With(
+                        {
+                            varJobEntrySelections:
+                                Filter(
+                                    colCdsJobEntrySelections,
+                                    'Job Entry Selection' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobEntrySelections",
+                                        Operation = "A"
+                                    ).RecordRef,
+                                    !('Job Entry'.'Job Entry' in Filter(colAUDRecords, Type="colCdsJobEntries").RecordRef)
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobEntrySelections),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 4,
+                                    ProgressText: "Creating Job Entry Selections"
+                                }
+                            );
+                            Clear(colParentRecords);
+                            ForAll(
+                                // For all records to be added, excluding columns which should not be used in Add
+                                varJobEntrySelections As tblRecordLoop,
+                                With(
+                                    {
+                                        // Write new records to datasource
+                                        varNewRecord: Patch(
+                                            'Job Entry Selections',
+                                            Defaults('Job Entry Selections'),
+                                            First(
+                                                DropColumns(
+                                                    Table(tblRecordLoop),
+                                                    appAttributeName,
+                                                    'Job Entry Selection'
+                                                )
+                                            )
+                                        )
+                                    },
+                                    With(
+                                        {varErrors: Errors('Job Entry Selections')}, 
+                                        If(
+                                            !IsEmpty(varErrors),
+                                            Notify(
+                                                First(varErrors).Error&Char(10)&
+                                                First(varErrors).Record.'Job Entry Selection'&Char(10)&
+                                                First(varErrors).Column&Char(10)&
+                                                First(varErrors).Message
+                                            )
+                                        )
+                                    );
+                                    If(
+                                        IsEmpty(Errors('Job Entry Selections')),
+                                        Collect(
+                                            colParentRecords,
+                                            {
+                                                Type: "colCdsJobEntrySelections",
+                                                OriginalGUID: tblRecordLoop.'Job Entry Selection',
+                                                NewGUID: varNewRecord.'Job Entry Selection'
+                                            }
+                                        )
+                                    );
+                                    If(
+                                        !IsEmpty(Errors('Job Entry Selections')),
+                                        Notify($"Job Entry Selections: {First(Errors('Job Entry Selections')).Error} {First(Errors('Job Entry Selections')).Message} {First(Errors('Job Entry Selections')).Column}")
+                                    )
+                                )
+                            );
+                            ForAll(
+                                colParentRecords,
+                                With(
+                                    {varParentRecord: LookUp('Job Entry Selections', 'Job Entry Selection'=colParentRecords[@NewGUID])},
+                                    // Update job entry selection GUID
+                                    Patch(
+                                        colCdsJobEntrySelections,
+                                        LookUp(colCdsJobEntrySelections, 'Job Entry Selection'=colParentRecords[@OriginalGUID]),
+                                        varParentRecord
+                                    );
+                                    // Remove from list of new records
+                                    RemoveIf(
+                                        colAUDRecords,
+                                        And(
+                                            Type = "colCdsJobEntrySelections",
+                                            RecordRef = colParentRecords[@OriginalGUID],
+                                            Operation = "A"
+                                        )
+                                    );
+                                    // update progress bar
+                                    Update(
+                                        colProgressBar,
+                                        LookUp(colProgressBar, Not(Saved)),
+                                        {Saved: true}
+                                    )
+                                )
+                            );
+                            // Save Data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobEntrySelections,
+                                    "localCdsJobEntrySelections"
+                                )
+                            );
+                        )
+                    );
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Add__JobLaborItems)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="+ JE Selections"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =50
+            - btn_Saving_Add__JobLaborItems:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Create Job Labor Items
+                    With(
+                        {
+                            varJobLaborItems:
+                                Filter(
+                                colCdsJobLaborItems,
+                                'Job Labor Item' in Filter(
+                                    colAUDRecords,
+                                    Type = "colCdsJobLaborItems",
+                                    Operation = "A"
+                                ).RecordRef
+                            )
+                        },
+                        If(
+                            !IsEmpty(varJobLaborItems),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 5,
+                                    ProgressText: "Creating Job Labor Items"
+                                }
+                            );
+                            Clear(colParentRecords);
+                            ForAll(
+                                // For all records to be added, excluding columns which should not be used in Add
+                                varJobLaborItems As tblRecordLoop,
+                                With(
+                                    {
+                                        // Write new records to datasource
+                                        varNewRecord: Patch(
+                                            'Job Labor Items',
+                                            Defaults('Job Labor Items'),
+                                            First(
+                                                DropColumns(
+                                                    Table(tblRecordLoop),
+                                                    'Job Labor Item',
+                                                    appJobIDText
+                                                )
+                                            )
+                                        )
+                                    },
+                                    If(
+                                        IsEmpty(Errors('Job Labor Items')),
+                                        Collect(
+                                            colParentRecords,
+                                            {
+                                                Type: "colCdsJobLaborItems",
+                                                OriginalGUID: tblRecordLoop.'Job Labor Item',
+                                                NewGUID: varNewRecord.'Job Labor Item'
+                                            }
+                                        )
+                                    )
+                                )
+                            );
+                            ForAll(
+                                colParentRecords,
+                                // Update job labor items GUID
+                                Patch(
+                                    colCdsJobLaborItems,
+                                    LookUp(colCdsJobLaborItems, 'Job Labor Item'=colParentRecords[@OriginalGUID]),
+                                    LookUp('Job Labor Items', 'Job Labor Item'=colParentRecords[@NewGUID])
+                                );
+                                // Remove from list of new records
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobLaborItems",
+                                        RecordRef = colParentRecords[@OriginalGUID],
+                                        Operation = "A"
+                                    )
+                                );
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            If(
+                                gblAppLoadOffline,
+                                // Save data
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobLaborItems,
+                                    "localCdsJobLaborItems"
+                                )
+                            )
+                        )
+                    );
+                    // Next screen
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Add__JobMaterialItems)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="+ Job Labor"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =50
+            - btn_Saving_Add__JobMaterialItems:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Create Job Material Items
+                    With(
+                        {
+                            varJobMaterialItems:
+                            Filter(
+                                colCdsJobMaterialItems,
+                                'Job Material Item' in Filter(
+                                    colAUDRecords,
+                                    Type = "colCdsJobMaterialItems",
+                                    Operation = "A"
+                                ).RecordRef
+                            )
+                        },
+                        If(
+                            !IsEmpty(varJobMaterialItems),      
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 6,
+                                    ProgressText: "Creating Job Material Items"
+                                }
+                            );
+                            Clear(colParentRecords);
+                            ForAll(
+                                // For all records to be added, excluding columns which should not be used in Add
+                                varJobMaterialItems As tblRecordLoop,
+                                With(
+                                    {
+                                        // Write new records to datasource
+                                        varNewRecord: Patch(
+                                            'Job Material Items',
+                                            Defaults('Job Material Items'),
+                                            First(
+                                                DropColumns(
+                                                    Table(tblRecordLoop),
+                                                    'Job Material Item',
+                                                    appJobIDText
+                                                )
+                                            )
+                                        )
+                                    },
+                                    If(
+                                        IsEmpty(Errors('Job Material Items')),
+                                        Collect(
+                                            colParentRecords,
+                                            {
+                                                Type: "colCdsJobMaterialItems",
+                                                OriginalGUID: tblRecordLoop.'Job Material Item',
+                                                NewGUID: varNewRecord.'Job Material Item'
+                                            }
+                                        )
+                                    )
+                                )
+                            );
+                            ForAll(
+                                colParentRecords,
+                                // Update job material items GUID
+                                Patch(
+                                    colCdsJobMaterialItems,
+                                    LookUp(colCdsJobMaterialItems, 'Job Material Item'=colParentRecords[@OriginalGUID]),
+                                    LookUp('Job Material Items', 'Job Material Item'=colParentRecords[@NewGUID])
+                                );
+                                // Remove from list of new records
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobMaterialItems",
+                                        RecordRef = colParentRecords[@OriginalGUID],
+                                        Operation = "A"
+                                    )
+                                );
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            If(
+                                gblAppLoadOffline,
+                                // Save data
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobMaterialItems,
+                                    "localCdsJobMaterialItems"
+                                );
+                            )
+                        )
+                    );
+                    // Next screen
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Add__WindowMeasurements)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="+ Job Material"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =50
+            - btn_Saving_Add__WindowMeasurements:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |
+                    =// Create Window Measurements
+                    With(
+                        {
+                            varWindowMeasurements: Filter(
+                                colCdsWindowMeasurements,
+                                'Window Measurement' in Filter(
+                                    colAUDRecords,
+                                    Type = "colCdsWindowMeasurements",
+                                    Operation = "A"
+                                ).RecordRef,
+                                !('Job Entry'.'Job Entry' in Filter(
+                                    colAUDRecords,
+                                    Type = "colCdsJobEntries"
+                                ).RecordRef)
+                            )
+                        },
+                        If(
+                            !IsEmpty(varWindowMeasurements),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 6,
+                                    ProgressText: "Creating Window Measurements"
+                                }
+                            );
+                            Clear(colParentRecords);
+                            // Process Add (Create) Records
+                    ForAll(
+                                // Filter records to be added
+                                varWindowMeasurements As tblRecordLoop,
+                                With(
+                                    {
+                                        // Write new records to datasource, excluding certain columns
+                                        varNewRecord: Patch(
+                                            'Window Measurements',
+                                            Defaults('Window Measurements'),
+                                            First(
+                                                DropColumns(
+                                                    Table(tblRecordLoop),
+                                                    'Window Measurement'
+                                                )
+                                            )
+                                        )
+                                    },
+                                    If(
+                                        IsEmpty(Errors('Window Measurements')),
+                                        Collect(
+                                            colParentRecords,
+                                            {
+                                                Type: "colCdsWindowMeasurements",
+                                                OriginalGUID: tblRecordLoop.'Window Measurement',
+                                                NewGUID: varNewRecord.'Window Measurement'
+                                            }
+                                        )
+                                    );
+                                    If(
+                                        !IsEmpty(Errors('Window Measurements')),
+                                        Notify($"Window Measurements: {First(Errors('Window Measurements')).Error} {First(Errors('Window Measurements')).Message} {First(Errors('Window Measurements')).Column}")
+                                    )
+                                )
+                            );
+                            ForAll(
+                                colParentRecords,
+                                With(
+                                    {
+                                        varParentRecord: LookUp(
+                                            'Window Measurements',
+                                            'Window Measurement' = colParentRecords[@NewGUID]
+                                        )
+                                    },
+                                    // Update window measurements GUID
+                                    Patch(
+                                        colCdsWindowMeasurements,
+                                        LookUp(
+                                            colCdsWindowMeasurements,
+                                            'Window Measurement' = colParentRecords[@OriginalGUID]
+                                        ),
+                                        LookUp(
+                                            'Window Measurements',
+                                            'Window Measurement' = colParentRecords[@NewGUID]
+                                        )
+                                    );
+                                    // Job Photos
+                    UpdateIf(
+                                        colCdsJobPhotos,
+                                        'Window Measurement'.'Window Measurement' = colParentRecords[@OriginalGUID],
+                                        {'Window Measurement': varParentRecord}
+                                    );
+                                    // Remove from collection of records which would be processed
+                    RemoveIf(
+                                        colAUDRecords,
+                                        And(
+                                            Type = "colCdsWindowMeasurements",
+                                            RecordRef = colParentRecords[@OriginalGUID],
+                                            Operation = "A"
+                                        )
+                                    )
+                                );
+                                // update progress bar
+                    Update(
+                                    colProgressBar,
+                                    LookUp(
+                                        colProgressBar,
+                                        Not(Saved)
+                                    ),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save Data
+                    If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsWindowMeasurements,
+                                    "localCdsWindowMeasurements"
+                                );
+                                SaveData(
+                                    colCdsJobEntries,
+                                    "localCdsJobPhotos"
+                                )
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Update__JobRooms)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="+ Win Measure"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =10
+            - btn_Saving_Update__JobRooms:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Update Job Rooms
+                    With(
+                        {
+                            varJobRooms: 
+                                Filter(
+                                    colCdsJobRooms,
+                                    'Job Room' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobRooms",
+                                        Operation = "U"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobRooms),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 8,
+                                    ProgressText: "Updating Job Rooms"
+                                }
+                            );
+                            // Process Update Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                    Patch(
+                                        'Job Rooms',
+                                        ShowColumns(
+                                            varJobRooms,
+                                            Floor,
+                                            Job,
+                                            'Job Room',
+                                            Name,
+                                            Room
+                                        )
+                                    )
+                                },
+                                // remove records from tracking
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobRooms",
+                                        RecordRef in varPatchedRecords.'Job Room',
+                                        Operation = "U"
+                                    )
+                                ) 
+                            );
+                            ForAll(
+                                varJobRooms,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobRooms,
+                                    "localCdsJobRooms"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Update__JobEntries)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="^ Job Rooms"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Update__JobEntries:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Update Job Entries
+                    With(
+                        {
+                            varJobEntries: 
+                                Filter(
+                                    colCdsJobEntries,
+                                    'Job Entry' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobEntries",
+                                        Operation = "U"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobEntries),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 9,
+                                    ProgressText: "Updating Job Entries"
+                                }
+                            );
+                            // Process Update Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                    Patch(
+                                        'Job Entries',
+                                        ShowColumns(
+                                            varJobEntries,
+                                            'Job Entry',
+                                            Job,
+                                            Name,
+                                            Completed,
+                                            'Job Room',
+                                            'Lead Test: Exterior Component',
+                                            'Lead Test: Exterior Result',
+                                            'Lead Test: Exterior Swab Number',
+                                            'Lead Test: Interior Component',
+                                            'Lead Test: Interior Result',
+                                            'Lead Test: Interior Swab Number',
+                                            Notes,
+                                            'Room: Description',
+                                            'Room: Floor',
+                                            'Room: Type',
+                                            'Window Choice',
+                                            'Window Mull'
+                                        )
+                                    )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobEntries",
+                                        RecordRef in varPatchedRecords.'Job Entry',
+                                        Operation = "U"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobEntries,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobEntries,
+                                    "localCdsJobEntries"
+                                )
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Update__JobEntrySelections)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="^ Job Entries"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Update__JobEntrySelections:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Update Job Entry Selections
+                    With(
+                        {
+                            varJobEntrySelections: 
+                                Filter(
+                                    colCdsJobEntrySelections,
+                                    'Job Entry Selection' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobEntrySelections",
+                                        Operation = "U"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobEntrySelections),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 9,
+                                    ProgressText: "Updating Job Entry Selections"
+                                }
+                            );
+                            // Process Update Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Job Entry Selections',
+                                            ShowColumns(
+                                                varJobEntrySelections,
+                                                'Job Entry Selection',
+                                                Name,
+                                                'Job Entry',
+                                                'Job Entry Option (Attribute)',
+                                                'Job Entry Option (Value)',
+                                                'Job Entry Option (Value) (Sales)',
+                                                Notes,
+                                                Job
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobEntrySelections",
+                                        RecordRef in varPatchedRecords.'Job Entry Selection',
+                                        Operation = "U"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobEntrySelections,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobEntrySelections,
+                                    "localCdsJobEntrySelections"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Update__JobLaborItems)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="^ JE Selections"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Update__JobLaborItems:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Update Job Labor Items
+                    With(
+                        {
+                            varJobLaborItems: 
+                                Filter(
+                                    colCdsJobLaborItems,
+                                    'Job Labor Item' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobLaborItems",
+                                        Operation = "U"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobLaborItems),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 10,
+                                    ProgressText: "Updating Job Labor Items"
+                                }
+                            );
+                            // Process Update Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Job Labor Items',
+                                            ShowColumns(
+                                                varJobLaborItems,
+                                                Job,
+                                                'Job Labor Item',
+                                                'Market Labor Item',
+                                                Name,
+                                                Notes,
+                                                Quantity
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobLaborItems",
+                                        RecordRef in varPatchedRecords.'Job Labor Item',
+                                        Operation = "U"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobLaborItems,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobLaborItems,
+                                    "localCdsJobLaborItems"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Update__JobMaterialsItems)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="^ Job Labor"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Update__JobMaterialsItems:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Update Job Material Items
+                    With(
+                        {
+                            varJobMaterialItems: 
+                                Filter(
+                                    colCdsJobMaterialItems,
+                                    'Job Material Item' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobMaterialItems",
+                                        Operation = "U"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobMaterialItems),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 11,
+                                    ProgressText: "Updating Job Material Items"
+                                }
+                            );
+                            // Process Update Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                    Patch(
+                                        'Job Material Items',
+                                        ShowColumns(
+                                            varJobMaterialItems,
+                                            Color,
+                                            Job,
+                                            'Job Material Item',
+                                            'Market Material Item',
+                                            Name,
+                                            Quantity,
+                                            Notes,
+                                            'Lumber: Species',
+                                            'Lumber: Grade'
+                                        )
+                                    )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobMaterialItems",
+                                        RecordRef in varPatchedRecords.'Job Material Item',
+                                        Operation = "U"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobMaterialItems,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobMaterialItems,
+                                    "localCdsJobMaterialItems"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Update__JobDocuments)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="^ Job Materials"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Update__JobDocuments:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Update Job Documents 
+                    With(
+                        {
+                            varJobDocuments: 
+                                Filter(
+                                    colCdsJobDocuments,
+                                    'Job Document' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobDocuments",
+                                        Operation = "U"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobDocuments),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 12,
+                                    ProgressText: "Updating Job Documents"
+                                }
+                            );
+                            // Process Update Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Job Documents',
+                                            ShowColumns(
+                                                varJobDocuments,
+                                                Completed,
+                                                Document,
+                                                DocumentDate,
+                                                'Homeowner Signature (1)',
+                                                //"wn_homeownersignature1id",
+                                                'Homeowner Signature Date (1)',
+                                                'Homeowner Signature (2)',
+                                                //"wn_homeownersignature2id",
+                                                'Homeowner Signature Date (2)',
+                                                Job,
+                                                'Job Document',
+                                                Name,
+                                                'Technician Signature',
+                                                //"wn_techniciansignatureid",
+                                                'Technician Signature Date'
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobDocuments",
+                                        RecordRef in varPatchedRecords.'Job Document',
+                                        Operation = "U"
+                                    )
+                                );
+                            );
+                            ForAll(
+                                varJobDocuments,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobDocuments,
+                                    "localCdsJobDocuments"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Update__WindowMeasurements)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="^ Job Documents"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Update__WindowMeasurements:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Update Window Measurements
+
+
+                    IfError(     // ✅ start error suppression
+
+                    With(
+                        {
+                            varWindowMeasurements: 
+                                Filter(
+                                    colCdsWindowMeasurements,
+                                    'Window Measurement' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsWindowMeasurements",
+                                        Operation = "U"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varWindowMeasurements),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 14,
+                                    ProgressText: "Updating Window Measurements"
+                                }
+                            );
+                            // Process Update Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Window Measurements',
+                                            ShowColumns(
+                                                varWindowMeasurements,
+                                                Completed,
+                                                Height,
+                                                'Job Entry',
+                                                'Exception?',
+                                                'Jamb Depth',
+                                                'Lead Test: Exterior Component',
+                                                'Lead Test: Exterior Result',
+                                                'Lead Test: Exterior Swab Number',
+                                                'Lead Test: Interior Component',
+                                                'Lead Test: Interior Result',
+                                                'Lead Test: Interior Swab Number',
+                                                'Max Projection',
+                                                Name,
+                                                Notes,
+                                                'Soffit Depth',
+                                                'United Inches (UI)',
+                                                'Wall Thickness',
+                                                Width,
+                                                'Window Measurement',
+                                                'Window Mull'
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsWindowMeasurements",
+                                        RecordRef in varPatchedRecords.'Window Measurement',
+                                        Operation = "U"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varWindowMeasurements,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsWindowMeasurements,
+                                    "localCdsWindowMeasurements"
+                                )
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Delete__JobRooms)
+                    );
+                    ,   // ✅ error result handler
+                    Blank()   // Suppress visible errors
+                    );        // ✅ end IfError wrapper
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="^ Win Measure"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Delete__JobRooms:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Delete Job Rooms
+                    With(
+                        {
+                            varJobRooms: 
+                                Filter(
+                                    colCdsJobRooms,
+                                    'Job Room' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobRooms",
+                                        Operation = "D"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobRooms),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 15,
+                                    ProgressText: "Deleting Job Rooms"
+                                }
+                            );
+                            // Process Delete Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Job Rooms',
+                                            ShowColumns(
+                                                varJobRooms,
+                                                'Job Room',
+                                                Status,
+                                                'Status Reason'
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobRooms",
+                                        RecordRef in varPatchedRecords.'Job Room',
+                                        Operation = "D"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobRooms,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobRooms,
+                                    "localCdsJobRooms"
+                                )
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Delete__WindowMulls)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="- Job Rooms"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Delete__WindowMulls:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Delete Window Mulls
+                    With(
+                        {
+                            varWindowMulls: 
+                                Filter(
+                                    colCdsWindowMulls,
+                                    'Window Mulls' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsWindowMulls",
+                                        Operation = "D"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varWindowMulls),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 16,
+                                    ProgressText: "Deleting Window Mulls"
+                                }
+                            );
+                            // Process Delete Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Window Mulls',
+                                            ShowColumns(
+                                                varWindowMulls,
+                                                'Window Mulls',
+                                                Status,
+                                                'Status Reason'
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                colAUDRecords,
+                                    And(
+                                        Type = "colCdsWindowMulls",
+                                        RecordRef in varPatchedRecords.'Window Mulls',
+                                        Operation = "D"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varWindowMulls,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsWindowMulls,
+                                    "localCdsWindowMulls"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Delete__JobEntry)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="- Window Mulls"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Delete__JobEntry:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Delete Job Entry
+                    With(
+                        {
+                            varJobEntries: 
+                                Filter(
+                                    colCdsJobEntries,
+                                    'Job Entry' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobEntries",
+                                        Operation = "D"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobEntries),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 17,
+                                    ProgressText: "Deleting Job Entry"
+                                }
+                            );
+                            // Process Delete Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Job Entries',
+                                            ShowColumns(
+                                                varJobEntries,
+                                                'Job Entry',
+                                                Status,
+                                                'Status Reason'
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobEntries",
+                                        RecordRef in varPatchedRecords.'Job Entry',
+                                        Operation = "D"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobEntries,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobEntries,
+                                    "localCdsJobEntries"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Delete__JobLaborItems)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="- Job Entry"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Delete__JobLaborItems:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Delete Job Labor Items
+                    With(
+                        {
+                            varJobLaborItems: 
+                                Filter(
+                                    colCdsJobLaborItems,
+                                    'Job Labor Item' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobLaborItems",
+                                        Operation = "D"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobLaborItems),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 18,
+                                    ProgressText: "Deleting Job Labor Items"
+                                }
+                            );
+                            // Process Delete Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Job Labor Items',
+                                            ShowColumns(
+                                                varJobLaborItems,
+                                                'Job Labor Item',
+                                                Status,
+                                                'Status Reason'
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobLaborItems",
+                                        RecordRef in varPatchedRecords.'Job Labor Item',
+                                        Operation = "D"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobLaborItems,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobLaborItems,
+                                    "localCdsJobLaborItems"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Delete__JobMaterialItems)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="- Job Labor"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Delete__JobMaterialItems:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Delete Job Material Items
+                    With(
+                        {
+                            varJobMaterialItems: 
+                                Filter(
+                                    colCdsJobMaterialItems,
+                                    'Job Material Item' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobMaterialItems",
+                                        Operation = "D"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobMaterialItems),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 19,
+                                    ProgressText: "Deleting Job Material Items"
+                                }
+                            );
+                            // Process Delete Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Job Material Items',
+                                            ShowColumns(
+                                                varJobMaterialItems,
+                                                'Job Material Item',
+                                                Status,
+                                                'Status Reason'
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobMaterialItems",
+                                        RecordRef in varPatchedRecords.'Job Material Item',
+                                        Operation = "D"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobMaterialItems,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobMaterialItems,
+                                    "localCdsJobMaterialItems"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Delete__JobEntrySelections)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="- Job Material"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Delete__JobEntrySelections:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Delete Job Entry Selections
+                    With(
+                        {
+                            varJobEntrySelections: 
+                                Filter(
+                                    colCdsJobEntrySelections,
+                                    'Job Entry Selection' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobEntrySelections",
+                                        Operation = "D"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobEntrySelections),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 20,
+                                    ProgressText: "Deleting Job Entry Selections"
+                                }
+                            );
+                            // Process Delete Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Job Entry Selections',
+                                            ShowColumns(
+                                                varJobEntrySelections,
+                                                'Job Entry Selection',
+                                                Status,
+                                                'Status Reason'
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobEntrySelections",
+                                        RecordRef in varPatchedRecords.'Job Entry Selection',
+                                        Operation = "D"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobEntrySelections,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobEntrySelections,
+                                    "localCdsJobEntrySelections"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Delete__WindowMeasurements)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="- JE Selections"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Delete__WindowMeasurements:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |
+                    =// Delete Window Measurements 
+                    With(
+                        {
+                            varWindowMeasurements: Filter(
+                                colCdsWindowMeasurements,
+                                'Window Measurement' in Filter(
+                                    colAUDRecords,
+                                    Type = "colCdsWindowMeasurements",
+                                    Operation = "D"
+                                ).RecordRef
+                            )
+                        },
+                        If(
+                            !IsEmpty(varWindowMeasurements),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 21,
+                                    ProgressText: "Deleting Window Measurements"
+                                }
+                            );
+                            // Process Delete Records
+                    With(
+                                {
+                                    varPatchedRecords: Patch(
+                                        'Window Measurements',
+                                        ShowColumns(
+                                            varWindowMeasurements,
+                                            'Window Measurement',
+                                            Status,
+                                            'Status Reason'
+                                        )
+                                    )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsWindowMeasurements",
+                                        RecordRef in varPatchedRecords.'Window Measurement',
+                                        Operation = "D"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varWindowMeasurements,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(
+                                        colProgressBar,
+                                        Not(Saved)
+                                    ),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                    If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsWindowMeasurements,
+                                    "localCdsWindowMeasurements"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+
+                    If(
+                        // Auto-Advance, Call, Online
+                        And(
+                            gblAppAutoAdvance,
+                            Connection.Metered,
+                            Connection.Connected
+                        ),
+                        UpdateContext({locBoolean_ShowSavePrompt: true});
+                        // Auto-Advance, WiFi, Online
+                        And(
+                            gblAppAutoAdvance,
+                            Not(Connection.Metered),
+                            Connection.Connected
+                        ),
+                        Select(btn_Saving_Add__JobPhotos);
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="- Win Measure"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Add__JobPhotos:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |
+                    =// Create Job Photos
+                    With(
+                        {
+                            varJobPhotos:
+                                Filter(
+                                    colCdsJobPhotos,
+                                    'Job Photo' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobPhotos",
+                                        Operation = "A"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobPhotos),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 7,
+                                    ProgressText: "Creating Job Photos"
+                                }
+                            );
+                            Clear(colParentRecords);
+                            // Process Add (Create) Records
+                            ForAll(
+                                // Filter records to be added
+                                varJobPhotos As tblRecordLoop,
+                                With(
+                                    {
+                                        // Write new records to datasource, excluding certain columns
+                                        varNewRecord: Patch(
+                                            'Job Photos',
+                                            Defaults('Job Photos'),
+                                            First(
+                                                DropColumns(
+                                                    Table(tblRecordLoop),
+                                                    'Job Photo'
+                                                )
+                                            )
+                                        )
+                                    },
+                                    If(
+                                        IsEmpty(Errors('Job Photos')),
+                                        Collect(
+                                            colParentRecords,
+                                            {
+                                                Type: "colCdsJobPhotos",
+                                                OriginalGUID: tblRecordLoop.'Job Photo',
+                                                NewGUID: varNewRecord.'Job Photo'
+                                            }
+                                        )
+                                    );
+                                    If(
+                                        !IsEmpty(Errors('Job Photos')),
+                                        Notify($"Job Photos: {First(Errors('Job Photos')).Error} {First(Errors('Job Photos')).Message} {First(Errors('Job Photos')).Column}")
+                                    )
+                                )
+                            );
+                            ForAll(
+                                colParentRecords,
+                                // Update job photos GUID
+                                Patch(
+                                    colCdsJobPhotos,
+                                    LookUp(colCdsJobPhotos, 'Job Photo'=colParentRecords[@OriginalGUID]),
+                                    LookUp('Job Photos', 'Job Photo'=colParentRecords[@NewGUID])
+                                );
+                                    // Remove from collection of records which would be processed
+                                    RemoveIf(
+                                        colAUDRecords,
+                                        And(
+                                            Type = "colCdsJobPhotos",
+                                            RecordRef = colParentRecords[@OriginalGUID],
+                                            Operation = "A"
+                                        )
+                                );
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save Data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobPhotos,
+                                    "localCdsJobPhotos"
+                                )
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Update__JobPhotos)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="+ Job Photos"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =10
+            - btn_Saving_Update__JobPhotos:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Update Job Photos
+                    With(
+                        {
+                            varJobPhotos: 
+                                Filter(
+                                    colCdsJobPhotos,
+                                    'Job Photo' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobPhotos",
+                                        Operation = "U"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobPhotos),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 13,
+                                    ProgressText: "Updating Job Photos"
+                                }
+                            );
+                            // Process Update Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Job Photos',
+                                            ShowColumns(
+                                                varJobPhotos,
+                                                'Job Photo',
+                                                Name,
+                                                Notes,
+                                                Type,
+                                                Job,
+                                                'Job Entry',
+                                                'Window Measurement',
+                                                Image
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobPhotos",
+                                        RecordRef in varPatchedRecords.'Job Photo',
+                                        Operation = "U"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobPhotos,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobPhotos,
+                                    "localCdsJobPhotos"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Delete__JobPhotos)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="^ Job Photos"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Delete__JobPhotos:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Delete Job Photos
+                    With(
+                        {
+                            varJobPhotos: 
+                                Filter(
+                                    colCdsJobPhotos,
+                                    'Job Photo' in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobPhotos",
+                                        Operation = "D"
+                                    ).RecordRef
+                                )
+                        },
+                        If(
+                            !IsEmpty(varJobPhotos),
+                            // Collect Progress Record
+                            Collect(
+                                colSaveProgress,
+                                {
+                                    ProgressValue: 22,
+                                    ProgressText: "Deleting Job Photos"
+                                }
+                            );
+                            // Process Delete Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            'Job Photos',
+                                            ShowColumns(
+                                                varJobPhotos,
+                                                'Job Photo',
+                                                Status,
+                                                'Status Reason'
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobPhotos",
+                                        RecordRef in varPatchedRecords.'Job Photo',
+                                        Operation = "D"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobPhotos,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobPhotos,
+                                    "localCdsJobPhotos"
+                                );
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_Update__Jobs)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="- Job Photos"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_Update__Jobs:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Update Jobs
+                    With(
+                        {
+                            varJobs: 
+                                Filter(
+                                    colCdsJobs,
+                                    Job in Filter(
+                                        colAUDRecords,
+                                        Type = "colCdsJobs",
+                                        Operation = "U"
+                                ).RecordRef
+                            )
+                        },
+                        If(
+                            !IsEmpty(varJobs),      
+                        // Collect Progress Record
+                        Collect(
+                            colSaveProgress,
+                            {
+                                ProgressValue: 23,
+                                ProgressText: "Updating Job"
+                            }
+                        );
+                        // Process Update Records
+                            With(
+                                {
+                                    varPatchedRecords:
+                                        Patch(
+                                            Jobs,
+                                            ShowColumns(
+                                                varJobs,
+                                                Name,
+                                                Job,
+                                                'Address Street 1',
+                                                'Address Street 2',
+                                                'Address Street 3',
+                                                City,
+                                                Country,
+                                                //"wn_completed",
+                                                'Email (1)',
+                                                'Email (2)',
+                                                'End Date Time',
+                                                'Exterior Coverage',
+                                                'Market Segment',
+                                                'Phone (1)',
+                                                'Phone (1) Type',
+                                                'Phone (2)',
+                                                'Phone (2) Type',
+                                                'Phone (3)',
+                                                'Phone (3) Type',
+                                                'Primary Contact',
+                                                'Rescission Date',
+                                                'Secondary Contact',
+                                                'Start Date Time',
+                                                State,
+                                                'Window Removal',
+                                                'Year Built',
+                                                'Zip Code',
+                                                'Lead Test: Last Swab Number',
+                                                'Overview: Construction',
+                                                'Overview: Existing Windows',
+                                                'Overview: Exterior Capping',
+                                                'Overview: Exterior Covering',
+                                                'Overview: Notes',
+                                                'Overview: Special Conditions',
+                                                'Overview: Special Equipment Needed',
+                                                'Overview: Style Of Home'//,
+                                                //"wn_jobpackagesenddocuments",
+                                                //"wn_leadtestsenddocument",
+                                                //"wn_jobfinishedsendemail"
+                                            )
+                                        )
+                                },
+                                RemoveIf(
+                                    colAUDRecords,
+                                    And(
+                                        Type = "colCdsJobs",
+                                        RecordRef in varPatchedRecords.Job,
+                                        Operation = "U"
+                                    )
+                                )
+                            );
+                            ForAll(
+                                varJobs,
+                                // update progress bar
+                                Update(
+                                    colProgressBar,
+                                    LookUp(colProgressBar, Not(Saved)),
+                                    {Saved: true}
+                                )
+                            );
+                            // Save data
+                            If(
+                                gblAppLoadOffline,
+                                SaveData(
+                                    colAUDRecords,
+                                    "localAUDRecords"
+                                );
+                                SaveData(
+                                    colCdsJobs,
+                                    "localCdsJobs"
+                                )
+                            )
+                        )
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        Select(btn_Saving_End)
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="^ Jobs"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =364
+            - btn_Saving_End:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Collect Progress Record
+                    Collect(
+                        colSaveProgress,
+                        {
+                            ProgressValue: 24,
+                            ProgressText: "Save Completed"
+                        }
+                    );
+                    Update(
+                        colProgressBar,
+                        LookUp(colProgressBar, Not(Saved)),
+                        {Saved: true}
+                    );
+                    // Next Step
+                    If(
+                        gblAppAutoAdvance,
+                        If(
+                            IsEmpty(colAUDRecords),
+                            Reset(tmr_Saving_Navigate);
+                            UpdateContext({locStartTimer: false});
+                            UpdateContext({locStartTimer: true});
+                            Patch(
+                                Jobs,
+                                ShowColumns(
+                                    colCdsJobs,
+                                    Job,
+                                    Completed,
+                                    'Job Package: Send Documents?',
+                                    'Lead Test: Send Document?',
+                                    'Job Finished: Send Email?'
+                                )
+                            ),
+                            UpdateContext({locShowPopUp: "Save Error"})
+                        )
+                    );
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="End"
+                  Width: =Parent.Width - (2* Self.X)
+                  X: =10
+                  Y: =10
+      - btn_Saving_Status:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(0, 18, 107, 1)
+            Fill: =RGBA(141, 198, 63, 1)
+            Font: =Font.'Open Sans'
+            FontWeight: =FontWeight.Semibold
+            Size: =11
+            Text: =Last(colSaveProgress).ProgressText
+            Visible: =!gblAppAutoload
+            Width: =286
+            X: =606
+            Y: =10
+      - btn_Saving_Purge:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =RGBA(168, 0, 0, 1)
+            Font: =Font.'Open Sans'
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnSelect: =Clear(colSaveProgress);Clear(colAUDRecords);
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Text: ="Purge"
+            Visible: =!gblAppAutoload
+            Width: =188
+            X: =12
+            Y: =10
+      - cmb_Saving_Type:
+          Control: Classic/ComboBox@2.4.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            ChevronBackground: =RGBA(56, 96, 178, 1)
+            ChevronFill: =RGBA(255, 255, 255, 1)
+            ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            ChevronHoverFill: =RGBA(255, 255, 255, 1)
+            DefaultSelectedItems: |-
+              =ForAll(Distinct(colAUDRecords,Type), {Result: ThisRecord.Value})
+            DisplayFields: =["Result"]
+            Font: =Font.'Open Sans'
+            HoverFill: =RGBA(186, 202, 226, 1)
+            Items: |-
+              =ForAll(Distinct(colAUDRecords,Type), {Result: ThisRecord.Value})
+            PressedColor: =RGBA(255, 255, 255, 1)
+            PressedFill: =RGBA(0, 18, 107, 1)
+            SearchFields: =["Result"]
+            SelectionColor: =RGBA(255, 255, 255, 1)
+            SelectionFill: =RGBA(56, 96, 178, 1)
+            Visible: =!gblAppAutoload
+            Width: =440
+            X: =563
+            Y: =75
+      - cmb_Saving_Operation:
+          Control: Classic/ComboBox@2.4.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            ChevronBackground: =RGBA(56, 96, 178, 1)
+            ChevronFill: =RGBA(255, 255, 255, 1)
+            ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            ChevronHoverFill: =RGBA(255, 255, 255, 1)
+            DefaultSelectedItems: |-
+              =ForAll(Distinct(colAUDRecords,Operation), {Result: ThisRecord.Value})
+            DisplayFields: =["Result"]
+            Font: =Font.'Open Sans'
+            HoverFill: =RGBA(186, 202, 226, 1)
+            Items: |-
+              =ForAll(Distinct(colAUDRecords,Operation), {Result: ThisRecord.Value})
+            PressedColor: =RGBA(255, 255, 255, 1)
+            PressedFill: =RGBA(0, 18, 107, 1)
+            SearchFields: =["Result"]
+            SelectionColor: =RGBA(255, 255, 255, 1)
+            SelectionFill: =RGBA(56, 96, 178, 1)
+            Visible: =!gblAppAutoload
+            Width: =200
+            X: =344
+            Y: =75
+      - gal_Saving_ProgressBar:
+          Control: Gallery@2.15.0
+          Variant: Horizontal
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            DelayItemLoading: =false
+            Height: =10+Self.TemplatePadding*2
+            Items: =colProgressBar
+            LoadingSpinner: =LoadingSpinner.None
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplatePadding: |-
+              =With(
+                  {varCount: CountRows(Self.AllItems)},
+                  If(
+                      varCount = 0,
+                      0,
+                      varCount <= 25,
+                      5,
+                      varCount <= 50,
+                      3,
+                      2
+                  )
+              )
+            TemplateSize: |-
+              =With(
+                  {varCount: CountRows(Self.AllItems)},
+                  Self.Width / If(
+                      varCount = 0,
+                      1,
+                      varCount
+                  ) - Self.TemplatePadding
+              )
+            Visible: =true//gblAppAutoload
+            Width: =500
+            X: =(Parent.Width - Self.Width - Self.TemplatePadding) / 2
+            Y: =570
+          Children:
+            - shp_Saving_ProgressBar:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Fill: =If(ThisItem.Saved,gblAppColors.Secondary.Green,gblAppColors.Secondary.GrayMedium)
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  Width: =Parent.TemplateWidth
+                  X: =0*0
+                  Y: =0*0
+      - lblRecordsToProcess:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Text: |-
+              =Concatenate(
+                  "Rows: ",
+                  Text(
+                      CountRows(
+                          Filter(
+                              colAUDRecords,
+                              Type in cmb_Saving_Type.SelectedItems.Result,
+                              Operation in cmb_Saving_Operation.SelectedItems.Result
+                          )
+                      )
+                  )
+              )
+            Visible: =!gblAppAutoload
+            Width: =100
+            X: =230
+            Y: =75
+      - dtbRecordsToProcess:
+          Control: DataTable@1.0.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =Color.White
+            Font: =Font.'Open Sans'
+            HeadingColor: =RGBA(255, 255, 255, 1)
+            HeadingFill: =RGBA(56, 96, 178, 1)
+            HeadingFont: =Font.'Open Sans'
+            Height: =624
+            HoverFill: =RGBA(186, 202, 226, .2)
+            Items: |-
+              =Filter(
+                  colAUDRecords,
+                  Type in cmb_Saving_Type.SelectedItems.Result,
+                  Operation in cmb_Saving_Operation.SelectedItems.Result
+              )
+            SelectedFill: =RGBA(56, 96, 178, .2)
+            Visible: =!gblAppAutoload
+            Width: =774
+            X: =250
+            Y: =144
+          Children:
+            - Job_Column2:
+                Control: DataTableColumn@1.0.1
+                Variant: Textual
+                IsLocked: true
+                Properties:
+                  AutoWidth: =false
+                  FieldDisplayName: ="Job"
+                  FieldName: ="Job"
+                  Order: =1
+                  Text: =ThisItem.Job
+                  Width: =82
+            - Operation_Column2:
+                Control: DataTableColumn@1.0.1
+                Variant: Textual
+                IsLocked: true
+                Properties:
+                  AutoWidth: =false
+                  FieldDisplayName: ="Operation"
+                  FieldName: ="Operation"
+                  Order: =2
+                  Text: =ThisItem.Operation
+                  Width: =55
+            - RecordRef_Column2:
+                Control: DataTableColumn@1.0.1
+                Variant: Textual
+                IsLocked: true
+                Properties:
+                  AutoWidth: =false
+                  FieldDisplayName: ="RecordRef"
+                  FieldName: ="RecordRef"
+                  Order: =3
+                  Text: =ThisItem.RecordRef
+                  Width: =372
+            - Type_Column2:
+                Control: DataTableColumn@1.0.1
+                Variant: Textual
+                IsLocked: true
+                Properties:
+                  AutoWidth: =false
+                  FieldDisplayName: ="Type"
+                  FieldName: ="Type"
+                  Order: =4
+                  Text: =ThisItem.Type
+                  Width: =184
+      - con_Saving_PopUp:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =768
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =!IsBlank(locShowPopUp)
+            Width: =1024
+          Children:
+            - btn_Saving_PopUp__Clickshield:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Fill: =RGBA(0, 0, 0, 0.5)
+                  Font: =Font.'Open Sans'
+                  Height: =768
+                  OnSelect: =
+                  Text: =""
+                  Width: =1024
+            - btn_Saving_PopUp__Base:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =
+                  EnableSpellCheck: =true
+                  Font: =gblAppStyles.Text.Font
+                  Height: =265
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  MaxLength: =2000
+                  Mode: =TextMode.MultiLine
+                  PaddingLeft: =20
+                  PaddingTop: =16
+                  Width: =643
+                  X: =225
+                  Y: =202
+            - btn_Saving_PopUp__Back:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =gblAppStyles.Status.Neutral
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =ColorFade(Self.Fill, -10%)
+                  OnSelect: |
+                    =UpdateContext({locShowPopUp: ""});
+                    Back()
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =ColorFade(Self.Fill,-30%)
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Size: =20
+                  Text: ="Back"
+                  Width: =180
+                  X: =668
+                  Y: =400
+            - btn_Saving_PopUp__Ignore:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =gblAppColors.Secondary.GrayMediumDark
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =gblAppColors.Secondary.White
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =ColorFade(Self.Fill, -10%)
+                  OnSelect: |-
+                    =Clear(colAUDRecords);
+                    If(
+                        gblAppLoadOffline,
+                        SaveData(
+                            colAUDRecords,
+                            "localAUDRecords"
+                        )
+                    );
+                    UpdateContext({locShowPopUp: ""});
+                    Patch(
+                        Jobs,
+                        ShowColumns(
+                            colCdsJobs,
+                            Job,
+                            Completed,
+                            'Job Package: Send Documents?',
+                            'Lead Test: Send Document?',
+                            'Job Finished: Send Email?'
+                        )
+                    );
+                    Reset(tmr_Saving_Navigate);
+                    UpdateContext({locStartTimer: true})
+                  PressedBorderColor: =Self.BorderColor
+                  PressedColor: =Self.Fill
+                  PressedFill: =ColorFade(Self.Fill,-30%)
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Size: =20
+                  Text: ="Ignore"
+                  Visible: =locShowPopUp="Save Error"
+                  Width: =180
+                  X: =470
+                  Y: =400
+            - btn_Saving_PopUp__Message:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =121
+                  LineHeight: =1.5
+                  PaddingLeft: =30
+                  PaddingRight: =30
+                  Size: =gblAppStyles.Text.SubtitleSize
+                  Text: |-
+                    =Switch(
+                        locShowPopUp,
+                        "Not Connected",
+                        "Data cannot be saved because the device is not connected to the internet.  Please try again when your device has an internet connection.",
+                        "Save Error",
+                        CountRows(colAUDRecords)&" records were not saved due to an error.  Press back to attempt another save.  Any unsaved data will be lost if you press ignore."
+                    )
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =643
+                  X: =225
+                  Y: =269
+            - btn_Saving_PopUp__Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =67
+                  PaddingLeft: =30
+                  Size: =gblAppStyles.Text.TitleSize
+                  Text: =locShowPopUp
+                  Width: =643
+                  X: =225*1
+                  Y: =202*1
+      - con_Modal_SaveOnCellConnection_Saving:
+          Control: GroupContainer@1.3.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(0, 0, 0, 0.5)
+            Height: =Parent.Height
+            LayoutAlignItems: =LayoutAlignItems.Center
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutJustifyContent: =LayoutJustifyContent.Center
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locBoolean_ShowSavePrompt
+            Width: =Parent.Width
+            X: =0*0
+            Y: =0*0
+          Children:
+            - Container3:
+                Control: GroupContainer@1.3.0
+                Variant: AutoLayout
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  DropShadow: =DropShadow.Semilight
+                  Fill: =RGBA(255, 255, 255, 1)
+                  FillPortions: =0
+                  Height: =300
+                  LayoutAlignItems: =LayoutAlignItems.Stretch
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                  PaddingBottom: =12
+                  PaddingLeft: =12
+                  PaddingRight: =12
+                  PaddingTop: =12
+                  RadiusBottomLeft: =8
+                  RadiusBottomRight: =8
+                  RadiusTopLeft: =8
+                  RadiusTopRight: =8
+                Children:
+                  - btn_Saving_PopUp__Title_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Segoe UI'
+                        Height: =67
+                        PaddingLeft: =30
+                        Size: =gblAppStyles.Text.TitleSize
+                        Text: ="Confirm Save"
+                        Width: =643
+                        X: =225*1
+                        Y: =202*1
+                  - btn_Saving_PopUp__Message_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Segoe UI'
+                        Height: =121
+                        LineHeight: =1.5
+                        PaddingLeft: =30
+                        PaddingRight: =30
+                        Size: =gblAppStyles.Text.SubtitleSize
+                        Text: ="It looks like you're on a cellular connection. Click 'Continue' to save Photos now, or 'Skip' to proceed without uploading photos."
+                        VerticalAlign: =VerticalAlign.Top
+                        Width: =643
+                        X: =225
+                        Y: =269
+                  - Container4:
+                      Control: GroupContainer@1.3.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+                        LayoutMinHeight: =0
+                        PaddingLeft: =30
+                        PaddingRight: =30
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                      Children:
+                        - btn_Saving_PopUp__Ignore_1:
+                            Control: Classic/Button@2.2.0
+                            Properties:
+                              BorderColor: =ColorFade(Self.Fill, -15%)
+                              Color: =gblAppColors.Secondary.GrayMediumDark
+                              DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                              Fill: =gblAppColors.Secondary.White
+                              FocusedBorderColor: =Color.Transparent
+                              FocusedBorderThickness: =0.01
+                              Font: =Font.'Segoe UI'
+                              FontWeight: =FontWeight.Normal
+                              Height: =50
+                              HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                              HoverColor: =Self.Color
+                              HoverFill: =ColorFade(Self.Fill, -10%)
+                              OnSelect: |-
+                                =// Advance to Job Update
+                                Select(btn_Saving_Update__Jobs);
+                                UpdateContext({locBoolean_ShowSavePrompt: false});
+                              PressedBorderColor: =Self.BorderColor
+                              PressedColor: =Self.Fill
+                              PressedFill: =ColorFade(Self.Fill,-30%)
+                              RadiusBottomLeft: =5
+                              RadiusBottomRight: =5
+                              RadiusTopLeft: =5
+                              RadiusTopRight: =5
+                              Size: =20
+                              Text: ="Skip"
+                              Width: =180
+                              X: =470
+                              Y: =400
+                        - btn_Saving_PopUp__Back_1:
+                            Control: Classic/Button@2.2.0
+                            Properties:
+                              BorderColor: =ColorFade(Self.Fill, -15%)
+                              BorderThickness: =0
+                              Color: =RGBA(255, 255, 255, 1)
+                              DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                              DisplayMode: |-
+                                =If(
+                                    Connection.Connected,
+                                    DisplayMode.Edit,
+                                    DisplayMode.Disabled
+                                )
+                              Fill: =gblAppStyles.Status.Info
+                              FocusedBorderColor: =Color.Transparent
+                              FocusedBorderThickness: =0.01
+                              Font: =Font.'Segoe UI'
+                              FontWeight: =FontWeight.Normal
+                              Height: =50
+                              HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                              HoverColor: =Self.Color
+                              HoverFill: =ColorFade(Self.Fill, -10%)
+                              OnSelect: |
+                                =// Create Photos
+                                Select(btn_Saving_Add__JobPhotos);
+                                UpdateContext({locBoolean_ShowSavePrompt: false});
+                              PressedBorderColor: =Self.Fill
+                              PressedFill: =ColorFade(Self.Fill,-30%)
+                              RadiusBottomLeft: =5
+                              RadiusBottomRight: =5
+                              RadiusTopLeft: =5
+                              RadiusTopRight: =5
+                              Size: =20
+                              Text: ="Continue"
+                              Width: =180
+                              X: =668
+                              Y: =400

@@ -1,0 +1,100 @@
+{
+  "Resources": [
+    {
+      "Name": "SampleImage",
+      "Schema": "i",
+      "IsSampleData": true,
+      "IsWritable": false,
+      "Type": "ResourceInfo",
+      "FileName": "/ctrllib/image/images/SampleImage.svg",
+      "Path": "/ctrllib/image/images/SampleImage.svg",
+      "Content": "Image",
+      "ResourceKind": "Uri",
+      "RootPath": "ms-appx:///ctrllib/image/images/SampleImage.svg"
+    },
+    {
+      "Name": "window-nation-footer-logo-cds",
+      "Schema": "i",
+      "IsSampleData": false,
+      "IsWritable": false,
+      "Type": "ResourceInfo",
+      "FileName": "0004.png",
+      "Path": "Assets\\Images\\0004.png",
+      "Content": "Image",
+      "ResourceKind": "LocalFile",
+      "RootPath": "https://dsprdil108eus.blob.core.windows.net/a9f778bb-3c2e-41da-a891-a8bda5520dbd-1/resource/MDAwNA.png?skoid=58690ece-ec83-4ce2-9ce8-883d4d6a54ee&sktid=975f013f-7f24-47e8-a7d3-abc4752bf346&skt=2025-10-27T12%3A46%3A37Z&ske=2025-10-28T13%3A01%3A37Z&sks=b&skv=2023-01-03&sv=2023-01-03&spr=https&se=2025-10-28T13%3A01%3A37Z&sr=b&sp=r&sig=nOZq4%2B8RGX9ZiEAInmZAn1EwhNEIcJI36aCiwwEgQjQ%3D"
+    },
+    {
+      "Name": "dblhungw",
+      "Schema": "i",
+      "IsSampleData": false,
+      "IsWritable": false,
+      "Type": "ResourceInfo",
+      "FileName": "0006.svg",
+      "Path": "Assets\\Images\\0006.svg",
+      "Content": "Image",
+      "ResourceKind": "LocalFile",
+      "RootPath": "https://dsprdil108eus.blob.core.windows.net/a9f778bb-3c2e-41da-a891-a8bda5520dbd-1/resource/MDAwNg.svg?skoid=58690ece-ec83-4ce2-9ce8-883d4d6a54ee&sktid=975f013f-7f24-47e8-a7d3-abc4752bf346&skt=2025-10-27T12%3A46%3A37Z&ske=2025-10-28T13%3A01%3A37Z&sks=b&skv=2023-01-03&sv=2023-01-03&spr=https&se=2025-10-28T13%3A01%3A37Z&sr=b&sp=r&sig=aiNHElgEk8O7ytoSKoQev%2FD%2FVO6%2FZ2cUl1822DNsmeY%3D"
+    },
+    {
+      "Name": "icons8-checkmark",
+      "Schema": "i",
+      "IsSampleData": false,
+      "IsWritable": false,
+      "Type": "ResourceInfo",
+      "FileName": "0008.svg",
+      "Path": "Assets\\Images\\0008.svg",
+      "Content": "Image",
+      "ResourceKind": "LocalFile",
+      "RootPath": "https://dsprdil108eus.blob.core.windows.net/a9f778bb-3c2e-41da-a891-a8bda5520dbd-1/resource/MDAwOA.svg?skoid=58690ece-ec83-4ce2-9ce8-883d4d6a54ee&sktid=975f013f-7f24-47e8-a7d3-abc4752bf346&skt=2025-10-27T12%3A46%3A37Z&ske=2025-10-28T13%3A01%3A37Z&sks=b&skv=2023-01-03&sv=2023-01-03&spr=https&se=2025-10-28T13%3A01%3A37Z&sr=b&sp=r&sig=Toq6Zqu7sckypLGNAgca4Fnf55%2FOofGaRqCpPTeW9GI%3D"
+    },
+    {
+      "Name": "Image_LoadingSpinner",
+      "Schema": "i",
+      "IsSampleData": false,
+      "IsWritable": false,
+      "Type": "ResourceInfo",
+      "FileName": "0013.svg",
+      "Path": "Assets\\Images\\0013.svg",
+      "Content": "Image",
+      "ResourceKind": "LocalFile",
+      "RootPath": "https://dsprdil108eus.blob.core.windows.net/a9f778bb-3c2e-41da-a891-a8bda5520dbd-1/resource/MDAxMw.svg?skoid=58690ece-ec83-4ce2-9ce8-883d4d6a54ee&sktid=975f013f-7f24-47e8-a7d3-abc4752bf346&skt=2025-10-27T12%3A46%3A37Z&ske=2025-10-28T13%3A01%3A37Z&sks=b&skv=2023-01-03&sv=2023-01-03&spr=https&se=2025-10-28T13%3A01%3A37Z&sr=b&sp=r&sig=8GzrxEHWvIRFI0uD%2FwyqziVQWkF1ZGe%2BFot%2BUkhetrw%3D"
+    },
+    {
+      "Name": "Image_SavingSpinner",
+      "Schema": "i",
+      "IsSampleData": false,
+      "IsWritable": false,
+      "Type": "ResourceInfo",
+      "FileName": "0015.svg",
+      "Path": "Assets\\Images\\0015.svg",
+      "Content": "Image",
+      "ResourceKind": "LocalFile",
+      "RootPath": "https://dsprdil108eus.blob.core.windows.net/a9f778bb-3c2e-41da-a891-a8bda5520dbd-1/resource/MDAxNQ.svg?skoid=58690ece-ec83-4ce2-9ce8-883d4d6a54ee&sktid=975f013f-7f24-47e8-a7d3-abc4752bf346&skt=2025-10-27T12%3A46%3A37Z&ske=2025-10-28T13%3A01%3A37Z&sks=b&skv=2023-01-03&sv=2023-01-03&spr=https&se=2025-10-28T13%3A01%3A37Z&sr=b&sp=r&sig=vkg1xBhJFTHNjok%2BNyeZaGHQeYI%2FgXEwunXnPo2S5jk%3D"
+    },
+    {
+      "Name": "dblhungw-2",
+      "Schema": "i",
+      "IsSampleData": false,
+      "IsWritable": false,
+      "Type": "ResourceInfo",
+      "FileName": "0024.svg",
+      "Path": "Assets\\Images\\0024.svg",
+      "Content": "Image",
+      "ResourceKind": "LocalFile",
+      "RootPath": "https://dsprdil108eus.blob.core.windows.net/a9f778bb-3c2e-41da-a891-a8bda5520dbd-1/resource/MDAyNA.svg?skoid=58690ece-ec83-4ce2-9ce8-883d4d6a54ee&sktid=975f013f-7f24-47e8-a7d3-abc4752bf346&skt=2025-10-27T12%3A46%3A37Z&ske=2025-10-28T13%3A01%3A37Z&sks=b&skv=2023-01-03&sv=2023-01-03&spr=https&se=2025-10-28T13%3A01%3A37Z&sr=b&sp=r&sig=1ZDC9vqNMBo9tBvs5onAUdO1oOGhlKKqg5eklAAVnN8%3D"
+    },
+    {
+      "Name": "Image_IssueSpinner",
+      "Schema": "i",
+      "IsSampleData": false,
+      "IsWritable": false,
+      "Type": "ResourceInfo",
+      "FileName": "0025.svg",
+      "Path": "Assets\\Images\\0025.svg",
+      "Content": "Image",
+      "ResourceKind": "LocalFile",
+      "RootPath": "https://dsprdil108eus.blob.core.windows.net/a9f778bb-3c2e-41da-a891-a8bda5520dbd-1/resource/MDAyNQ.svg?skoid=58690ece-ec83-4ce2-9ce8-883d4d6a54ee&sktid=975f013f-7f24-47e8-a7d3-abc4752bf346&skt=2025-10-27T12%3A46%3A37Z&ske=2025-10-28T13%3A01%3A37Z&sks=b&skv=2023-01-03&sv=2023-01-03&spr=https&se=2025-10-28T13%3A01%3A37Z&sr=b&sp=r&sig=3bWNt2kTbKVfjeTCmB0Pht03v2dkMQ3btuKaEMP0pbA%3D"
+    }
+  ]
+}

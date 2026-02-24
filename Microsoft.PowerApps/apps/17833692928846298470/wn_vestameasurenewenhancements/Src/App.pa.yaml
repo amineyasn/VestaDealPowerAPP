@@ -1,0 +1,394 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+App:
+  Properties:
+    BackEnabled: =false
+    ConfirmExit: =!IsEmpty(colAUDRecords)
+    ConfirmExitMessage: ="You have unsaved data. Please save before closing the app or your changes will be lost"
+    OnError: |-
+      =Notify(
+          Concatenate(
+              FirstError.Message,
+              ", Observed: ",
+              FirstError.Observed,
+              ", Source: ",
+              FirstError.Source
+          ),
+          NotificationType.Error
+      );
+      Trace(
+          "Unhandled Error",
+          TraceSeverity.Error,
+          {
+              Kind: FirstError.Kind,
+              Message: FirstError.Message,
+              Observed: FirstError.Observed,
+              Screen: App.ActiveScreen.Name,
+              Source: FirstError.Source,
+              User: User().Email
+          }
+      );
+    OnStart: |
+      =Set(
+          gblAppVersion,
+          Value(1.62)
+      );
+      Set(
+          gblAppAutoload,
+          true
+      );
+      Set(
+          gblAppLoadOffline,
+          !(Param("offlinemode")="false")
+      );
+      Set(
+          gblAppAutoAdvance,
+          true
+      );
+      Set(
+          gblDateCurrent,
+          Today()
+      );
+      ClearCollect(
+          colAUDRecords,
+          FirstN(Table({Type: "A", RecordRef: GUID(), Job: GUID(), Operation: "A"}),0)
+      );
+      // App Icons
+      Set(
+          gblAppIcons,
+          {
+              Ruler: "data:image/svg+xml;utf8, "&EncodeUrl("<svg fill='#122632' height='800px' width='800px' version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' 
+      	 viewBox='0 0 512 512' xml:space='preserve'>
+      <g>
+      	<g>
+      		<path d='M402.826,0L0.001,402.827L109.174,512l402.826-402.826L402.826,0z M43.671,402.827l25.789-25.789l32.752,32.752
+      			l21.834-21.834l-32.752-32.752l25.789-25.789l21.834,21.834l21.834-21.834l-21.834-21.834l25.789-25.789l21.834,21.834
+      			l21.834-21.834l-21.834-21.834l25.79-25.79l32.752,32.752l21.834-21.834l-32.752-32.752l25.789-25.789l21.834,21.834
+      			l21.834-21.834l-21.834-21.834l25.789-25.789l21.835,21.834l21.834-21.834l-21.834-21.834l25.79-25.79l32.752,32.752
+      			l21.834-21.834L377.037,69.46l25.789-25.789l65.504,65.504L109.174,468.33L43.671,402.827z'/>
+      	</g>
+      </g>
+      </svg>"),
+             RulerDisabled: "data:image/svg+xml;utf8, "&EncodeUrl("<svg fill='#8A8886' height='800px' width='800px' version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' 
+      	 viewBox='0 0 512 512' xml:space='preserve'>
+      <g>
+      	<g>
+      		<path d='M402.826,0L0.001,402.827L109.174,512l402.826-402.826L402.826,0z M43.671,402.827l25.789-25.789l32.752,32.752
+      			l21.834-21.834l-32.752-32.752l25.789-25.789l21.834,21.834l21.834-21.834l-21.834-21.834l25.789-25.789l21.834,21.834
+      			l21.834-21.834l-21.834-21.834l25.79-25.79l32.752,32.752l21.834-21.834l-32.752-32.752l25.789-25.789l21.834,21.834
+      			l21.834-21.834l-21.834-21.834l25.789-25.789l21.835,21.834l21.834-21.834l-21.834-21.834l25.79-25.79l32.752,32.752
+      			l21.834-21.834L377.037,69.46l25.789-25.789l65.504,65.504L109.174,468.33L43.671,402.827z'/>
+      	</g>
+      </g>
+      </svg>")
+          }
+      );
+      // Global App Variables Block
+      Set(
+          // App Colors
+          gblAppColors,
+          {
+              Primary: {
+                  Blue: ColorValue("#0d59a2"),
+                  BlueDark: ColorValue("#122632"),
+                  Black: ColorValue("#000000"),
+                  White: ColorValue("#FFFFFF"),
+                  WhiteSmoke: ColorValue("#F5F5F5")
+              },
+              Secondary: {
+                  // Colors
+                  Red: ColorValue("#DC5B57"),
+                  Green: ColorValue("#1FA770"),
+                  Orange: ColorValue("#F7941D"),
+                  Yellow: ColorValue("#ffc600"),
+                  BlueShade: ColorValue("#1A459D"),
+                  Blue: ColorValue("#0d59a2"),
+                  BlueTint: ColorValue("#50BDED"),
+                  Gray: ColorValue("#faf9f8"),
+                  // Neutrals
+                  Black: ColorValue("#000000"),
+                  GrayDark: ColorValue("#484644"),
+                  //Gray 140
+                  GrayMediumDark: ColorValue("#8a8886"),
+                  //Gray 110
+                  GrayMedium: ColorValue("#b3b0ad"),
+                  //Gray 80
+                  GrayMediumLight: ColorValue("#d2d0ce"),
+                  //Gray 50
+                  GrayLight: ColorValue("#f3f2f1"),
+                  //Gray 20
+                  White: ColorValue("#FFFFFF")
+                  //Leftovers
+                  //Gray: ColorValue("#808080"),
+                  //GrayTint: ColorValue("#D3D3D3")
+              }
+          }
+      );
+      Set(
+          // App Styles
+          gblAppStyles,
+          {
+              Background: {Fill: gblAppColors.Primary.WhiteSmoke},
+              Padding: {ButtonMargin: 40},
+              ButtonPrimary: {
+                  BorderColor: gblAppColors.Secondary.Yellow,
+                  BorderThickness: 1,
+                  Color: gblAppColors.Primary.Black,
+                  DisabledBorderColor: gblAppColors.Secondary.GrayDark,
+                  DisabledColor: gblAppColors.Primary.White,
+                  DisabledFill: gblAppColors.Secondary.GrayDark,
+                  Fill: gblAppColors.Secondary.Yellow,
+                  FocusedBorderColor: gblAppColors.Primary.Black,
+                  FocusedBorderThickness: 2,
+                  HoverBorderColor: gblAppColors.Secondary.Yellow,
+                  HoverColor: gblAppColors.Primary.Black,
+                  HoverFill: ColorFade(
+                      gblAppColors.Secondary.Yellow,
+                      -20%
+                  ),
+                  PressedBorderColor: gblAppColors.Secondary.Yellow,
+                  PressedColor: gblAppColors.Primary.White,
+                  PressedFill: ColorFade(
+                      gblAppColors.Secondary.Yellow,
+                      -50%
+                  )
+              },
+              // ACTIONS MENU
+              ActionsMenu: {
+                  ActionX: 72,
+                  ActionY: 3,
+                  Color: gblAppColors.Secondary.Black,
+                  Fill: gblAppColors.Secondary.Gray,
+                  IconX: 28,
+                  IconY: 5,
+                  QuantityBorderThickness: 0,
+                  QuantityColor: Color.Black,
+                  QuantityFill: gblAppColors.Secondary.GrayLight,
+                  QuantityFontWeight: FontWeight.Normal,
+                  QuantitySize: 8,
+                  QuantityX: 35,
+                  QuantityY: 40,
+                  SizeTitle: 12,
+                  SizeSubtitle: 10
+              },
+              // CARD
+              Card: {
+                  BorderColor: ColorFade(
+                      gblAppColors.Secondary.GrayMedium,
+                      60%
+                  ),
+                  BorderStyle: BorderStyle.Solid,
+                  BorderThickness: 1,
+                  Fill: gblAppColors.Secondary.White,
+                  Font: Font.'Segoe UI',
+                  HighlightColor: gblAppColors.Secondary.Blue,
+                  HoverFill: ColorValue("#50BDED30"),
+                  MarginLeft: 15,
+                  PaddingLeft: 10,
+                  PaddingRight: 10,
+                  PressedFill: ColorValue("#50BDED60"),
+                  Radius: 5,
+                  SubtitleColor: gblAppColors.Secondary.GrayMediumDark,
+                  SubtitleSize: 12,
+                  TitleColor: gblAppColors.Secondary.Black,
+                  TitleSize: 16
+              },
+              // ROLODEX
+              Rolodex: {
+                  Color: gblAppColors.Secondary.Black,
+                  ColorSelected: gblAppColors.Secondary.White,
+                  Fill: gblAppColors.Secondary.White,
+                  FillSelected: gblAppStyles.Status.Neutral,
+                  TemplateHeight: 60
+              },
+              // STATUS
+              Status: {
+                  Danger: gblAppColors.Secondary.Red,
+                  Disabled: gblAppColors.Secondary.GrayMedium,
+                  Info: gblAppColors.Secondary.Blue,
+                  Neutral: gblAppColors.Secondary.BlueTint,
+                  Success: gblAppColors.Secondary.Green,
+                  Warning: gblAppColors.Secondary.Yellow
+              },
+              // SIDEBAR
+              Sidebar: {
+                  Color: gblAppColors.Secondary.White,
+                  Fill: gblAppColors.Primary.BlueDark,
+                  HoverFill: RGBA(
+                      0,
+                      121,
+                      187,
+                      0.15
+                  ),
+                  IconSize: 35,
+                  SelectedColor: gblAppColors.Secondary.BlueTint,
+                  SelectedFill: RGBA(
+                      0,
+                      121,
+                      187,
+                      0.4
+                  ),
+                  TemplateSize: 80,
+                  TitleSize: 9
+              },
+              // TITLEBAR
+              Titlebar: {
+                  Color: gblAppColors.Secondary.White,
+                  Font: Font.'Segoe UI',
+                  FontWeight: FontWeight.Normal,
+                  Fill: gblAppColors.Primary.Blue,
+                  Size: 20
+              },
+              // TEXT
+              Text: {
+                  Color: gblAppColors.Secondary.Black,
+                  Font: Font.'Segoe UI',
+                  SmallSize: 10,
+                  Size: 13,
+                  SubtitleSize: 16,
+                  TitleSize: 20,
+                  TitleFont: Font.'Segoe UI'
+              }
+          }
+      );
+      // Concurrent Block (Internal)
+      Concurrent(
+          ClearCollect(
+              // APP MENUS
+              colSidebarItems,
+              Table(
+                  {
+                      Title: "Job",
+                      Icon: Icon.Waypoint,
+                      Screen: 'Job Details Screen'
+                  },
+                  {
+                      Title: "Project",
+                      Icon: Icon.Home,
+                      Screen: 'Rooms Screen'
+                  },
+                  {
+                      Title: "Labor",
+                      Icon: Icon.ToolsWrench,
+                      Screen: 'Labor Screen'
+                  },
+                  {
+                      Title: "Materials",
+                      Icon: Icon.PaperClip,
+                      Screen: 'Materials Screen'
+                  },
+                  {
+                      Title: "Documents",
+                      Icon: Icon.DocumentWithContent,
+                      Screen: 'Documents Screen'
+                  },
+                  {
+                      Title: "Photos",
+                      Icon: Icon.Camera,
+                      Screen: 'Photos Screen'
+                  },
+                  {
+                      Title: "Overview",
+                      Icon: Icon.OptionsList,
+                      Screen: 'Overview Screen'
+                  },
+                  {
+                      Title: "Final Steps",
+                      Icon: Icon.Cars,
+                      Screen: 'Final Steps Screen'
+                  }
+              )
+          ),
+          ClearCollect(
+              colActionsMenuItems,
+              Table(
+                  {
+                      Value: "Clone",
+                      Icon: Icon.Copy,
+                      Color: gblAppStyles.Status.Success,
+                      Screen: 'Clone Window Screen',
+                      Rotate: 0,
+                      ShowJobEntry: true,
+                      ShowWindowMeasurement: false
+                  },
+                  {
+                      Value: "Lead Test",
+                      Icon: Icon.Filter,
+                      Color: gblAppStyles.Status.Neutral,
+                      Screen: 'Lead Test Screen',
+                      Rotate: 180,
+                      ShowJobEntry: false,
+                      ShowWindowMeasurement: true
+                  },
+                  {
+                      Value: "Rename Room",
+                      Icon: Icon.Home,
+                      Color: gblAppStyles.Status.Neutral,
+                      Screen: 'Add Room Screen',
+                      Rotate: 0,
+                      ShowJobEntry: true,
+                      ShowWindowMeasurement: false
+                  },
+                  {
+                      Value: "Mull/De-mull",
+                      Icon: Icon.CollapseView,
+                      Color: gblAppStyles.Status.Warning,
+                      Screen: 'Mull Windows Screen',
+                      Rotate: 0,
+                      ShowJobEntry: false,
+                      ShowWindowMeasurement: true
+                  },
+                  {
+                      Value: "Delete",
+                      Icon: Icon.Trash,
+                      Color: gblAppStyles.Status.Danger,
+                      Screen: 'Delete Window Screen',
+                      Rotate: 0,
+                      ShowJobEntry: true,
+                      ShowWindowMeasurement: true
+                  }
+              )
+          ),
+          ClearCollect(
+              colMeasurementFractions,
+              {
+                  valIncrement: 0,
+                  valLabel: "0"
+              },
+              {
+                  valIncrement: 0.125,
+                  valLabel: "1/8"
+              },
+              {
+                  valIncrement: 0.25,
+                  valLabel: "1/4"
+              },
+              {
+                  valIncrement: 0.375,
+                  valLabel: "3/8"
+              },
+              {
+                  valIncrement: 0.5,
+                  valLabel: "1/2"
+              },
+              {
+                  valIncrement: 0.625,
+                  valLabel: "5/8"
+              },
+              {
+                  valIncrement: 0.75,
+                  valLabel: "3/4"
+              },
+              {
+                  valIncrement: 0.875,
+                  valLabel: "7/8"
+              }
+          )
+      );
+    Theme: =PowerAppsTheme

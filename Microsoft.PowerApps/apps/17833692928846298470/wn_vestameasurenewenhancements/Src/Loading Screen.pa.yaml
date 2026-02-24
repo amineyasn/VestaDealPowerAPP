@@ -1,0 +1,1982 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Loading Screen:
+    Properties:
+      Fill: =gblAppColors.Primary.WhiteSmoke
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |-
+        =UpdateContext(
+            {
+                locLoadingText: "Gettings things ready...",
+                locLoadingPercent: 0
+            }
+        );
+        If(
+            gblAppAutoload,
+            Select(btn_Loading_VersionCheck)
+        )
+    Children:
+      - cmp_Loading_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: =
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - lbl_Loading_Version:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Lighter
+            PaddingBottom: =20
+            PaddingLeft: =20
+            Size: =10
+            Text: =Concatenate("Version ",Text(gblAppVersion))
+            Width: =262
+            X: =0*0
+            Y: =Parent.Height - Self.Height
+      - img_Loading_Spinner:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =132
+            Image: =Image_LoadingSpinner
+            Width: =132
+            X: =(Parent.Width - Self.Width) / 2
+            Y: =((Parent.Height - Self.Height) / 2) - 44
+      - lbl_Loading_VestaMeasure:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Lighter
+            Height: =88
+            Size: =32
+            Text: ="Vesta Measure"
+            VerticalAlign: =VerticalAlign.Bottom
+            Width: =1024
+            Y: =img_Loading_Spinner.Y + img_Loading_Spinner.Height
+      - lbl_Loading_CurrentActivity:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppColors.Secondary.GrayMediumDark
+            Fill: =Color.Transparent
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Lighter
+            Height: =80
+            Size: =20
+            Text: =locLoadingText
+            VerticalAlign: =VerticalAlign.Top
+            Width: =1024
+            Y: =lbl_Loading_VestaMeasure.Y + lbl_Loading_VestaMeasure.Height
+      - shp_Loading_ProgressBackground:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =gblAppColors.Secondary.GrayMedium
+            Height: =10
+            Width: =500
+            X: =(Parent.Width - Self.Width) / 2
+            Y: =lbl_Loading_CurrentActivity.Y + lbl_Loading_CurrentActivity.Height
+      - shp_Loading_ProgressActual:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =gblAppColors.Secondary.Yellow
+            Height: =shp_Loading_ProgressBackground.Height
+            Width: |-
+              =With(
+                  {varWidth: shp_Loading_ProgressBackground.Width},
+                  varWidth * locLoadingPercent/100
+              )
+              /*
+              // Clear Loading Progress Collection
+              UpdateContext(
+                  {
+                      locCreatedRecords: true, // 20
+                      locSaved_JobDocuments: false, // 10
+                      locSaved_JobEntries: false, // 10
+                      locSaved_JobLaborItems: false, // 5
+                      locSaved_JobMaterialItems: false, // 5
+                      locSaved_JobNotes: false, // 10
+                      locSaved_JobRooms: false, // 5
+                      locSaved_JobSelections: false, // 15
+                      locSaved_WindowMeasurements: false, // 15
+                      locSaved_WindowMulls: false // 5
+                  }
+              );
+              */
+            X: =shp_Loading_ProgressBackground.X
+            Y: =lbl_Loading_CurrentActivity.Y + lbl_Loading_CurrentActivity.Height
+      - dtb_Loading_RecordCounts:
+          Control: DataTable@1.0.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(0, 18, 107, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Font: =Font.'Segoe UI'
+            HeadingColor: =RGBA(255, 255, 255, 1)
+            HeadingFill: =RGBA(56, 96, 178, 1)
+            HeadingFont: =Font.'Segoe UI'
+            HeadingSize: =10
+            Height: =Parent.Height
+            HoverFill: =RGBA(186, 202, 226, .2)
+            Items: |-
+              =Table(
+                  {
+                      tblCount: CountRows(colCdsJobs),
+                      tblName: "localCdsJobs"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobEntries),
+                      tblName: "localCdsJobEntries"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobEntrySelections),
+                      tblName: "localCdsJobEntrySelections"
+                  },
+                  {
+                      tblCount: CountRows(colCdsWindowMeasurements),
+                      tblName: "localCdsWindowMeasurements"
+                  },
+                  {
+                      tblCount: CountRows(colCdsRooms),
+                      tblName: "localCdsRooms"
+                  },
+                  {
+                      tblCount: CountRows(colCdsWindowModels),
+                      tblName: "localCdsWindowModels"
+                  },
+                  {
+                      tblCount: CountRows(colCdsWindowChoices),
+                      tblName: "localCdsWindowChoices"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobStages),
+                      tblName: "localCdsJobStages"
+                  },
+                  {
+                      tblCount: CountRows(colCdsWindowStyles),
+                      tblName: "localCdsWindowStyles"
+                  },
+                  {
+                      tblCount: CountRows(colCdsMarketSegments),
+                      tblName: "localCdsMarketSegments"
+                  },
+                  {
+                      tblCount: CountRows(colCdsAccounts),
+                      tblName: "localCdsAccounts"
+                  },
+                  {
+                      tblCount: CountRows(colCdsWindowMulls),
+                      tblName: "localCdsWindowMulls"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobRooms),
+                      tblName: "localCdsJobRooms"
+                  },
+                  {
+                      tblCount: CountRows(colCdsLaborItems),
+                      tblName: "localCdsLaborItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsMarketLaborItems),
+                      tblName: "localCdsMarketLaborItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobLaborItems),
+                      tblName: "localCdsJobLaborItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsMaterialItems),
+                      tblName: "localCdsMaterialItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsMarketMaterialItems),
+                      tblName: "localCdsMarketMaterialItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobMaterialItems),
+                      tblName: "localCdsJobMaterialItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsDocuments),
+                      tblName: "localCdsDocuments"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobDocuments),
+                      tblName: "localCdsJobDocuments"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobEntryOptions),
+                      tblName: "localCdsJobEntryOptions"
+                  },
+                  {
+                      tblCount: CountRows(colDeleteMaterialItems),
+                      tblName: "localDeleteMaterialItems"
+                  }
+              )
+            SelectedFill: =RGBA(56, 96, 178, .2)
+            Size: =12
+            Visible: =!gblAppAutoload
+            Width: =481
+            X: =543
+          Children:
+            - tblCount_Column1:
+                Control: DataTableColumn@1.0.1
+                Variant: Textual
+                IsLocked: true
+                Properties:
+                  AutoWidth: =false
+                  FieldDisplayName: ="tblCount"
+                  FieldName: ="tblCount"
+                  Order: =2
+                  Text: =ThisItem.tblCount
+                  Width: =204
+            - tblName_Column1:
+                Control: DataTableColumn@1.0.1
+                Variant: Textual
+                IsLocked: true
+                Properties:
+                  AutoWidth: =false
+                  FieldDisplayName: ="tblName"
+                  FieldName: ="tblName"
+                  Order: =1
+                  Text: =ThisItem.tblName
+                  Width: =241
+      - con_Loading_Steps:
+          Control: GroupContainer@1.3.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =Color.White
+            Height: =661
+            LayoutAlignItems: =LayoutAlignItems.Stretch
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutGap: =10
+            LayoutJustifyContent: =LayoutJustifyContent.SpaceBetween
+            PaddingBottom: =10
+            PaddingLeft: =5
+            PaddingRight: =5
+            PaddingTop: =10
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =!gblAppAutoload
+            Width: =340
+          Children:
+            - btn_Loading_VersionCheck:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |
+                    =Trace("Button Pressed: Loading Step X",TraceSeverity.Information);
+                    If(
+                        // Connected
+                        Connection.Connected,
+                        UpdateContext(
+                            {
+                                locLoadingText: "Checking App version...",
+                                locLoadingPercent: 5
+                            }
+                        );
+                        UpdateContext(
+                            // Check CDS for Power App Cache
+                            {
+                                locPowerAppCache: First(
+                                    Filter(
+                                        'Power App Caches',
+                                        'Power App Caches (Views)'.'Vesta Measure'
+                                    )
+                                )
+                            }
+                        );
+                        If(
+                                // If User is not on correct version, redirect to screen to prompt update
+                            locPowerAppCache.'App Version' = gblAppVersion,
+                            Select(btn_Loading_OptionSets),
+                            Navigate('Incorrect Version Screen');
+                        ),
+                        // Not Connected
+                        LoadData(
+                            colCdsOptionSets,
+                            "localCdsOptionSets",
+                            true
+                        );
+                        Set(
+                            gblOptionSets,
+                            First(colCdsOptionSets)
+                        );
+                        If(
+                            IsEmpty(colCdsOptionSets),
+                            Notify(
+                                "You are offline and the app has not been configured. Please try again, when online.",
+                                NotificationType.Error
+                            ),
+                            Select(btn_Loading_LoadLocalFiles);
+                        )
+                    );
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="X) Version Check"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =32
+            - btn_Loading_OptionSets:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |
+                    =Trace("Button Pressed: Loading Step 0",TraceSeverity.Information);
+                    UpdateContext(
+                        {
+                            locLoadingText: "Checking Vesta Data...",
+                            locLoadingPercent: 10
+                        }
+                    );
+                    If(
+                        gblAppLoadOffline,
+                        LoadData(
+                            colCdsOptionSets,
+                            "localCdsOptionSets",
+                            true
+                        )
+                    );
+                    Set(
+                        gblOptionSets,
+                        First(colCdsOptionSets)
+                    );
+                    If(
+                        gblOptionSets.TimeStamp < locPowerAppCache.'Option Sets' Or IsEmpty(colCdsOptionSets),
+                        Set(
+                            gblOptionSets,
+                            {
+                                TimeStamp: locPowerAppCache.'Option Sets',
+                                Global: {
+                                    PhotoType: {
+                                        Window: 'Photo Type'.Window,
+                                        ElevationSide: 'Photo Type'.'Elevation (Side)',
+                                        ElevationFront: 'Photo Type'.'Elevation (Front)',
+                                        ElevationRear: 'Photo Type'.'Elevation (Rear)',
+                                        Other: 'Photo Type'.Other
+                                    },
+                                    DataEntryType: {
+                                        Construction: 'Data Entry Type'.Construction,
+                                        ExistingWindows: 'Data Entry Type'.'Existing Windows',
+                                        ExteriorCapping: 'Data Entry Type'.'Exterior Capping',
+                                        ExteriorCovering: 'Data Entry Type'.'Exterior Covering',
+                                        ExteriorWindowComponent: 'Data Entry Type'.'Exterior Window Component',
+                                        Floor: 'Data Entry Type'.Floor,
+                                        InteriorWindowComponent: 'Data Entry Type'.'Interior Window Component',
+                                        LeadTestResults: 'Data Entry Type'.'Lead Test Results',
+                                        LumberGrade: 'Data Entry Type'.'Lumber Grade',
+                                        LumberSpecies: 'Data Entry Type'.'Lumber Species',
+                                        Room: 'Data Entry Type'.Room,
+                                        SpecialConditions: 'Data Entry Type'.'Special Conditions',
+                                        SpecialEquipmentNeeded: 'Data Entry Type'.'Special Equipment Needed',
+                                        StyleOfHome: 'Data Entry Type'.'Style Of Home'
+                                    },
+                                    YesNoNull: {
+                                        Yes: 'Yes No Null'.Yes,
+                                        No: 'Yes No Null'.No
+                                    }
+                                },
+                                Job: {
+                                    CompletedJob: {
+                                        Yes: 'Completed (Jobs)'.Yes,
+                                        No: 'Completed (Jobs)'.No
+                                    },
+                                    LeadTestSendDocuments: {
+                                        Yes: 'Lead Test: Send Document? (Jobs)'.Yes,
+                                        No: 'Lead Test: Send Document? (Jobs)'.No
+                                    },
+                                    IsSourceVestaDeal: {
+                                        Yes: 'Is Source Vesta Deal? (Jobs)'.Yes,
+                                        No: 'Is Source Vesta Deal? (Jobs)'.No
+                                    },
+                                    JobPackageSendDocuments: {
+                                        Yes: 'Job Package: Send Documents? (Jobs)'.Yes,
+                                        No: 'Job Package: Send Documents? (Jobs)'.No
+                                    },
+                                    JobFinishedSendEmail: {
+                                        Yes: 'Job Finished: Send Email? (Jobs)'.Yes,
+                                        No: 'Job Finished: Send Email? (Jobs)'.No
+                                    }
+                                },
+                                JobPhoto: {
+                                    Status: {
+                                        Inactive: 'Status (Job Photos)'.Inactive,
+                                        Active: 'Status (Job Photos)'.Active
+                                    },
+                                    StatusReason: {Inactive: 'Status Reason (Job Photos)'.Inactive}
+                                },
+                                JobRoom: {
+                                    Status: {
+                                        Inactive: 'Status (Job Rooms)'.Inactive,
+                                        Active: 'Status (Job Rooms)'.Active
+                                    },
+                                    StatusReason: {Inactive: 'Status Reason (Job Rooms)'.Inactive}
+                                },
+                                JobLaborItem: {
+                                    Status: {
+                                        Active: 'Status (Job Labor Items)'.Active,
+                                        Inactive: 'Status (Job Labor Items)'.Inactive
+                                    },
+                                    StatusReason: {
+                                        Active: 'Status Reason (Job Labor Items)'.Active,
+                                        Inactive: 'Status Reason (Job Labor Items)'.Inactive
+                                    }
+                                },
+                                JobMaterialItem: {
+                                    Status: {
+                                        Inactive: 'Status (Job Material Items)'.Inactive,
+                                        Active: 'Status (Job Material Items)'.Active
+                                    },
+                                    StatusReason: {Inactive: 'Status Reason (Job Material Items)'.Inactive}
+                                },
+                                JobEntrySelection: {
+                                    Status: {
+                                        Inactive: 'Status (Job Entry Selections)'.Inactive,
+                                        Active: 'Status (Job Entry Selections)'.Active
+                                    },
+                                    StatusReason: {Inactive: 'Status Reason (Job Entry Selections)'.Inactive}
+                                },
+                                JobEntry: {
+                                    Completed: {
+                                        Yes: 'Completed (Job Entries)'.Yes,
+                                        No: 'Completed (Job Entries)'.No
+                                    },
+                                    IsSourceVestaDeal: {
+                                        Yes: 'Is Source Vesta Deal? (Jobs)'.Yes,
+                                        No: 'Is Source Vesta Deal? (Jobs)'.No
+                                    },
+                                    Status: {
+                                        Inactive: 'Status (Job Entries)'.Inactive,
+                                        Active: 'Status (Job Entries)'.Active
+                                    },
+                                    LeadTestResult: {
+                                        Yes: 'Yes No Null'.Yes,
+                                        No: 'Yes No Null'.No
+                                    },
+                                    StatusReason: {Inactive: 'Status Reason (Job Entries)'.Inactive}
+                                },
+                                JobEntryOption: {
+                                    IsLegacy: {
+                                        Yes: 'Legacy? (Job Entry Options)'.Yes,
+                                        No: 'Legacy? (Job Entry Options)'.No
+                                    },
+                                    Status: {
+                                        Inactive: 'Status (Job Entry Options)'.Inactive,
+                                        Active: 'Status (Job Entry Options)'.Active
+                                    },
+                                    Type: {
+                                        Attribute: 'Job Entry Option Types'.Attribute,
+                                        Header: 'Job Entry Option Types'.Header,
+                                        HierarchyStep: 'Job Entry Option Types'.'Hierarchy Step',
+                                        Value: 'Job Entry Option Types'.Value
+                                    }
+                                },
+                                MaterialItems: {
+                                    Type: {
+                                            CaulkCoil: 'Material Item Type'.CAULK,
+                                            Lumber: 'Material Item Type'.COIL,
+                                            RoofingSiding: 'Material Item Type'.'FOAM/CLEANER/INSULATION',
+                                            LeadSupplies: 'Material Item Type'.'LEAD SUPPLIES'
+                                    },
+                                    TypeTable: Table(
+                                        {Value: 'Material Item Type'.CAULK},
+                                        {Value: 'Material Item Type'.COIL},
+                                        {Value: 'Material Item Type'.'FOAM/CLEANER/INSULATION'},
+                                        {Value: 'Material Item Type'.'LEAD SUPPLIES'}
+                                    )
+                                },
+                                WindowChoices: {
+                                    IncludeJambDepth: {
+                                        Yes: 'Include Jamb Depth (Window Choices)'.Yes,
+                                        No: 'Include Jamb Depth (Window Choices)'.No
+                                    },
+                                    IncludeMaxProjection: {
+                                        Yes: 'Include Max Projection (Window Choices)'.Yes,
+                                        No: 'Include Max Projection (Window Choices)'.No
+                                    },
+                                    IncludeSoffitDepth: {
+                                        Yes: 'Include Soffit Depth (Window Choices)'.Yes,
+                                        No: 'Include Soffit Depth (Window Choices)'.No
+                                    },
+                                    IncludeWallThickness: {
+                                        Yes: 'Include Wall Thickness (Window Choices)'.Yes,
+                                        No: 'Include Wall Thickness (Window Choices)'.No
+                                    }
+                                },
+                                WindowMeasurement: {
+                                    Completed: {
+                                        Yes: 'Completed (Window Measurements)'.Yes,
+                                        No: 'Completed (Window Measurements)'.No
+                                    },
+                                    Exception: {
+                                        Yes: 'Exception? (Window Measurements)'.Yes,
+                                        No: 'Exception? (Window Measurements)'.No
+                                    },
+                                    LeadTestResult: {
+                                        Yes: 'Yes No Null'.Yes,
+                                        No: 'Yes No Null'.No
+                                    },
+                                    Status: {
+                                        Inactive: 'Status (Window Measurements)'.Inactive,
+                                        Active: 'Status (Window Measurements)'.Active
+                                    },
+                                    StatusReason: {Inactive: 'Status Reason (Window Measurements)'.Inactive},
+                                    Type: {
+                                        Sales: 'Window Measurement Types'.Sales,
+                                        Tech: 'Window Measurement Types'.Tech,
+                                        Other: 'Window Measurement Types'.Other
+                                    }
+                                },
+                                WindowMull: { 
+                                    Status: {
+                                        Inactive: 'Status (Window Mulls)'.Inactive,
+                                        Active: 'Status (Window Mulls)'.Active
+                                    },
+                                    StatusReason: {Inactive: 'Status Reason (Window Mulls)'.Inactive}
+                                },
+                                JobDocument: {
+                                    Completed: {
+                                        Yes: 'Completed (Job Documents)'.Yes,
+                                        No: 'Completed (Job Documents)'.No
+                                    },
+                                    Status: {
+                                        Active: 'Status (Job Documents)'.Active
+                                    }
+                                }
+                            }
+                        );
+                        ClearCollect(
+                            colCdsOptionSets,
+                            gblOptionSets
+                        );
+                        If(
+                            gblAppLoadOffline,
+                            SaveData(
+                                colCdsOptionSets,
+                                "localCdsOptionSets"
+                            )
+                        )
+                    );
+                    // Navigate
+                    If(
+                        gblAppAutoAdvance,
+                        UpdateContext(
+                            {
+                                locLoadingText: "Loading local data...",
+                                locLoadingPercent: 15
+                            }
+                        );
+                        Select(btn_Loading_LoadLocalFiles)
+                    );
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="0) Option Sets"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =54
+            - btn_Loading_LoadLocalFiles:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =Trace(
+                        "Button Pressed: Loading Step 1",
+                        TraceSeverity.Information
+                        );
+
+
+                    IfError(   // ✅ Start error handler
+
+                    If(
+                        gblAppLoadOffline,
+                        // UNSAVED JOBS
+                        LoadData(
+                            colAUDRecords,
+                            "localAUDRecords",
+                            true
+                        );
+                        If(
+                            !IsEmpty(colAUDRecords),
+                            UpdateContext(
+                                {
+                                    locLoadingText: "Resuming last session...",
+                                    locLoadingPercent: 80
+                                }
+                            )
+                        )
+                    );
+                    If(
+                        !locLoadingSkipLocal,
+                        If(
+                            gblAppLoadOffline,
+                    // ACCOUNTS
+                                LoadData(
+                                    colCdsAccounts,
+                                    "localCdsAccounts",
+                                    true
+                                );
+                    // DOCUMENTS
+                                LoadData(
+                                    colCdsDocuments,
+                                    "localCdsDocuments",
+                                    true
+                                );
+                    // DATA ENTRY CHOICES
+                                LoadData(
+                                    colCdsDataEntryChoices,
+                                    "localCdsDataEntryChoices",
+                                    true
+                                );
+                    // EMPLOYEES
+                                LoadData(
+                                    colCdsEmployees,
+                                    "localCdsEmployees",
+                                    true
+                                );
+                    // JOB DOCUMENTS
+                                LoadData(
+                                    colCdsJobDocuments,
+                                    "localCdsJobDocuments",
+                                    true
+                                );
+                    // JOB ENTRIES
+                                LoadData(
+                                    colCdsJobEntries,
+                                    "localCdsJobEntries",
+                                    true
+                                );
+                    // JOB ENTRY OPTIONS
+                                Clear(colCdsJobEntryOptions);
+                                LoadData(
+                                    colStagingCdsJobEntryOptions_Header,
+                                    "localCdsJobEntryOptions_Header",
+                                    true
+                                );
+                                LoadData(
+                                    colStagingCdsJobEntryOptions_Attribute,
+                                    "localCdsJobEntryOptions_Attribute",
+                                    true
+                                );
+                                LoadData(
+                                    colStagingCdsJobEntryOptions_HierarchyStep,
+                                    "localCdsJobEntryOptions_HierarchyStep",
+                                    true
+                                );
+                                LoadData(
+                                    colStagingCdsJobEntryOptions_Value,
+                                    "localCdsJobEntryOptions_Value",
+                                    true
+                                );
+                                Collect(
+                                    colCdsJobEntryOptions,
+                                    colStagingCdsJobEntryOptions_Header
+                                );
+                                Collect(
+                                    colCdsJobEntryOptions,
+                                    colStagingCdsJobEntryOptions_Attribute
+                                );
+                                Collect(
+                                    colCdsJobEntryOptions,
+                                    colStagingCdsJobEntryOptions_HierarchyStep
+                                );
+                                Collect(
+                                    colCdsJobEntryOptions,
+                                    colStagingCdsJobEntryOptions_Value
+                                );
+                                Clear(colStagingCdsJobEntryOptions_Header);
+                                Clear(colStagingCdsJobEntryOptions_Attribute);
+                                Clear(colStagingCdsJobEntryOptions_HierarchyStep);
+                                Clear(colStagingCdsJobEntryOptions_Value);
+                    // JOB ENTRY SELECTIONS
+                                LoadData(
+                                    colCdsJobEntrySelections,
+                                    "localCdsJobEntrySelections",
+                                    true
+                                );
+                    // JOB LABOR ITEMS
+                                LoadData(
+                                    colCdsJobLaborItems,
+                                    "localCdsJobLaborItems",
+                                    true
+                                );
+                    // JOB MATERIAL ITEMS
+                                LoadData(
+                                    colCdsJobMaterialItems,
+                                    "localCdsJobMaterialItems",
+                                    true
+                                );
+                    // JOB PHOTOS
+                                LoadData(
+                                    colCdsJobPhotos,
+                                    "localCdsJobPhotos",
+                                    true
+                                );
+                    // JOB ROOMS
+                                LoadData(
+                                    colCdsJobRooms,
+                                    "localCdsJobRooms",
+                                    true
+                                );
+                    // JOBS
+                                LoadData(
+                                    colCdsJobs,
+                                    "localCdsJobs",
+                                    true
+                                );
+                    // JOB STAGES
+                                LoadData(
+                                    colCdsJobStages,
+                                    "localCdsJobStages",
+                                    true
+                                );
+                    // LABOR ITEMS
+                                LoadData(
+                                    colCdsLaborItems,
+                                    "localCdsLaborItems",
+                                    true
+                                );
+                    // MARKET LABOR ITEMS
+                                LoadData(
+                                    colCdsMarketLaborItems,
+                                    "localCdsMarketLaborItems",
+                                    true
+                                );
+                    // MARKET MATERIAL ITEMS
+                                LoadData(
+                                    colCdsMarketMaterialItems,
+                                    "localCdsMarketMaterialItems",
+                                    true
+                                );
+                    // MARKET SEGMENTS
+                                LoadData(
+                                    colCdsMarketSegments,
+                                    "localCdsMarketSegments",
+                                    true
+                                );
+                    // MATERIAL ITEMS
+                                LoadData(
+                                    colCdsMaterialItems,
+                                    "localCdsMaterialItems",
+                                    true
+                                );
+                    // MATERIAL ITEM COLORS
+                                LoadData(
+                                    colCdsMaterialItemColors,
+                                    "localCdsMaterialItemColors",
+                                    true
+                                );
+                    // ROOMS
+                                LoadData(
+                                    colCdsRooms,
+                                    "localCdsRooms",
+                                    true
+                                );
+                    // VESTA SETTINGS
+                                LoadData(
+                            colCdsVestaSettings,
+                            "localCdsVestaSettings",
+                            true
+                        );
+                    // WINDOW CHOICES
+                                LoadData(
+                                    colCdsWindowChoices,
+                                    "localCdsWindowChoices",
+                                    true
+                                );
+                    // WINDOW MEASUREMENTS
+                                LoadData(
+                                    colCdsWindowMeasurements,
+                                    "localCdsWindowMeasurements",
+                                    true
+                                );
+                    // WINDOW MODELS
+                                LoadData(
+                                    colCdsWindowModels,
+                                    "localCdsWindowModels",
+                                    true
+                                );
+                    // WINDOW MULLS
+                                LoadData(
+                                    colCdsWindowMulls,
+                                    "localCdsWindowMulls",
+                                    true
+                                );
+                    // WINDOW STYLES
+                                LoadData(
+                                    colCdsWindowStyles,
+                                    "localCdsWindowStyles",
+                                    true
+                                );
+                            )
+                    );
+                    If(
+                        gblAppAutoAdvance,
+                        If(
+                            !IsEmpty(colAUDRecords) Or !Connection.Connected,
+                            Select(btn_Loading_Proceed),
+                            // Resume last session; loading text set above
+                            UpdateContext(
+                                {
+                                    locLoadingText: "Checking Vesta Data...",
+                                    locLoadingPercent: 20
+                                }
+                            );
+                            Select(btn_Loading_CheckCdsOrg)
+                        )
+                    );
+                    , Blank() )  // ✅ Suppress any visible error
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="1) Load Local"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =108
+            - btn_Loading_CheckCdsOrg:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: "=Trace(\n    \"Button Pressed: Loading Step 2.1\",\n    TraceSeverity.Information\n);\n// Compare CDS Modified Ons\nUpdateContext(\n    {\n        locCdsOrgLatest_Accounts: locPowerAppCache.Accounts,\n        locCdsOrgLatest_Documents: locPowerAppCache.Documents,\n        locCdsOrgLatest_DataEntryChoices: locPowerAppCache.'Data Entry Choices',\n        locCdsOrgLatest_Employee: locPowerAppCache.Employees,\n        locCdsOrgLatest_JobEntryOptions_Headers: locPowerAppCache.'Job Entry Options (Headers)',\n        locCdsOrgLatest_JobEntryOptions_Attributes: locPowerAppCache.'Job Entry Options (Attributes)',\n        locCdsOrgLatest_JobEntryOptions_HierarchySteps: locPowerAppCache.'Job Entry Options (Hierarchy Steps)',\n        locCdsOrgLatest_JobEntryOptions_Values: locPowerAppCache.'Job Entry Options (Values)',\n        locCdsOrgLatest_JobStages: locPowerAppCache.'Job Stages',\n        locCdsOrgLatest_LaborItems: locPowerAppCache.'Labor Items',\n        locCdsOrgLatest_MaterialItemColors: locPowerAppCache.'Material Item Colors',\n        locCdsOrgLatest_MarketSegments: locPowerAppCache.'Market Segments',\n        locCdsOrgLatest_MaterialItems: locPowerAppCache.'Material Items',\n        locCdsOrgLatest_Rooms: locPowerAppCache.Rooms,\n        locCdsOrgLatest_VestaSettings: Now(),\n        locCdsOrgLatest_WindowChoices: locPowerAppCache.'Window Choices',\n        locCdsOrgLatest_WindowModels: locPowerAppCache.'Window Models',\n        locCdsOrgLatest_WindowStyles: locPowerAppCache.'Window Styles',\n        locCdsOrgLatest_MarketMaterialItems:locPowerAppCache.'Market Material Items'\n    }\n);\nUpdateContext(\n    {\n        locCdsOrgLatest_JobEntryOptions: Max(\n            locCdsOrgLatest_JobEntryOptions_Attributes,\n            locCdsOrgLatest_JobEntryOptions_Headers,\n            locCdsOrgLatest_JobEntryOptions_HierarchySteps,\n            locCdsOrgLatest_JobEntryOptions_Values\n        )\n    }\n);\nIf(\n    gblAppAutoAdvance,\n    UpdateContext(\n        {\n            locLoadingText: \"Loading Vesta Data...\",\n            locLoadingPercent: 25\n        }\n    );\n    Select(btn_Loading_LoadCdsOrg);\n    \n)"
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="2.1) Check CDS (Org)"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =162
+            - btn_Loading_LoadCdsOrg:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: "=Trace(\"Button Pressed: Loading Step 2.2\",TraceSeverity.Information);\nClear(colCdsMarketMaterialItems);\nConcurrent(\n// ACCOUNTS\n    If(\n        First(\n            SortByColumns(\n                colCdsAccounts,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_Accounts Or IsEmpty(colCdsAccounts),\n        ClearCollect(\n            colCdsAccounts,\n            Filter(\n                Accounts,\n                'Accounts (Views)'.'Active Manufacturer Accounts'\n            )\n        );\n        UpdateContext({locSaveAccounts: true})\n    ),\n // DATA ENTRY CHOICES\n    If(\n        First(\n            SortByColumns(\n                colCdsDataEntryChoices,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_DataEntryChoices Or IsEmpty(colCdsDataEntryChoices),\n        ClearCollect(\n            colCdsDataEntryChoices,\n            Filter(\n                'Data Entry Choices',\n                'Data Entry Choices (Views)'.'Active Data Entry Choices'\n            )\n        );\n        UpdateContext({locSaveDataEntryChoices: true})\n    ),\n// DOCUMENTS\n    If(\n        First(\n            SortByColumns(\n                colCdsDocuments,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_Documents Or IsEmpty(colCdsDocuments),\n        ClearCollect(\n            colCdsDocuments,\n            Filter(\n                Documents,\n                'Documents (Views)'.'Active Documents'\n            )\n        );\n        UpdateContext({locSaveDocuments: true})\n    ),\n    // EMPLOYEES\n    If(\n        First(\n            SortByColumns(\n                colCdsEmployees,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_Employee Or IsEmpty(colCdsEmployees),\n        ClearCollect(\n            colCdsEmployees,\n            Filter(\n                Employees,\n                'Employees (Views)'.'Active Employees'\n            )\n        );\n        UpdateContext({locSaveEmployees: true})\n    ),\n	// JOB STAGES\n    If(\n        First(\n            SortByColumns(\n                colCdsJobStages,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_JobStages Or IsEmpty(colCdsJobStages),\n        ClearCollect(\n            colCdsJobStages,\n            Filter(\n                'Job Stages',\n                'Job Stages (Views)'.'Active Job Stages'\n            )\n        );\n        UpdateContext({locSaveJobStages: true})\n    ),\n	// LABOR ITEMS\n    If(\n        First(\n            SortByColumns(\n                colCdsLaborItems,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_LaborItems Or IsEmpty(colCdsLaborItems),\n        ClearCollect(\n            colCdsLaborItems,\n            AddColumns(\n                Filter(\n                    'Labor Items',\n                    'Labor Items (Views)'.'Active Labor Items'\n                ),\n                appOptionSetType,\n                Type\n            )\n        );\n        UpdateContext({locSaveLaborItems: true})\n    ),\n// MARKET SEGMENTS\n    If(\n        First(\n            SortByColumns(\n                colCdsMarketSegments,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_MarketSegments Or IsEmpty(colCdsMarketSegments),\n        ClearCollect(\n            colCdsMarketSegments,\n            Filter(\n                'Market Segments',\n                'Market Segments (Views)'.'Active Market Segments'\n            )\n        );\n        UpdateContext({locSaveMarketSegments: true})\n    ),\n// MATERIAL ITEMS\n    If(\n        First(\n            SortByColumns(\n                colCdsMaterialItems,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_MaterialItems Or IsEmpty(colCdsMaterialItems),\n        ClearCollect(\n            colCdsMaterialItems,\n            AddColumns(\n                Filter(\n                    'Material Items',\n                    'Material Items (Views)'.'Active Material Items'\n                ),\n                appOptionSetType,\n                Type\n            )\n        );\n        UpdateContext({locSaveMaterialItems: true})\n    ),\n// MATERIAL ITEM COLORS\n    If(\n        First(\n            SortByColumns(\n                colCdsMaterialItemColors,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_MaterialItemColors Or IsEmpty(colCdsMaterialItemColors),\n        ClearCollect(\n            colCdsMaterialItemColors,\n            Filter(\n                'Material Item Colors',\n                'Material Item Colors (Views)'.'Active Material Item Colors'\n            )\n        );\n        UpdateContext({locSaveMaterialItemColors: true})\n    ),\n\n    //MARKET MATERIAL ITEMS\n    If(  \n        First(\n            SortByColumns(\n                colCdsMarketMaterialItems,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_MarketMaterialItems Or IsEmpty(colCdsMarketMaterialItems),\n ClearCollect(\n    colCdsMarketSegmentsIds,\n    Distinct('Market Segments', 'Market Segment')\n);\nForAll(\n    colCdsMarketSegmentsIds,\n    Collect(\n        colCdsMarketMaterialItems,\n        Filter(\n            'Market Material Items',\n            'Market Segment'.'Market Segment'= colCdsMarketSegmentsIds[@Value]\n        )\n    )\n);\n        UpdateContext({locSaveMarketMaterialItems: true})\n    ),\n    \n\n// ROOMS\n    If(\n        First(\n            SortByColumns(\n                colCdsRooms,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_Rooms Or IsEmpty(colCdsRooms),\n        ClearCollect(\n            colCdsRooms,\n            AddColumns(\n                Filter(\n                    Rooms,\n                    'Rooms (Views)'.'Active Rooms'\n                ),\n                appRoomIdText,\n                Text(Room)\n            )\n        );\n        UpdateContext({locSaveRooms: true})\n    ),\n   // VESTA SETTINGS\n   If(\n        First(\n            SortByColumns(\n                colCdsVestaSettings,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_VestaSettings Or IsEmpty(colCdsVestaSettings),\n        ClearCollect(\n            colCdsVestaSettings,\n            Filter(\n                'Vesta Settings',\n                'Vesta Settings (Views)'.'Active Vesta Measure Settings'\n            )\n        );\n        UpdateContext({locSaveVestaSettings: true})\n   ),\n// WINDOW CHOICES\n    If(\n        First(\n            SortByColumns(\n                colCdsWindowChoices,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_WindowChoices Or IsEmpty(colCdsWindowChoices),\n        ClearCollect(\n            colCdsWindowChoices,\n            AddColumns(\n                Filter(\n                    'Window Choices',\n                    'Window Choices (Views)'.'Active Window Choices'\n                ),\n                appWindowStyleIdText,\n                Text(Style.'Window Style'),\n                appWindowModelIdText,\n                Text(Model.'Window Model'),\n                appAccountsIdText,\n                Text(Manufacturer.Account),\n                appJobEntryOptionIdText,\n                Text('Job Entry Option (Header)'.'Job Entry Option')\n            )\n        );\n        UpdateContext({locSaveWindowChoices: true})\n    ),\n// WINDOW MODELS\n    If(\n        First(\n            SortByColumns(\n                colCdsWindowModels,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_WindowModels Or IsEmpty(colCdsWindowModels),\n        ClearCollect(\n            colCdsWindowModels,\n            Filter(\n                'Window Models',\n                'Window Models (Views)'.'Active Window Models'\n            )\n        );\n        UpdateContext({locSaveWindowModels: true})\n    ),\n// WINDOW STYLES\n    If(\n        First(\n            SortByColumns(\n                colCdsWindowStyles,\n                \"modifiedon\",\n                SortOrder.Descending\n            )\n        ).'Modified On' < locCdsOrgLatest_WindowStyles Or IsEmpty(colCdsWindowStyles),\n        ClearCollect(\n            colCdsWindowStyles,\n            Filter(\n                'Window Styles',\n                'Window Styles (Views)'.'Active Window Styles'\n            )\n        );\n        UpdateContext({locSaveWindowStyles: true})\n    )\n);\nIf(\n    gblAppAutoAdvance,\n    UpdateContext(\n        {\n            locLoadingText: \"Caching Vesta Data...\",\n            locLoadingPercent: 40\n        }\n    );\n    Select(btn_Loading_SaveCdsOrg)\n)"
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="2.2) Load CDS (Org)"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =216
+            - btn_Loading_LoadCdsOrg_OLD:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =DisplayMode.Disabled
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =/*
+                    Trace("Button Pressed: Loading Step 2.2",TraceSeverity.Information);
+                    Concurrent(
+                    // ACCOUNTS
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsAccounts,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_Accounts Or IsEmpty(colCdsAccounts),
+                            ClearCollect(
+                                colCdsAccounts,
+                                Filter(
+                                    Accounts,
+                                    'Accounts (Views)'.'Active Accounts'
+                                )
+                            );
+                            UpdateContext({locSaveAccounts: true})
+                        ),
+                     // DATA ENTRY CHOICES
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsDataEntryChoices,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_DataEntryChoices Or IsEmpty(colCdsDataEntryChoices),
+                            ClearCollect(
+                                colCdsDataEntryChoices,
+                                Filter(
+                                    'Data Entry Choices',
+                                    'Data Entry Choices (Views)'.'Active Data Entry Choices'
+                                )
+                            );
+                            UpdateContext({locSaveDataEntryChoices: true})
+                        ),
+                    // DOCUMENTS
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsDocuments,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_Documents Or IsEmpty(colCdsDocuments),
+                            ClearCollect(
+                                colCdsDocuments,
+                                Filter(
+                                    Documents,
+                                    'Documents (Views)'.'Active Documents'
+                                )
+                            );
+                            UpdateContext({locSaveDocuments: true})
+                        ),
+                        // EMPLOYEES
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsEmployees,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_Employee Or IsEmpty(colCdsEmployees),
+                            ClearCollect(
+                                colCdsEmployees,
+                                Filter(
+                                    Employees,
+                                    'Employees (Views)'.'Active Employees'
+                                )
+                            );
+                            UpdateContext({locSaveEmployees: true})
+                        ),
+                    	// JOB STAGES
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsJobStages,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_JobStages Or IsEmpty(colCdsJobStages),
+                            ClearCollect(
+                                colCdsJobStages,
+                                Filter(
+                                    'Job Stages',
+                                    'Job Stages (Views)'.'Active Job Stages'
+                                )
+                            );
+                            UpdateContext({locSaveJobStages: true})
+                        ),
+                    	// LABOR ITEMS
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsLaborItems,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_LaborItems Or IsEmpty(colCdsLaborItems),
+                            ClearCollect(
+                                colCdsLaborItems,
+                                AddColumns(
+                                    Filter(
+                                        'Labor Items',
+                                        'Labor Items (Views)'.'Active Labor Items'
+                                    ),
+                                    "appOptionSetType",
+                                    Type
+                                )
+                            );
+                            UpdateContext({locSaveLaborItems: true})
+                        ),
+                    // MARKET LABOR ITEMS
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsMarketLaborItems,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_MarketLaborItems Or IsEmpty(colCdsMarketLaborItems),
+                            ClearCollect(
+                                colCdsMarketLaborItems,
+                                Filter(
+                                    AddColumns(
+                                        'Market Labor Items',
+                                        "appMarketSegment",
+                                        'Market Segment'.'Market Segment',
+                                        "appLaborDisplayOrder",
+                                        'Labor Item'.'Display Order'
+                                    ),
+                                    'Market Labor Items (Views)'.'Inactive Market Labor Items'
+                                )
+                            );
+                            UpdateContext({locSaveMarketLaborItems: true})
+                        ),
+                    // MARKET MATERIAL ITEMS
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsMarketMaterialItems,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_MarketMaterialItems Or IsEmpty(colCdsMarketMaterialItems),
+                            ClearCollect(
+                                colCdsMarketMaterialItems,
+                                Filter(
+                                    AddColumns(
+                                        'Market Material Items',
+                                        "appMarketSegment",
+                                        'Market Segment'.'Market Segment',
+                                        "appMaterialName",
+                                        'Material Item'.Name
+                                    ),
+                                    'Market Material Items (Views)'.'Active Market Material Items'
+                                )
+                            );
+                            UpdateContext({locSaveMarketMaterialItems: true})
+                        ),
+                    // MARKET SEGMENTS
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsMarketSegments,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_MarketSegments Or IsEmpty(colCdsMarketSegments),
+                            ClearCollect(
+                                colCdsMarketSegments,
+                                Filter(
+                                    'Market Segments',
+                                    'Market Segments (Views)'.'Active Market Segments'
+                                )
+                            );
+                            UpdateContext({locSaveMarketSegments: true})
+                        ),
+                    // MATERIAL ITEMS
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsMaterialItems,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_MaterialItems Or IsEmpty(colCdsMaterialItems),
+                            ClearCollect(
+                                colCdsMaterialItems,
+                                AddColumns(
+                                    Filter(
+                                        'Material Items',
+                                        'Material Items (Views)'.'Active Material Items'
+                                    ),
+                                    "appOptionSetType",
+                                    Type
+                                )
+                            );
+                            UpdateContext({locSaveMaterialItems: true})
+                        ),
+                    // MATERIAL ITEM COLORS
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsMaterialItemColors,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_MaterialItemColors Or IsEmpty(colCdsMaterialItemColors),
+                            ClearCollect(
+                                colCdsMaterialItemColors,
+                                Filter(
+                                    'Material Item Colors',
+                                    'Material Item Colors (Views)'.'Active Material Item Colors'
+                                )
+                            );
+                            UpdateContext({locSaveMaterialItemColors: true})
+                        ),
+                    // ROOMS
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsRooms,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_Rooms Or IsEmpty(colCdsRooms),
+                            ClearCollect(
+                                colCdsRooms,
+                                AddColumns(
+                                    Filter(
+                                        Rooms,
+                                        'Rooms (Views)'.'Active Rooms'
+                                    ),
+                                    "appRoomIdText",
+                                    Text(Room)
+                                )
+                            );
+                            UpdateContext({locSaveRooms: true})
+                        ),
+                       // VESTA SETTINGS
+                       If(
+                            First(
+                                SortByColumns(
+                                    colCdsVestaSettings,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_VestaSettings Or IsEmpty(colCdsVestaSettings),
+                            ClearCollect(
+                                colCdsVestaSettings,
+                                Filter(
+                                    'Vesta Settings',
+                                    'Vesta Settings (Views)'.'Active Vesta Measure Settings'
+                                )
+                            );
+                            UpdateContext({locSaveVestaSettings: true})
+                       ),
+                    // WINDOW CHOICES
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsWindowChoices,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_WindowChoices Or IsEmpty(colCdsWindowChoices),
+                            ClearCollect(
+                                colCdsWindowChoices,
+                                AddColumns(
+                                    Filter(
+                                        'Window Choices',
+                                        'Window Choices (Views)'.'Active Window Choices'
+                                    ),
+                                    "appWindowStyleIdText",
+                                    Text(Style.'Window Style'),
+                                    "appWindowModelIdText",
+                                    Text(Model.'Window Model'),
+                                    "appAccountsIdText",
+                                    Text(Manufacturer.Account),
+                                    "appJobEntryOptionIdText",
+                                    Text('Job Entry Option (Header)'.'Job Entry Option')
+                                )
+                            );
+                            UpdateContext({locSaveWindowChoices: true})
+                        ),
+                    // WINDOW MODELS
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsWindowModels,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_WindowModels Or IsEmpty(colCdsWindowModels),
+                            ClearCollect(
+                                colCdsWindowModels,
+                                Filter(
+                                    'Window Models',
+                                    'Window Models (Views)'.'Active Window Models'
+                                )
+                            );
+                            UpdateContext({locSaveWindowModels: true})
+                        ),
+                    // WINDOW STYLES
+                        If(
+                            First(
+                                SortByColumns(
+                                    colCdsWindowStyles,
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_WindowStyles Or IsEmpty(colCdsWindowStyles),
+                            ClearCollect(
+                                colCdsWindowStyles,
+                                Filter(
+                                    'Window Styles',
+                                    'Window Styles (Views)'.'Active Window Styles'
+                                )
+                            );
+                            UpdateContext({locSaveWindowStyles: true})
+                        ),
+                        // JOB ENTRY OPTIONS (HEADER)
+                        // can retrieve up to 2000 records from Dataverse
+                        If(
+                            First(
+                                SortByColumns(
+                                    Filter(
+                                        colCdsJobEntryOptions,
+                                        Type = gblOptionSets.JobEntryOption.Type.Header
+                                    ),
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_JobEntryOptions_Headers Or IsEmpty(
+                                Filter(
+                                    colCdsJobEntryOptions,
+                                    Type = gblOptionSets.JobEntryOption.Type.Header
+                                )
+                            ),
+                            RemoveIf(
+                                colCdsJobEntryOptions,
+                                Type = gblOptionSets.JobEntryOption.Type.Header
+                            );
+                            Collect(
+                                colCdsJobEntryOptions_Header,
+                                AddColumns(
+                                    Filter(
+                                        'Job Entry Options',
+                                        'Job Entry Options (Views)'.'Header Job Entry Options'
+                                    ),
+                                    "appParentOptionGUID",
+                                    'Parent Option'.'Job Entry Option'
+                                )
+                            )
+                        );
+                        // JOB ENTRY OPTIONS (ATTRIBUTE)
+                        // can retrieve up to 2000 records from Dataverse
+                        If(
+                            First(
+                                SortByColumns(
+                                    Filter(
+                                        colCdsJobEntryOptions,
+                                        Type = gblOptionSets.JobEntryOption.Type.Attribute
+                                    ),
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_JobEntryOptions_Attributes Or IsEmpty(
+                                Filter(
+                                    colCdsJobEntryOptions,
+                                    Type = gblOptionSets.JobEntryOption.Type.Attribute
+                                )
+                            ),
+                            RemoveIf(
+                                colCdsJobEntryOptions,
+                                Type = gblOptionSets.JobEntryOption.Type.Attribute
+                            );
+                            Collect(
+                                colCdsJobEntryOptions_Attribute,
+                                AddColumns(
+                                    Filter(
+                                        'Job Entry Options',
+                                        'Job Entry Options (Views)'.'Attribute Job Entry Options'
+                                    ),
+                                    "appParentOptionGUID",
+                                    'Parent Option'.'Job Entry Option'
+                                )
+                            )
+                        );
+                        // JOB ENTRY OPTIONS (HIERARCHY STEP)
+                        // can retrieve up to 4000 records from Dataverse
+                        If(
+                            First(
+                                SortByColumns(
+                                    Filter(
+                                        colCdsJobEntryOptions,
+                                        Type = gblOptionSets.JobEntryOption.Type.HierarchyStep
+                                    ),
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_JobEntryOptions_HierarchySteps Or IsEmpty(
+                                Filter(
+                                    colCdsJobEntryOptions,
+                                    Type = gblOptionSets.JobEntryOption.Type.HierarchyStep
+                                )
+                            ),
+                            RemoveIf(
+                                colCdsJobEntryOptions,
+                                Type = 'Job Entry Option Types'.'Hierarchy Step'
+                            );
+                            With(
+                                {
+                                    varJobEntryOptionsChunk1: Sort(
+                                        Filter(
+                                            'Job Entry Options',
+                                            'Job Entry Options (Views)'.'Hierarchy Step Job Entry Options'
+                                        ),
+                                        'Job Entry Option',
+                                        SortOrder.Ascending
+                                    ),
+                                    varJobEntryOptionsChunk2: Sort(
+                                        Filter(
+                                            'Job Entry Options',
+                                            'Job Entry Options (Views)'.'Hierarchy Step Job Entry Options'
+                                        ),
+                                        'Job Entry Option',
+                                        SortOrder.Descending
+                                    )
+                                },
+                                Collect(
+                                    colCdsJobEntryOptions_HierarchyStep,
+                                    varJobEntryOptionsChunk1,
+                                    Filter(
+                                        varJobEntryOptionsChunk2,
+                                        !('Job Entry Option' in varJobEntryOptionsChunk1.'Job Entry Option')
+                                    )
+                                )
+                            );
+                            UpdateContext({locSaveJobEntryOptions: true});
+                        );
+                        If(
+                            First(
+                                SortByColumns(
+                                    Filter(
+                                        colCdsJobEntryOptions,
+                                        Type = gblOptionSets.JobEntryOption.Type.Value
+                                    ),
+                                    "modifiedon",
+                                    SortOrder.Descending
+                                )
+                            ).'Modified On' < locCdsOrgLatest_JobEntryOptions_Values Or IsEmpty(
+                                Filter(
+                                    colCdsJobEntryOptions,
+                                    Type = gblOptionSets.JobEntryOption.Type.Value
+                                )
+                            ),
+                            RemoveIf(
+                                colCdsJobEntryOptions,
+                                Type = gblOptionSets.JobEntryOption.Type.Value
+                            );
+                            ForAll(
+                                Filter(
+                                    colCdsJobEntryOptions_Header,
+                                    Type = gblOptionSets.JobEntryOption.Type.Header
+                                 ) As tblJobEntryOptionHeaders,
+                                Collect(
+                                    colCdsJobEntryOptions_Value,
+                                    Filter(
+                                        [@'Job Entry Options'],
+                                        'Job Entry Option (Header Root)'.'Job Entry Option'=tblJobEntryOptionHeaders.'Job Entry Option',
+                                        Type = gblOptionSets.JobEntryOption.Type.Value,
+                                        'Legacy?' = gblOptionSets.JobEntryOption.IsLegacy.No,
+                                        Status=gblOptionSets.JobEntryOption.Status.Active
+                                    )
+                                );
+                            );
+                        );
+                        If(
+                            Or(
+                                !IsEmpty(colCdsJobEntryOptions_Header),
+                                !IsEmpty(colCdsJobEntryOptions_Attribute),
+                                !IsEmpty(colCdsJobEntryOptions_HierarchyStep),
+                                !IsEmpty(colCdsJobEntryOptions_Value)
+                            ),
+                            ClearCollect(colCdsJobEntryOptions, colCdsJobEntryOptions_Header);
+                            Collect(colCdsJobEntryOptions, colCdsJobEntryOptions_Attribute);
+                            Collect(colCdsJobEntryOptions, colCdsJobEntryOptions_HierarchyStep);
+                            Collect(colCdsJobEntryOptions, colCdsJobEntryOptions_Value);
+                            Clear(colCdsJobEntryOptions_Header);
+                            Clear(colCdsJobEntryOptions_Attribute);
+                            Clear(colCdsJobEntryOptions_HierarchyStep);
+                            Clear(colCdsJobEntryOptions_Value);
+                        );
+                        UpdateContext({locSaveJobEntryOptions: true});
+                    );
+                    If(
+                        gblAppAutoAdvance,
+                        UpdateContext(
+                            {
+                                locLoadingText: "Caching Vesta Data...",
+                                locLoadingPercent: 50
+                            }
+                        );
+                        Select(btn_Loading_SaveCdsOrg)
+                    )
+                    */
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="2.2) Load CDS (Org) OLD"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =216
+            - btn_Loading_SaveCdsOrg:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: "=Trace(\n    \"Button Pressed: Loading Step 2.3\",\n    TraceSeverity.Information\n);\n\nIfError(   // ✅ Start error handler\nIf(\n    gblAppLoadOffline,\n// ACCOUNTS\n    If(\n        locSaveAccounts,\n        SaveData(\n            colCdsAccounts,\n            \"localCdsAccounts\"\n        )\n    );\n    \n// DATA ENTRY CHOICES\nIf(\n        locSaveDataEntryChoices,\n        SaveData(\n            colCdsDataEntryChoices,\n            \"localCdsDataEntryChoices\"\n        )\n    );\n    \n// DOCUMENTS\nIf(\n        locSaveDocuments,\n        SaveData(\n            colCdsDocuments,\n            \"localCdsDocuments\"\n        )\n    );\n    // EMPLOYEES\nIf(\n        locSaveEmployees,\n        SaveData(\n            colCdsEmployees,\n            \"localCdsEmployees\"\n        )\n    );\n    \n	// JOB STAGES\nIf(\n        locSaveJobStages,\n        SaveData(\n            colCdsJobStages,\n            \"localCdsJobStages\"\n        )\n    );\n    \n	// LABOR ITEMS\nIf(\n        locSaveLaborItems,\n        SaveData(\n            colCdsLaborItems,\n            \"localCdsLaborItems\"\n        )\n    );\n// MARKET SEGMENTS\nIf(\n        locSaveMarketSegments,\n        SaveData(\n            colCdsMarketSegments,\n            \"localCdsMarketSegments\"\n        )\n    );\n    \n// MATERIAL ITEMS\nIf(\n        locSaveMaterialItems,\n        SaveData(\n            colCdsMaterialItems,\n            \"localCdsMaterialItems\"\n        )\n    );\n    // MATERIAL ITEM COLORS\nIf(\n        locSaveMaterialItemColors,\n        SaveData(\n            colCdsMaterialItemColors,\n            \"localCdsMaterialItemColors\"\n        )\n    );\n    \n// ROOMS\nIf(\n        locSaveRooms,\n        SaveData(\n            colCdsRooms,\n            \"localCdsRooms\"\n        )\n    );\n    \n// VESTA SETTINGS\nIf(\n        locSaveVestaSettings,\n        SaveData(\n            colCdsVestaSettings,\n            \"localCdsVestaSettings\"\n        )\n    );\n    \n// WINDOW CHOICES\nIf(\n        locSaveWindowChoices,\n        SaveData(\n            colCdsWindowChoices,\n            \"localCdsWindowChoices\"\n        )\n    );\n    \n// WINDOW MODELS\nIf(\n        locSaveWindowModels,\n        SaveData(\n            colCdsWindowModels,\n            \"localCdsWindowModels\"\n        )\n    );\n    \n// WINDOW STYLES\nIf(\n        locSaveWindowStyles,\n        SaveData(\n            colCdsWindowStyles,\n            \"localCdsWindowStyles\"\n        )\n    );\n    \n);\nIf(\n    gblAppAutoAdvance,\n    UpdateContext(\n        {\n            locLoadingText: \"Loading Your Job Data...\",\n            locLoadingPercent: 50\n        }\n    );\n    Select(btn_Loading_LoadCdsUser)\n);\n, Blank()  ) // ✅ Suppress any visible error\n"
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="2.3) Save CDS (Org)"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =270
+            - btn_Loading_SaveCdsOrg_Options_OLD:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =DisplayMode.Disabled
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: "=/*\nTrace(\"Button Pressed: Loading Step 2.4\",TraceSeverity.Information);\n// JOB ENTRY OPTIONS\nIf(\n    locSaveJobEntryOptions And gblAppLoadOffline,\n    ClearCollect(\n        colStagingCdsJobEntryOptions_Header,\n        Filter(\n            colCdsJobEntryOptions,\n            Type = gblOptionSets.JobEntryOption.Type.Header\n        )\n    );\n    SaveData(\n        colStagingCdsJobEntryOptions_Header,\n        \"localCdsJobEntryOptions_Header\"\n    );\n    ClearCollect(\n        colStagingCdsJobEntryOptions_Attribute,\n        Filter(\n            colCdsJobEntryOptions,\n            Type = gblOptionSets.JobEntryOption.Type.Attribute\n        )\n    );\n    SaveData(\n        colStagingCdsJobEntryOptions_Attribute,\n        \"localCdsJobEntryOptions_Attribute\"\n    );\n    ClearCollect(\n        colStagingCdsJobEntryOptions_HierarchyStep,\n        Filter(\n            colCdsJobEntryOptions,\n            Type = gblOptionSets.JobEntryOption.Type.HierarchyStep\n        )\n    );\n    SaveData(\n        colStagingCdsJobEntryOptions_HierarchyStep,\n        \"localCdsJobEntryOptions_HierarchyStep\"\n    );\n    ClearCollect(\n        colStagingCdsJobEntryOptions_Value,\n        Filter(\n            colCdsJobEntryOptions,\n            Type = gblOptionSets.JobEntryOption.Type.Value\n        )\n    );\n    SaveData(\n        colStagingCdsJobEntryOptions_Value,\n        \"localCdsJobEntryOptions_Value\"\n    );\n    \n);\nIf(\n    gblAppAutoAdvance,\n    UpdateContext(\n        {\n            locLoadingText: \"Loading your Job data...\",\n            locLoadingPercent: 65\n        }\n    );\n    Select(btn_Loading_LoadCdsUser)\n)\n*/"
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="2.4) Save CDS Options (Org) OLD"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =324
+            - btn_Loading_LoadCdsUser:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |
+                    =Trace("Button Pressed: Loading Step 3",TraceSeverity.Information);
+                    Concurrent(
+                        // JOBS
+                        ClearCollect(
+                            colCdsJobs,
+                            AddColumns(
+                                Filter(
+                                    Jobs,
+                                    'Jobs (Views)'.'My Measure Jobs (This Week, Next Week, Last Week)'
+                                ),
+                                appJobIDText,
+                                Text(Job),
+                                appFields,
+                                Concatenate(
+                                    Text('Start Date Time'),
+                                    Name
+                                )
+                            )
+                        );
+                        ForAll(
+                            Filter(
+                                Jobs,
+                                'Jobs (Views)'.'My Jobs (Today)'
+                            ) As currentRecord,
+                            Patch(
+                                colCdsJobs,
+                                LookUp(
+                                    colCdsJobs,
+                                    Job=currentRecord.Job
+                                ),
+                                {'Map Image': currentRecord.'Map Image'}
+                            )
+                        ),
+                    // JOB DOCUMENTS
+                        ClearCollect(
+                            colCdsJobDocuments,
+                            AddColumns(
+                                Filter(
+                                    'Job Documents',
+                                    'Job Documents (Views)'.'My Job''s Documents (Today)'
+                                ),
+                                appJobIdText,
+                                Text(Job.Job),
+                                appJobDocumentIdText,
+                                Text('Job Document')
+                            )
+                        ),
+                    // JOB ENTRIES
+                        ClearCollect(
+                            colCdsJobEntries,
+                            AddColumns(
+                                Filter(
+                                    'Job Entries',
+                                    'Job Entries (Views)'.'My Job Entries (Today)'
+                                ),
+                                appFields,
+                                Concatenate(
+                                    "",
+                                    Job.Name
+                                ),
+                                appJobRoomIdText,
+                                Text('Job Room'.'Job Room'),
+                                appJobIdText,
+                                Text(Job.Job),
+                                '''Window Choice''',
+                                'Window Choice'
+                            )
+                        ),
+                    // JOB ENTRY SELECTIONS
+                        ClearCollect(
+                            colCdsJobEntrySelections,
+                            AddColumns(
+                                Filter(
+                                    'Job Entry Selections',
+                                    'Job Entry Selections (Views)'.'My Job Entry Selections (Today)'
+                                ),
+                                appAttributeName,
+                                'Job Entry Option (Attribute)'.Name
+                            )
+                        ),
+                    // JOB LABOR ITEMS
+                        ClearCollect(
+                            colCdsJobLaborItems,
+                            AddColumns(
+                                Filter(
+                                    'Job Labor Items',
+                                    'Job Labor Items (Views)'.'My Job''s Labor Items (Today)'
+                                ),
+                                appJobIDText,
+                                Text(Job.Job)
+                            )
+                        ),
+                    // JOB MATERIAL ITEMS
+                        ClearCollect(
+                            colCdsJobMaterialItems,
+                            AddColumns(
+                                Filter(
+                                    'Job Material Items',
+                                    'Job Material Items (Views)'.'My Job''s Material Items (Today)'
+                                ),
+                                appJobIDText,
+                                Text(Job.Job)
+                            )
+                        ),
+                    // JOB PHOTOS
+                        ClearCollect(
+                            colCdsJobPhotos,
+                            Filter(
+                                'Job Photos',
+                                'Job Photos (Views)'.'My Job Photos (Today) (Not Completed)'
+                            )
+                        ),
+                    // JOB ROOMS
+                        ClearCollect(
+                            colCdsJobRooms,
+                            AddColumns(
+                                Filter(
+                                    'Job Rooms',
+                                    'Job Rooms (Views)'.'My Job Rooms (Today)'
+                                ),
+                                appJobRoomIdText,
+                                Text('Job Room'),
+                                appJobIdText,
+                                Text(Job.Job)
+                            )
+                        ),
+                        // MARKET LABOR ITEMS
+                        ClearCollect(
+                            colCdsMarketLaborItems,
+                            AddColumns(
+                                Filter(
+                                    'Market Labor Items',
+                                    'Market Labor Items (Views)'.'Active Market Labor Items (Today)'
+                                ),
+                                appMarketSegment,
+                                'Market Segment'.'Market Segment',
+                                appLaborDisplayOrder,
+                                'Labor Item'.'Display Order'
+                            )
+                        ),
+                        // MARKET MATERIAL ITEMS
+                        ClearCollect(
+                            colCdsMarketMaterialItems,
+                            AddColumns(
+                                Filter(
+                                    'Market Material Items',
+                                    'Market Material Items (Views)'.'Active Market Materials (Today)'
+                                ),
+                                appMarketSegment,
+                                'Market Segment'.'Market Segment',
+                                appMaterialName,
+                                'Material Item'.Name
+                            )
+                        ),
+                    // WINDOW MEASUREMENTS
+                        ClearCollect(
+                            colCdsWindowMeasurements,
+                            Filter(
+                                'Window Measurements',
+                                'Window Measurements (Views)'.'My Job''s Window Measurements (Today)'
+                            )
+                        ),
+                    // WINDOW MULLS
+                        ClearCollect(
+                            colCdsWindowMulls,
+                            AddColumns(
+                                Filter(
+                                    'Window Mulls',
+                                    'Window Mulls (Views)'.'My Job Window Mulls (Today)'
+                                ),
+                                appJobRoomIdText,
+                                Text('Job Room'.'Job Room')
+                            )
+                        )
+                    );
+
+                    If(
+                        gblAppAutoAdvance,
+                        UpdateContext(
+                            {
+                                locLoadingText: "Saving Job Data...",
+                                locLoadingPercent: 60
+                            }
+                        );
+                    Select(btn_Loading_SaveLocalFiles)
+                    );
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="3) Load CDS (User)"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =378
+            - btn_Loading_SaveLocalFiles:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: "=Trace(\n    \"Button Pressed: Loading Step 4\",\n    TraceSeverity.Information\n);\nIfError(   // ✅ Start error handler\nIf(\n    gblAppLoadOffline,\n// JOB DOCUMENTS\n    SaveData(\n        colCdsJobDocuments,\n        \"localCdsJobDocuments\"\n    );\n    \n// JOB ENTRIES\nSaveData(\n        colCdsJobEntries,\n        \"localCdsJobEntries\"\n    );\n    \n// JOB ENTRY SELECTIONS\nSaveData(\n        colCdsJobEntrySelections,\n        \"localCdsJobEntrySelections\"\n    );\n    \n// JOB LABOR ITEMS\nSaveData(\n        colCdsJobLaborItems,\n        \"localCdsJobLaborItems\"\n    );\n    \n// JOB MATERIAL ITEMS\nSaveData(\n        colCdsJobMaterialItems,\n        \"localCdsJobMaterialItems\"\n    );\n    \n// JOB PHOTOS\nSaveData(\n        colCdsJobPhotos,\n        \"localCdsJobPhotos\"\n    );\n    \n// JOB ROOMS\nSaveData(\n        colCdsJobRooms,\n        \"localCdsJobRooms\"\n    );\n    \n// JOBS\nSaveData(\n        colCdsJobs,\n        \"localCdsJobs\"\n    );\n    \n// MARKET LABOR ITEMS\nSaveData(\n        colCdsMarketLaborItems,\n        \"localCdsMarketLaborItems\"\n    );\n    \n// MARKET MATERIAL ITEMS\nSaveData(\n        colCdsMarketMaterialItems,\n        \"localCdsMarketMaterialItems\"\n    );\n    \n// WINDOW MEASUREMENTS\nSaveData(\n        colCdsWindowMeasurements,\n        \"localCdsWindowMeasurements\"\n    );\n    \n// WINDOW MULLS\nSaveData(\n        colCdsWindowMulls,\n        \"localCdsWindowMulls\"\n    );\n    \n);\nIf(\n    gblAppAutoAdvance,\n    UpdateContext(\n        {\n            locLoadingText: \"Loading Job Entry Options...\",\n            locLoadingPercent: 75\n        }\n    );\n\n    Select(btn_Loading_LoadJobEntryOptions)\n);\n, Blank()  ) // ✅ Suppress any visible error "
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="4) Save Local (User)"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =432
+            - btn_Loading_LoadJobEntryOptions:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(109, 49, 162, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =// Get list of unique window choices for any jobs currently on the device
+                    ClearCollect(
+                        colWindowChoices_ForJobsOnDevice,
+                        Distinct(
+                            AddColumns(
+                                colCdsJobEntries,
+                                WindowChoiceID,
+                                'Window Choice'.'Window Choice'
+                            ).WindowChoiceID,
+                            WindowChoiceID
+                        )
+                    );
+                    // Add a column for the job entry option headers to the window choices
+                    ClearCollect(
+                        colJobEntryOptionHeaders_ForJobsOnDevice,
+                        Distinct(
+                            AddColumns(
+                                colWindowChoices_ForJobsOnDevice,
+                                HeaderID,
+                                LookUp(
+                                    colCdsWindowChoices,
+                                    'Window Choice' = Value,
+                                    'Job Entry Option (Header)'
+                                ).'Job Entry Option'
+                            ).HeaderID,
+                            HeaderID
+                        )
+                    );
+                    // Determine whether a new set of Job Entry Options must be downloaded to the device
+                    Set(
+                        gblShouldAppDownloadJobEntryOptions,
+                        Or(
+                            false in AddColumns(
+                                colJobEntryOptionHeaders_ForJobsOnDevice,
+                                OnDevice,
+                                Value in colCdsJobEntryOptions.'Job Entry Option'
+                            ).OnDevice,
+                            false in AddColumns(
+                                Filter(
+                                    colCdsJobEntryOptions,
+                                    Type=gblOptionSets.JobEntryOption.Type.Header
+                                ),
+                                OnDevice,
+                                'Job Entry Option' in colJobEntryOptionHeaders_ForJobsOnDevice.Value
+                            ).OnDevice
+                        )
+                    );
+                    // Loop through each column header and download its child options
+                    If(
+                        gblShouldAppDownloadJobEntryOptions,
+                        Clear(colCdsJobEntryOptions);
+                        ForAll(
+                            colJobEntryOptionHeaders_ForJobsOnDevice As currentRecord,
+                            // Get header record
+                            Collect(
+                                colCdsJobEntryOptions,
+                                Filter(
+                                    'Job Entry Options',
+                                    'Job Entry Option'=currentRecord.Value,
+                                    Status=gblOptionSets.JobEntryOption.Status.Active,
+                                    'Legacy?'=gblOptionSets.JobEntryOption.IsLegacy.No
+                                )
+                            );
+                            // Get attributes, hierarchy steps and values
+                            Collect(
+                                colCdsJobEntryOptions,
+                                Filter(
+                                    'Job Entry Options',
+                                    'Job Entry Option (Header Root)'.'Job Entry Option'=currentRecord.Value,
+                                    Status=gblOptionSets.JobEntryOption.Status.Active,
+                                    'Legacy?'=gblOptionSets.JobEntryOption.IsLegacy.No
+                                )
+                            )
+                        );
+                        UpdateContext({locSaveJobEntryOptions: true});
+                    );
+                    Clear(colWindowChoices_ForJobsOnDevice);
+                    Clear(colJobEntryOptionHeaders_ForJobsOnDevice);
+                    Set(gblShouldAppDownloadJobEntryOptions, false);
+                    If(
+                        gblAppAutoAdvance,
+                        UpdateContext(
+                            {
+                                locLoadingText: "Saving Job Entry Options...",
+                                locLoadingPercent: 90
+                            }
+                        );
+                        Select(btn_Loading_SaveCdsOrg_Options)
+                    );
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="5) Load Job Entry Options NEW"
+                  Width: =320
+                  X: =572
+                  Y: =537
+            - btn_Loading_SaveCdsOrg_Options:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(109, 49, 162, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =Trace(
+                        "Button Pressed: Loading 6",
+                        TraceSeverity.Information
+                    );
+                    // JOB ENTRY OPTIONS
+                    If(
+                        locSaveJobEntryOptions And gblAppLoadOffline,
+                        ClearCollect(
+                            colStagingCdsJobEntryOptions_Header,
+                            Filter(
+                                colCdsJobEntryOptions,
+                                Type = gblOptionSets.JobEntryOption.Type.Header
+                            )
+                        );
+                        SaveData(
+                            colStagingCdsJobEntryOptions_Header,
+                            "localCdsJobEntryOptions_Header"
+                        );
+                        ClearCollect(
+                            colStagingCdsJobEntryOptions_Attribute,
+                            Filter(
+                                colCdsJobEntryOptions,
+                                Type = gblOptionSets.JobEntryOption.Type.Attribute
+                            )
+                        );
+                        SaveData(
+                            colStagingCdsJobEntryOptions_Attribute,
+                            "localCdsJobEntryOptions_Attribute"
+                        );
+                        ClearCollect(
+                            colStagingCdsJobEntryOptions_HierarchyStep,
+                            Filter(
+                                colCdsJobEntryOptions,
+                                Type = gblOptionSets.JobEntryOption.Type.HierarchyStep
+                            )
+                        );
+                        SaveData(
+                            colStagingCdsJobEntryOptions_HierarchyStep,
+                            "localCdsJobEntryOptions_HierarchyStep"
+                        );
+                        ClearCollect(
+                            colStagingCdsJobEntryOptions_Value,
+                            Filter(
+                                colCdsJobEntryOptions,
+                                Type = gblOptionSets.JobEntryOption.Type.Value
+                            )
+                        );
+                        SaveData(
+                            colStagingCdsJobEntryOptions_Value,
+                            "localCdsJobEntryOptions_Value"
+                        )
+                    );
+                    UpdateContext({locSaveJobEntryOptions: false});
+                    If(
+                        gblAppAutoAdvance,
+                        UpdateContext(
+                            {
+                                locLoadingText: "Loading Completed",
+                                locLoadingPercent: 100
+                            }
+                        );
+                        Select(btn_Loading_Proceed)
+                    )
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="6) Save CDS Options (Org) NEW"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =324
+            - btn_Loading_Proceed:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =Align.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |
+                    =Trace("Button Pressed: Loading Step 7",TraceSeverity.Information);
+                    If(
+                        // fall back screen when gblTextClickedSaveScreen is blank
+                        gblTextClickedSaveScreen = "Jobs Screen",
+                        Navigate(
+                            'Jobs Screen',
+                            ScreenTransition.Fade
+                        ),
+                        // go to load job screen
+                        !IsBlank(gblRecordJobCurrent) And !IsToday(gblRecordJobCurrent.'Start Date Time'),
+                        Navigate(
+                            'Load Job Screen',
+                            ScreenTransition.Fade
+                        ),
+                        // go to rooms screen
+                        gblTextClickedSaveScreen = "Rooms Screen" And IsToday(gblRecordJobCurrent.'Start Date Time'),
+                        Navigate(
+                            'Rooms Screen',
+                            ScreenTransition.Fade
+                        ),
+                        // go to final steps screen
+                        gblTextClickedSaveScreen = "Final Steps Screen" And IsToday(gblRecordJobCurrent.'Start Date Time'),
+                        Navigate(
+                            'Final Steps Screen',
+                            ScreenTransition.Fade
+                        ),
+                        // fall back screen when gblTextClickedSaveScreen is blank
+                        Navigate(
+                            'Jobs Screen',
+                            ScreenTransition.Fade
+                        )
+                    );
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="7) Proceed"
+                  Visible: =!gblAppAutoload
+                  Width: =300
+                  X: =16
+                  Y: =493

@@ -1,0 +1,806 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Delete Window Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+    Children:
+      - cmp_Delete_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Project"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =708
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =60
+      - cmp_Delete_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: |-
+              =If(
+                  gblProjectSidebarItemCurrent.Category="Job Entry",
+                  'Windows Screen',
+                  'Measure Window Screen'
+              )
+            Color: =Color.White
+            Context: |-
+              =$"{gblRecordJobEntryCurrent_.'Room: Type'}, {gblRecordJobEntryCurrent_.'Room: Floor'}"
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - lbl_Delete_Actions__Background:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =gblAppStyles.ActionsMenu.Fill
+            Font: =Font.'Open Sans'
+            Height: =708
+            Text: =""
+            Width: =250
+            X: =80
+            Y: =60
+      - cmp_Delete_AdvanceButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Trash}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Secondary.Red
+            NavigateScreen: =App.ActiveScreen
+            Text: |-
+              =If(
+                  gblProjectSidebarItemCurrent.Category = "Job Entry",
+                  "Delete All Windows",
+                  gblProjectSidebarItemCurrent.Category = "Window Measurement",
+                  "Delete Line Item"
+              )
+            Width: |-
+              =If(
+                  gblProjectSidebarItemCurrent.Category = "Job Entry",
+                  290,
+                  gblProjectSidebarItemCurrent.Category = "Window Measurement",
+                  260
+              )
+            X: =376
+            Y: =670
+      - btn_Delete_AdvanceButton:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =Color.Transparent
+            DisabledBorderColor: =Color.Transparent
+            DisabledColor: =Color.Transparent
+            DisabledFill: =Color.Transparent
+            Fill: =Color.Transparent
+            Font: =Font.'Open Sans'
+            Height: =cmp_Delete_AdvanceButton.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Color.Transparent
+            HoverFill: =Color.Transparent
+            OnSelect: |-
+              =If(
+                  // JOB ENTRY
+                  gblProjectSidebarItemCurrent.Category = "Job Entry",
+                  With(
+                      {
+                          varType: "colCdsJobEntries",
+                          varRecordRef: gblRecordJobEntryCurrent_.'Job Entry'
+                      },
+                      // Check if the record was added by the app
+                      If(
+                          varRecordRef in Filter(
+                              colAUDRecords,
+                              Type = "colCdsJobEntries",
+                              Operation = "A"
+                          ).RecordRef,
+                          // for records added by the app
+                          //
+                          ////PHOTOS
+                          // remove job photos from new records
+                          RemoveIf(
+                              colAUDRecords,
+                              Type = "colCdsJobPhotos" And RecordRef in Filter(
+                                  colCdsJobPhotos,
+                                  'Job Entry'.'Job Entry' = varRecordRef
+                              ).'Job Photo' And Operation = "A"
+                          );
+                          // Delete job photos from local collection
+                          RemoveIf(
+                              colCdsJobPhotos,
+                              'Job Entry'.'Job Entry' = varRecordRef
+                          );
+                          //// WINDOW MEASUREMENTS
+                          // remove job entry selections from new records
+                          RemoveIf(
+                              colAUDRecords,
+                              Type = "colCdsWindowMeasurements" And RecordRef in Filter(
+                                  colCdsWindowMeasurements,
+                                  'Job Entry'.'Job Entry' = varRecordRef
+                              ).'Window Measurement' And Operation = "A"
+                          );
+                          // Delete window measurements from local collection
+                          RemoveIf(
+                              colCdsWindowMeasurements,
+                              'Job Entry'.'Job Entry' = varRecordRef
+                          );
+                          //// JOB ENTRY SELECTIONS
+                          // remove job entry selections from new records
+                          RemoveIf(
+                              colAUDRecords,
+                              Type = "colCdsJobEntrySelections" And RecordRef in Filter(
+                                  colCdsJobEntrySelections,
+                                  'Job Entry'.'Job Entry' = varRecordRef
+                              ).'Job Entry Selection' And Operation = "A"
+                          );
+                          //// JOB ENTRIES
+                          // remove job entries from new records
+                          Remove(
+                              colAUDRecords,
+                              LookUp(
+                                  colAUDRecords,
+                                  Type = "colCdsJobEntries" And RecordRef = varRecordRef And Operation = "A"
+                              )
+                          ),
+                          // for records found in CDS
+                          //
+                          // Add job photos to be deleted
+                          With(
+                              {
+                                  varJobPhotos: Filter(
+                                      colCdsJobPhotos,
+                                      'Job Entry'.'Job Entry' = gblRecordJobEntryCurrent_.'Job Entry'
+                                  )
+                              },
+                              Collect(
+                                  colAUDRecords,
+                                  ForAll(
+                                      varJobPhotos,
+                                      {
+                                          Type: "colCdsJobPhotos",
+                                          RecordRef: varJobPhotos[@'Job Photo'],
+                                          Job: gblRecordJobCurrent.Job,
+                                          Operation: "D"
+                                      }
+                                  )
+                              );
+                              UpdateIf(
+                                  colCdsJobPhotos,
+                                  'Job Photo' in varJobPhotos.'Job Photo',
+                                  {
+                                      Status: gblOptionSets.JobPhoto.Status.Inactive,
+                                      'Status Reason': gblOptionSets.JobPhoto.StatusReason.Inactive
+                                  }
+                              )
+                          );
+                          // Add window measurements to be deleted
+                          With(
+                              {
+                                  varWindowMeasurements: Filter(
+                                      colCdsWindowMeasurements,
+                                      'Job Entry'.'Job Entry' = gblRecordJobEntryCurrent_.'Job Entry'
+                                  )
+                              },
+                              Collect(
+                                  colAUDRecords,
+                                  ForAll(
+                                      varWindowMeasurements,
+                                      {
+                                          Type: "colCdsWindowMeasurements",
+                                          RecordRef: varWindowMeasurements[@'Window Measurement'],
+                                          Job: gblRecordJobCurrent.Job,
+                                          Operation: "D"
+                                      }
+                                  )
+                              );
+                              UpdateIf(
+                                  colCdsWindowMeasurements,
+                                  'Window Measurement' in varWindowMeasurements.'Window Measurement',
+                                  {
+                                      Status: gblOptionSets.WindowMeasurement.Status.Inactive,
+                                      'Status Reason': gblOptionSets.WindowMeasurement.StatusReason.Inactive
+                                  }
+                              )
+                          );
+                          // Add job entry selections to be deleted
+                          With(
+                              {
+                                  varJobEntrySelections: Filter(
+                                      colCdsJobEntrySelections,
+                                      'Job Entry'.'Job Entry' = gblRecordJobEntryCurrent_.'Job Entry'
+                                  )
+                              },
+                              Collect(
+                                  colAUDRecords,
+                                  ForAll(
+                                      varJobEntrySelections,
+                                      {
+                                          Type: "colCdsJobEntrySelections",
+                                          RecordRef: varJobEntrySelections[@'Job Entry Selection'],
+                                          Job: gblRecordJobCurrent.Job,
+                                          Operation: "D"
+                                      }
+                                  )
+                              );
+                              UpdateIf(
+                                  colCdsJobEntrySelections,
+                                  'Job Entry Selection' in varJobEntrySelections.'Job Entry Selection',
+                                  {
+                                      Status: gblOptionSets.JobEntrySelection.Status.Inactive,
+                                      'Status Reason': gblOptionSets.JobEntrySelection.StatusReason.Inactive
+                                  }
+                              )
+                          );
+                          // Add job entry to be deleted
+                          With(
+                              {varRecordRef: gblRecordJobEntryCurrent_.'Job Entry'},
+                              Collect(
+                                  colAUDRecords,
+                                  {
+                                      Type: "colCdsJobEntries",
+                                      RecordRef: varRecordRef,
+                                      Job: gblRecordJobCurrent.Job,
+                                      Operation: "D"
+                                  }
+                              );
+                              UpdateIf(
+                                  colCdsJobEntries,
+                                  'Job Entry' = varRecordRef,
+                                  {
+                                      Status: gblOptionSets.JobEntry.Status.Inactive,
+                                      'Status Reason': gblOptionSets.JobEntry.StatusReason.Inactive
+                                  }
+                              )
+                          )
+                      )
+                  );
+                  // save local changes
+                  If(
+                      gblAppLoadOffline,
+                      SaveData(
+                          colAUDRecords,
+                          "localAUDRecords"
+                      );
+                      SaveData(
+                          colCdsJobEntries,
+                          "localCdsJobEntries"
+                      );
+                      SaveData(
+                          colCdsJobEntrySelections,
+                          "localCdsJobEntrySelections"
+                      );
+                      SaveData(
+                          colCdsWindowMeasurements,
+                          "localCdsWindowMeasurements"
+                      );
+                      SaveData(
+                          colCdsJobPhotos,
+                          "localCdsJobPhotos"
+                      )
+                  );
+                  // go to the next screen
+                  Navigate(
+                      'Rooms Screen',
+                      BorderStyle.None
+                  ),
+                  // WINDOW MEASUREMENT
+                  gblProjectSidebarItemCurrent.Category = "Window Measurement",
+                  With(
+                      {
+                          varType: "colCdsWindowMeasurements",
+                          varRecordRef: gblRecordWindowMeasurement_Tech.'Window Measurement'
+                      },
+                      // Check if the record was added by the app
+                      If(
+                          varRecordRef in Filter(
+                              colAUDRecords,
+                              Type = "colCdsWindowMeasurements",
+                              Operation = "A"
+                          ).RecordRef,
+                          // remove job entry selections from new records
+                          RemoveIf(
+                              colAUDRecords,
+                              And(
+                                  Type = "colCdsWindowMeasurements",
+                                  RecordRef = gblRecordWindowMeasurement_Tech.'Window Measurement',
+                                  Operation = "A"
+                              )
+                          );
+                          RemoveIf(
+                              colCdsWindowMeasurements,
+                              'Window Measurement' = varRecordRef
+                          ); 
+                          //// PHOTOS
+                          // remove job photos from new records
+                          RemoveIf(
+                              colAUDRecords,
+                              Type = "colCdsJobPhotos" And RecordRef in Filter(
+                                  colCdsJobPhotos,
+                                  'Window Measurement'.'Window Measurement' = varRecordRef
+                              ).'Job Photo' And Operation = "A"
+                          );
+                          // Delete job photos from local collection
+                          RemoveIf(
+                              colCdsJobPhotos,
+                              'Window Measurement'.'Window Measurement' = varRecordRef
+                          );
+                          // remove current job entry from not completed windows collection
+                          Remove(
+                              colNotCompletedWindows,
+                              LookUp(colNotCompletedWindows, 'Window Measurement'=gblRecordWindowMeasurement_Tech.'Window Measurement') 
+                          ),
+                          // Add window measurements to be deleted
+                          Collect(
+                              colAUDRecords,
+                              {
+                                  Type: "colCdsWindowMeasurements",
+                                  RecordRef: gblRecordWindowMeasurement_Tech.'Window Measurement',
+                                  Job: gblRecordJobCurrent.Job,
+                                  Operation: "D"
+                              }
+                          );
+                          UpdateIf(
+                              colCdsWindowMeasurements,
+                              'Window Measurement' = gblRecordWindowMeasurement_Tech.'Window Measurement',
+                              {
+                                  Status: gblOptionSets.WindowMeasurement.Status.Inactive,
+                                  'Status Reason': gblOptionSets.WindowMeasurement.StatusReason.Inactive
+                              }
+                          );
+                          // Add job photos to be deleted
+                          With(
+                              {
+                                  varJobPhotos: Filter(
+                                      colCdsJobPhotos,
+                                      'Window Measurement'.'Window Measurement' = varRecordRef
+                                  )
+                              },
+                              Collect(
+                                  colAUDRecords,
+                                  ForAll(
+                                      varJobPhotos,
+                                      {
+                                          Type: "colCdsJobPhotos",
+                                          RecordRef: varJobPhotos[@'Job Photo'],
+                                          Job: gblRecordJobCurrent.Job,
+                                          Operation: "D"
+                                      }
+                                  )
+                              );
+                              UpdateIf(
+                                  colCdsJobPhotos,
+                                  'Job Photo' in varJobPhotos.'Job Photo',
+                                  {
+                                      Status: gblOptionSets.JobPhoto.Status.Inactive,
+                                      'Status Reason': gblOptionSets.JobPhoto.StatusReason.Inactive
+                                  }
+                              )
+                          );
+                          // remove current job entry from not completed windows collection
+                          Remove(
+                              colNotCompletedWindows,
+                              LookUp(colNotCompletedWindows, 'Window Measurement'=gblRecordWindowMeasurement_Tech.'Window Measurement') 
+                          );
+                      )
+                  );
+                  // save local changes
+                  If(
+                      gblAppLoadOffline,
+                      SaveData(
+                          colAUDRecords,
+                          "localAUDRecords"
+                      );
+                      SaveData(
+                          colCdsWindowMeasurements,
+                          "localCdsWindowMeasurements"
+                      );
+                      SaveData(
+                          colCdsJobPhotos,
+                          "localCdsJobPhotos"
+                      )
+                  );
+                  // go to the next screen
+                  Navigate(
+                      'Windows Screen',
+                      BorderStyle.None
+                  )
+              );
+              // create project sidebar
+              ClearCollect(
+                  colProjectSidebar,
+                  Ungroup(
+                      Filter(
+                          Table(
+                              {
+                                  varMenuItems: RenameColumns(
+                                      Table(
+                                          {
+                                              ID: gblRecordJobEntryCurrent_.'Job Entry',
+                                              Name: Index(
+                                                  ForAll(Split(
+                                                      gblRecordJobEntryCurrent_.'Window Choice'.Name,
+                                                      " > "
+                                                  ), {Result: ThisRecord.Value}),
+                                                  2
+                                              ).Result,
+                                              Category: "Job Entry",
+                                              Description: Index(
+                                                  ForAll(Split(
+                                                      gblRecordJobEntryCurrent_.'Window Choice'.Name,
+                                                      " > "
+                                                  ), {Result: ThisRecord.Value}),
+                                                  1
+                                              ).Result,
+                                              Screen: 'Windows Screen',
+                                              Type: "Window Choice",
+                                              Image: 'dblhungw-2',
+                                              ImageDisabled: 'dblhungw-2'
+                                          }
+                                      ),
+                                      Name,
+                                      Title
+                                  )
+                              },
+                              {
+                                  varMenuItems: ShowColumns(
+                                      RenameColumns(
+                                          AddColumns(
+                                              Filter(
+                                                  colCdsWindowMeasurements,
+                                                  'Job Entry'.'Job Entry' = gblRecordJobEntryCurrent_.'Job Entry',
+                                                  Type = gblOptionSets.WindowMeasurement.Type.Tech,
+                                                  Status <> gblOptionSets.WindowMeasurement.Status.Inactive
+                                              ),
+                                              Category,
+                                              "Window Measurement",
+                                              Description,
+                                              If(
+                                                  'United Inches (UI)' = 0,
+                                                  "Sales Measurement",
+                                                  "Tech Measurement"
+                                              ),
+                                              Image,
+                                              gblAppIcons.Ruler,
+                                              ImageDisabled,
+                                              gblAppIcons.RulerDisabled,
+                                              Screen,
+                                              'Measure Window Screen',
+                                              Title,
+                                              If(
+                                                  'United Inches (UI)' = 0,
+                                                  $"{Text(gblRecordJobEntryCurrent_.'Measurement (Sales)'.Width)}"" x {Text(gblRecordJobEntryCurrent_.'Measurement (Sales)'.Height)}""",
+                                                  $"{RoundDown(
+                                                      Width,
+                                                      0
+                                                  )} {Switch(
+                                                      Mod(
+                                                          Width,
+                                                          1
+                                                      ),
+                                                      0,
+                                                      "",
+                                                      0.125,
+                                                      "1/8",
+                                                      0.250,
+                                                      "1/4",
+                                                      0.375,
+                                                      "3/8",
+                                                      0.500,
+                                                      "1/2",
+                                                      0.625,
+                                                      "5/8",
+                                                      0.750,
+                                                      "3/4",
+                                                      0.875,
+                                                      "7/8"
+                                                  )}"" x {RoundDown(
+                                                      Height,
+                                                      0
+                                                  )} {Switch(
+                                                      Mod(
+                                                          Height,
+                                                          1
+                                                      ),
+                                                      0,
+                                                      "",
+                                                      0.125,
+                                                      "1/8",
+                                                      0.250,
+                                                      "1/4",
+                                                      0.375,
+                                                      "3/8",
+                                                      0.500,
+                                                      "1/2",
+                                                      0.625,
+                                                      "5/8",
+                                                      0.750,
+                                                      "3/4",
+                                                      0.875,
+                                                      "7/8"
+                                                  )}"""
+                                              )
+                                          ),
+                                          'Window Measurement',
+                                          ID
+                                      ),
+                                      ID,
+                                      Title,
+                                      Category,
+                                      Description,
+                                      Screen,
+                                      Image,
+                                      ImageDisabled
+                                  )
+                              }
+                          ),
+                          !IsEmpty(varMenuItems)
+                      ),
+                      varMenuItems
+                  )
+              );
+              If(
+                  gblProjectSidebarItemCurrent.Category = "Job Entry",
+                  Set(
+                      gblProjectSidebarItemCurrent,
+                      Blank()
+                  ),
+                  gblProjectSidebarItemCurrent.Category = "Window Measurement",
+                  With(
+                      {
+                          varGetFirstWindowMeasurement: LookUp(
+                              colProjectSidebar,
+                              Category="Window Measurement"
+                          ),
+                          varGetJobEntry: LookUp(
+                              colProjectSidebar,
+                              Category="Job Entry"
+                          )
+                      },
+                      Set(
+                          gblProjectSidebarItemCurrent,
+                          Coalesce(varGetFirstWindowMeasurement, varGetJobEntry)
+                      )
+                  )
+              );
+              // go to the next screen
+              If(
+                  // JOB ENTRY
+                  gblProjectSidebarItemCurrent.Category = "Job Entry",
+                  Set(
+                      gblProjectSidebarItemCurrent,
+                      Blank()
+                  );
+                  Navigate(
+                      'Rooms Screen',
+                      BorderStyle.None
+                  ),
+                  // WINDOW MEASUREMENT
+                  gblProjectSidebarItemCurrent.Category = "Window Measurement",
+                  With(
+                      {
+                          varGetFirstWindowMeasurement: LookUp(
+                              colProjectSidebar,
+                              Category="Window Measurement"
+                          ),
+                          varGetJobEntry: LookUp(
+                              colProjectSidebar,
+                              Category="Job Entry"
+                          )
+                      },
+                      If(
+                          IsBlank(varGetFirstWindowMeasurement),
+                          // no measurements found in sidebar
+                          Set(
+                              gblProjectSidebarItemCurrent,
+                              varGetJobEntry
+                          );
+                          Navigate(
+                              'Windows Screen',
+                              BorderStyle.None
+                          ),
+                          // measurement found in sidebar
+                          Set(
+                              gblProjectSidebarItemCurrent,
+                              varGetFirstWindowMeasurement
+                          );
+                          Navigate(
+                              'Measure Window Screen',
+                              BorderStyle.None,
+                              {locDeletedWindowMeasure: true}
+                          )
+                      )
+                  );
+              )
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Color.Transparent
+            PressedFill: =Color.Transparent
+            Text: =""
+            Width: =cmp_Delete_AdvanceButton.Width
+            X: =cmp_Delete_AdvanceButton.X
+            Y: =cmp_Delete_AdvanceButton.Y
+      - lbl_Delete_Titlebar:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Lighter
+            Size: =20
+            Text: |+
+              =If(
+                  gblProjectSidebarItemCurrent.Category = "Job Entry",
+                  "Are you sure you want to delete ALL windows?",
+                  gblProjectSidebarItemCurrent.Category = "Window Measurement",
+                  "Are you sure you want to delete this line item?"
+              )
+
+            Width: =638
+            X: =360
+            Y: =162
+      - lbl_Delete_Title:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            Size: =20
+            Text: |-
+              =If(
+                  gblProjectSidebarItemCurrent.Category = "Job Entry",
+                  "Delete All Windows",
+                  gblProjectSidebarItemCurrent.Category = "Window Measurement",
+                  "Delete Line Item"
+              )
+            Width: =638
+            X: =cmp_Delete_Sidebar.X+cmp_Delete_Sidebar.Width+lbl_Delete_Actions__Background.Width+30
+            Y: =cmp_Delete_Titlebar.Y+cmp_Delete_Titlebar.Height+30
+      - con_Delete_Select:
+          Control: GroupContainer@1.3.0
+          Variant: AutoLayout
+          Properties:
+            BorderColor: =Color.DarkGray
+            BorderStyle: =BorderStyle.None
+            DropShadow: =DropShadow.None
+            Height: =72
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutJustifyContent: =LayoutJustifyContent.Center
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =250
+            X: =80
+            Y: =60
+          Children:
+            - lbl_Delete_Select__Style:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =22
+                  PaddingLeft: =66
+                  Size: =12
+                  Text: =gblProjectSidebarItemCurrent.Title
+                  Width: =Parent.Width
+            - lbl_Delete_Select__Description:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =18
+                  PaddingLeft: =66
+                  Size: =9
+                  Text: =gblProjectSidebarItemCurrent.Description
+                  Visible: =!IsBlank(gblProjectSidebarItemCurrent.Description)
+                  Width: =Parent.Width
+                  Y: =22
+            - lbl_Delete_Select__Lead:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =18
+                  PaddingLeft: =66
+                  Size: =9
+                  Text: |-
+                    =If(
+                        !IsBlank(gblRecordJobEntryCurrent_.'Window Mull'.'Sequence Number'),
+                        "Mull " & gblRecordJobEntryCurrent_.'Window Mull'.'Sequence Number'
+                    )
+                    &
+                    If(
+                        !IsBlank(gblRecordJobEntryCurrent_.'Window Mull'.'Sequence Number')
+                        And !IsBlank(gblRecordJobEntryCurrent_.'Lead Test: Exterior Result'),
+                        ", "
+                    )
+                    &
+                    If(
+                        gblRecordJobEntryCurrent_.'Lead Test: Exterior Result'=gblOptionSets.JobEntry.LeadTestResult.Yes
+                        Or gblRecordJobEntryCurrent_.'Lead Test: Interior Result'=gblOptionSets.JobEntry.LeadTestResult.Yes,
+                        "Contains Lead",
+                        gblRecordJobEntryCurrent_.'Lead Test: Exterior Result'=gblOptionSets.JobEntry.LeadTestResult.No
+                        Or gblRecordJobEntryCurrent_.'Lead Test: Interior Result'=gblOptionSets.JobEntry.LeadTestResult.No,
+                        "No Lead",
+                        Blank()
+                    )
+                  Visible: |-
+                    =!IsBlank(gblRecordJobEntryCurrent_.'Window Mull'.'Sequence Number') Or !IsBlank(gblRecordJobEntryCurrent_.'Lead Test: Exterior Result')
+                  Width: =Parent.Width
+                  Y: =39
+      - ico_Delete_Select__Image:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =64
+            Image: =gblProjectSidebarItemCurrent.Image
+            PaddingBottom: =If(gblProjectSidebarItemCurrent.Type="Window Choice", 6, 15)
+            PaddingLeft: =If(gblProjectSidebarItemCurrent.Type="Window Choice", 6, 15)
+            PaddingRight: =If(gblProjectSidebarItemCurrent.Type="Window Choice", 6, 15)
+            PaddingTop: =If(gblProjectSidebarItemCurrent.Type="Window Choice", 6, 15)
+            Width: =64
+            X: =80
+            Y: =64
+      - btn_Delete_Select__Status:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =gblAppStyles.ActionsMenu.QuantityBorderThickness
+            Color: =Color.White//If(ThisItem.Completed, gblAppColors.Secondary.White,gblAppStyles.ActionsMenu.Color)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledFill: =gblAppStyles.Status.Success
+            Fill: =gblAppStyles.Status.Success
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =gblAppStyles.Text.Font
+            FontWeight: =gblAppStyles.ActionsMenu.QuantityFontWeight
+            Height: =17
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Self.Color
+            HoverFill: =Self.Fill
+            OnSelect: =
+            PressedBorderColor: =Self.Fill
+            PressedFill: =Self.Fill
+            RadiusBottomLeft: =180
+            RadiusBottomRight: =Self.RadiusBottomLeft
+            RadiusTopLeft: =Self.RadiusBottomLeft
+            RadiusTopRight: =Self.RadiusBottomLeft
+            Size: =8
+            Text: =Blank()//ThisItem.Quantity
+            Visible: =gblRecordJobEntryCurrent_.Completed
+            Width: =17
+            X: =80+35
+            Y: =103
+      - img_Delete_Select__Status:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =14
+            Image: ='icons8-checkmark'
+            Visible: =gblRecordJobEntryCurrent_.Completed
+            Width: =18
+            X: =80+35
+            Y: =105

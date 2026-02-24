@@ -1,0 +1,113 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+ComponentDefinitions:
+  cmp_AddNotes:
+    DefinitionType: CanvasComponent
+    CustomProperties:
+      Completed:
+        PropertyKind: Input
+        DisplayName: Completed
+        Description: A custom property
+        DataType: Boolean
+        Default: =true
+      Context:
+        PropertyKind: Input
+        DisplayName: Context
+        Description: A custom property
+        DataType: Text
+        Default: ="Text"
+      IconColor:
+        PropertyKind: Input
+        DisplayName: Icon Color
+        Description: A custom property
+        DataType: Color
+        Default: =RGBA(0, 0, 0, 1)
+      ScreenName:
+        PropertyKind: Input
+        DisplayName: Screen Name
+        Description: A custom property
+        DataType: Text
+        Default: ="Text"
+      ScreenNavigate:
+        PropertyKind: Input
+        DisplayName: Screen Navigate
+        Description: A custom property
+        DataType: Screen
+        Default: =App.ActiveScreen
+      TextColor:
+        PropertyKind: Input
+        DisplayName: Text Color
+        Description: A custom property
+        DataType: Color
+        Default: =RGBA(0, 0, 0, 1)
+    Properties:
+      Height: =40
+      Width: =120
+    Children:
+      - lbl_AddNotes:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            PaddingRight: =0
+            Size: =16
+            Text: ="Notes"
+            Width: =65
+            X: =55
+      - ico_AddNotes_Completed:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =ColorValue("#8a8886")//ColorValue("#50BDED")
+            Height: =17
+            Icon: =Icon.DetailList
+            Visible: =cmp_AddNotes.Completed
+            Width: =17
+            X: =11
+            Y: =10
+      - ico_AddNotes:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =cmp_AddNotes.IconColor
+            Height: =39
+            Icon: =Icon.Note
+            OnSelect: =Navigate(cmp_AddNotes.ScreenNavigate)
+            PaddingRight: =82
+            TabIndex: =0
+            Width: =120
+      - btn_AddNotes:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =0
+            Color: =Color.White
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =ColorValue("#DC5B57")
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Normal
+            Height: =17
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Self.Color
+            HoverFill: =Self.Fill
+            PressedBorderColor: =Self.Fill
+            PressedFill: =Self.Fill
+            RadiusBottomLeft: =180
+            RadiusBottomRight: =Self.RadiusBottomLeft
+            RadiusTopLeft: =Self.RadiusBottomLeft
+            RadiusTopRight: =Self.RadiusBottomLeft
+            Size: =8
+            Text: =
+            Visible: =false//cmp_AddNotes.Completed
+            Width: =17
+            X: =25
+            Y: =23

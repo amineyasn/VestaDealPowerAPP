@@ -1,0 +1,1046 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Final Steps Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |-
+        =// Unblock user input
+        UpdateContext({locShowConfirmFinishJob: false});
+        Reset(tog_FinalSteps_SendEmail);
+      OnVisible: |
+        =Set(
+            gblTextClickedSaveScreen,
+            Blank()
+        );
+        UpdateContext(
+            {
+                locLeadTestPerformed: !IsBlank(
+                    LookUp(
+                        colCdsWindowMeasurements,
+                        Job.Job = gblRecordJobCurrent.Job And (!IsBlank('Lead Test: Exterior Component') Or !IsBlank('Lead Test: Interior Component'))
+                    )
+                ),
+                locShowConfirmFinishJob: false
+            }
+        );
+    Children:
+      - lbl_FinalSteps_Title:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            Height: =60
+            PaddingLeft: =25
+            Size: =gblAppStyles.Text.TitleSize
+            Text: ="Final Steps"
+            Width: =400
+            X: =172
+            Y: =90
+      - cmp_FinalSteps_SaveProgress:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Save}
+            IconColor: =Color.White
+            IconFill: =gblAppStyles.Status.Disabled
+            NavigateScreen: =
+            Text: ="Save Progress"
+            Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+            Width: =240
+            X: =cmp_FinalSteps_Sidebar.Width + gblAppStyles.Padding.ButtonMargin
+            Y: =Parent.Height- Self.Height - gblAppStyles.Padding.ButtonMargin
+      - btn_FinalSteps_SaveProgress:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =0
+            Color: =Color.Transparent
+            DisabledBorderColor: =Color.Transparent
+            DisabledColor: =Color.Transparent
+            DisabledFill: =Color.Transparent
+            Fill: =Color.Transparent
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Open Sans'
+            Height: =cmp_FinalSteps_SaveProgress.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Self.Color
+            HoverFill: =Self.Fill
+            OnSelect: |-
+              =Set(
+                  gblRecordJobCurrent,
+                  Patch(
+                      colCdsJobs,
+                      LookUp(
+                          colCdsJobs,
+                          appJobIDText = gblRecordJobCurrent.appJobIDText
+                      ),
+                      {
+                          Completed: gblOptionSets.Job.CompletedJob.No,
+                          'Lead Test: Send Document?': If(
+                              tog_FinalSteps_SendEmail.Value,
+                              gblOptionSets.Job.LeadTestSendDocuments.Yes,
+                              gblOptionSets.Job.LeadTestSendDocuments.No
+                          )
+                      }
+                  )
+              );
+              Set(gblTextClickedSaveScreen, "Final Steps Screen");
+              Navigate(
+                  'Saving Screen',
+                  ScreenTransition.Fade,
+                  {locSaveText: "Saving data to Vesta Data..."}
+              )
+            PressedBorderColor: =Self.Fill
+            PressedFill: =Self.Fill
+            Text: =""
+            Visible: =cmp_FinalSteps_SaveProgress.Visible
+            Width: =cmp_FinalSteps_SaveProgress.Width
+            X: =cmp_FinalSteps_SaveProgress.X
+            Y: =cmp_FinalSteps_SaveProgress.Y
+      - cmp_FinalSteps_ElevationPhotos:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Camera}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Primary.Blue
+            NavigateScreen: ='Photos Screen'
+            Text: ="Elevation Photos"
+            Visible: =false
+            Width: =270
+            X: =Parent.Width - Self.Width - gblAppStyles.Padding.ButtonMargin
+            Y: =85
+      - btn_FinalSteps_ElevationPhotos:
+          Control: Classic/Button@2.2.0
+          Properties:
+            AutoDisableOnSelect: =false
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =0
+            Color: =Color.Transparent
+            DisabledBorderColor: =RGBA(0, 0, 0, 0)
+            DisabledColor: =RGBA(0, 0, 0, 0)
+            DisabledFill: =RGBA(0, 0, 0, 0)
+            Fill: =Color.Transparent
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Open Sans'
+            Height: =cmp_FinalSteps_ElevationPhotos.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Self.Color
+            HoverFill: =Self.Fill
+            OnSelect: |-
+              =With(
+                  {
+                      varElevationCount: CountRows(
+                          Filter(
+                              colCdsJobPhotos,
+                              colCdsJobPhotos[@Job].Job = gblRecordJobCurrent.Job,
+                              Type in [
+                                  gblOptionSets.Global.PhotoType.ElevationFront,
+                                  gblOptionSets.Global.PhotoType.ElevationRear,
+                                  gblOptionSets.Global.PhotoType.ElevationSide
+                              ]
+                          )
+                      )
+                  },
+                  Navigate(
+                      'Photos Screen',
+                      ScreenTransition.None,
+                      {
+                          locModeElevation: true,
+                          locModeDefault: false,
+                          locModeWindow: false,
+                          locShowTypes: varElevationCount = 0,
+                          locShowPhotos: varElevationCount > 0,
+                          locAddPhotoLabel: "",
+                          locReturnScreen: 'Final Steps Screen'
+                      }
+                  )
+              )
+            PressedBorderColor: =Self.Fill
+            PressedFill: =Self.Fill
+            Text: =""
+            Visible: =false
+            Width: =cmp_FinalSteps_ElevationPhotos.Width
+            X: =Parent.Width - Self.Width - gblAppStyles.Padding.ButtonMargin
+            Y: =cmp_FinalSteps_ElevationPhotos.Y
+      - cmp_FinalSteps_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Final Steps"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =App.Height-cmp_FinalSteps_Titlebar.Height
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =cmp_FinalSteps_Titlebar.Y+cmp_FinalSteps_Titlebar.Height
+      - cmp_FinalSteps_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Jobs Screen'
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - cmp_FinalSteps_Finish:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Send}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Secondary.Green
+            NavigateScreen: =
+            Text: ="Finish Job"
+            Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+            Width: =221
+            X: =Parent.Width - Self.Width - gblAppStyles.Padding.ButtonMargin
+            Y: =Parent.Height- Self.Height - gblAppStyles.Padding.ButtonMargin
+      - btn_FinalSteps_Finish:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =0
+            Color: =Color.Transparent
+            DisabledBorderColor: =Color.Transparent
+            DisabledColor: =Color.Transparent
+            DisabledFill: =Color.Transparent
+            Fill: =Color.Transparent
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Open Sans'
+            Height: =cmp_FinalSteps_Finish.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Self.Color
+            HoverFill: =Self.Fill
+            OnSelect: |-
+              =UpdateContext({locShowConfirmFinishJob: true})
+            PressedBorderColor: =Self.Fill
+            PressedFill: =Self.Fill
+            Text: =""
+            Visible: =cmp_FinalSteps_Finish.Visible
+            Width: =cmp_FinalSteps_Finish.Width
+            X: =cmp_FinalSteps_Finish.X
+            Y: =cmp_FinalSteps_Finish.Y
+      - gal_FinalSteps:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            BorderThickness: =1
+            DelayItemLoading: =false
+            Fill: =Color.Transparent
+            FocusedBorderThickness: =Self.BorderThickness
+            Height: =419
+            Items: |-
+              =Table(
+                  {
+                      Item: "Rooms",
+                      Message: With(
+                          {
+                              varWindowsNotCompleted: CountRows(
+                                  Filter(
+                                      colCdsWindowMeasurements,
+                                      Job.Job = gblRecordJobCurrent.Job,
+                                      Completed = gblOptionSets.WindowMeasurement.Completed.No,
+                                      Type = gblOptionSets.WindowMeasurement.Type.Tech,
+                                      Status <> gblOptionSets.WindowMeasurement.Status.Inactive
+                                  )
+                              )
+                          },
+                          If(
+                              varWindowsNotCompleted > 0,
+                              Text(
+                                  varWindowsNotCompleted,
+                                  "[$-en-US]0"
+                              ) & " windows have not been completed for this job",
+                              "Completed"
+                          )
+                      ),
+                      Success: CountRows(
+                          Filter(
+                              colCdsWindowMeasurements,
+                              Job.Job = gblRecordJobCurrent.Job,
+                              Completed = gblOptionSets.WindowMeasurement.Completed.No,
+                              Type = gblOptionSets.WindowMeasurement.Type.Tech,
+                              Status <> gblOptionSets.WindowMeasurement.Status.Inactive
+                          )
+                      ) = 0
+                  },
+                  {
+                      Item: "Labor",
+                      Message: If(
+                          IsEmpty(
+                              Filter(
+                                  colCdsJobLaborItems,
+                                  appJobIDText = gblRecordJobCurrent.appJobIDText,
+                                      Status <> gblOptionSets.JobLaborItem.Status.Inactive
+                              )
+                          ),
+                          "No labor items were found for this job",
+                          CountRows(
+                              Filter(
+                                  colCdsJobLaborItems,
+                                  appJobIDText = gblRecordJobCurrent.appJobIDText,
+                                  IsBlank(Quantity),
+                                  Status <> gblOptionSets.JobLaborItem.Status.Inactive
+                              )
+                          ) > 0,
+                          Text(
+                              CountRows(
+                                  Filter(
+                                      colCdsJobLaborItems,
+                                      appJobIDText = gblRecordJobCurrent.appJobIDText,
+                                      IsBlank(Quantity),
+                                      Status <> gblOptionSets.JobLaborItem.Status.Inactive
+                                  )
+                              ),
+                              "[$-en-US]0"
+                          ) & " labor item(s) are missing quantity information",
+                          "Completed"
+                      ),
+                      Success: With(
+                          {
+                              tblJobLaborItems: Filter(
+                                  colCdsJobLaborItems,
+                                  appJobIDText = gblRecordJobCurrent.appJobIDText,
+                                  Status <> gblOptionSets.JobLaborItem.Status.Inactive
+                              )
+                          },
+                          !IsEmpty(tblJobLaborItems) And IsEmpty(
+                              Filter(
+                                  tblJobLaborItems,
+                                  IsBlank(Quantity)
+                              )
+                          )
+                      )
+                  },
+                  {
+                      Item: "Materials",
+                      Message: If(
+                          IsEmpty(
+                              Filter(
+                                  colCdsJobMaterialItems,
+                                  appJobIDText = gblRecordJobCurrent.appJobIDText,
+                                  Status <> gblOptionSets.JobMaterialItem.Status.Inactive
+                              )
+                          ),
+                          "No materials items were found for this job",
+                          CountRows(
+                              Filter(
+                                  colCdsJobMaterialItems,
+                                  appJobIDText = gblRecordJobCurrent.appJobIDText,
+                                  IsBlank(Quantity) Or IsBlank(Color),
+                                  Status <> gblOptionSets.JobMaterialItem.Status.Inactive
+                              )
+                          ) > 0,
+                          Text(
+                              CountRows(
+                                  Filter(
+                                      colCdsJobMaterialItems,
+                                      appJobIDText = gblRecordJobCurrent.appJobIDText,
+                                      IsBlank(Quantity) Or IsBlank(Color),
+                                      Status <> gblOptionSets.JobMaterialItem.Status.Inactive
+                                  )
+                              ),
+                              "[$-en-US]0"
+                          ) & " materials item(s) are missing quantity or color information",
+                          "Completed"
+                      ),
+                      Success: With(
+                          {
+                              tblJobMaterialItems: Filter(
+                                  colCdsJobMaterialItems,
+                                  appJobIDText = gblRecordJobCurrent.appJobIDText,
+                                  Status <> gblOptionSets.JobMaterialItem.Status.Inactive
+                              )
+                          },
+                          !IsEmpty(tblJobMaterialItems) And IsEmpty(
+                              Filter(
+                                  tblJobMaterialItems,
+                                  IsBlank(Quantity) Or IsBlank(Color),
+                                  Status <> gblOptionSets.JobMaterialItem.Status.Inactive
+                              )
+                          )
+                      )
+                  },
+                  {
+                      Item: "Elevation Photos",
+                      Message: With(
+                          {
+                              tblJobPhotos: Filter(
+                                  colCdsJobPhotos,
+                                  colCdsJobPhotos[@Job].Job = gblRecordJobCurrent.Job,
+                                  Status <> gblOptionSets.JobPhoto.Status.Inactive
+                              )
+                          },
+                          If(
+                              IsBlank(
+                                  LookUp(
+                                      tblJobPhotos,
+                                      Type = gblOptionSets.Global.PhotoType.ElevationFront
+                                      And Status <> gblOptionSets.JobPhoto.Status.Inactive
+                                  )
+                              ) Or IsBlank(
+                                  LookUp(
+                                      tblJobPhotos,
+                                      Type = gblOptionSets.Global.PhotoType.ElevationSide
+                                      And Status <> gblOptionSets.JobPhoto.Status.Inactive
+                                  )
+                              ) Or IsBlank(
+                                  LookUp(
+                                      tblJobPhotos,
+                                      Type = gblOptionSets.Global.PhotoType.ElevationRear
+                                      And Status <> gblOptionSets.JobPhoto.Status.Inactive
+                                  )
+                              ),
+                              With(
+                                  {
+                                      varMessagePhoto: "Missing elevation photos: " & If(
+                                          IsBlank(
+                                              LookUp(
+                                                  tblJobPhotos,
+                                                  Type = gblOptionSets.Global.PhotoType.ElevationFront
+                                      And Status <> gblOptionSets.JobPhoto.Status.Inactive
+                                              )
+                                          ),
+                                          "front, "
+                                      ) & If(
+                                          IsBlank(
+                                              LookUp(
+                                                  tblJobPhotos,
+                                                  Type = gblOptionSets.Global.PhotoType.ElevationSide
+                                      And Status <> gblOptionSets.JobPhoto.Status.Inactive
+                                              )
+                                          ),
+                                          "side, "
+                                      ) & If(
+                                          IsBlank(
+                                              LookUp(
+                                                  tblJobPhotos,
+                                                  Type = gblOptionSets.Global.PhotoType.ElevationRear
+                                                  And Status <> gblOptionSets.JobPhoto.Status.Inactive
+                                              )
+                                          ),
+                                          "rear, "
+                                      )
+                                  },
+                                  Left(
+                                      varMessagePhoto,
+                                      Len(varMessagePhoto) - 2
+                                  )
+                              ),
+                              "Completed"
+                          )
+                      ),
+                      Success: With(
+                          {
+                              tblJobPhotos: Filter(
+                                  colCdsJobPhotos,
+                                  colCdsJobPhotos[@Job].Job = gblRecordJobCurrent.Job,
+                                  Status <> gblOptionSets.JobPhoto.Status.Inactive
+                              )
+                          },
+                          !IsBlank(
+                              LookUp(
+                                  tblJobPhotos,
+                                  Type = gblOptionSets.Global.PhotoType.ElevationFront
+                                  And Status <> gblOptionSets.JobPhoto.Status.Inactive
+                              )
+                          ) And !IsBlank(
+                              LookUp(
+                                  tblJobPhotos,
+                                  Type = gblOptionSets.Global.PhotoType.ElevationSide
+                                  And Status <> gblOptionSets.JobPhoto.Status.Inactive
+                              )
+                          ) And !IsBlank(
+                              LookUp(
+                                  tblJobPhotos,
+                                  Type = gblOptionSets.Global.PhotoType.ElevationRear
+                                  And Status <> gblOptionSets.JobPhoto.Status.Inactive
+                              )
+                          )
+                      )
+                  },
+                  {
+                      Item: "Documents",
+                      Message: With(
+                          {
+                              varJobDocsNotCompleted: CountRows(
+                                  Filter(
+                                      colCdsJobDocuments,
+                                      appJobIdText = gblRecordJobCurrent.appJobIDText,
+                                      Completed = gblOptionSets.JobDocument.Completed.No
+                                  )
+                              )
+                          },
+                          If(
+                              varJobDocsNotCompleted > 0,
+                              varJobDocsNotCompleted & " required document(s) have not been signed for this job",
+                              "Completed"
+                          )
+                      ),
+                      Success: With(
+                          {
+                              varJobDocsNotCompleted: CountRows(
+                                  Filter(
+                                      colCdsJobDocuments,
+                                      appJobIdText = gblRecordJobCurrent.appJobIDText,
+                                      Completed = gblOptionSets.JobDocument.Completed.No
+                                  )
+                              )
+                          },
+                          varJobDocsNotCompleted = 0
+                      )
+                  },
+                  {
+                      Item: "Overview",
+                      Message: With({varCountNotes: CountRows(Filter([!IsBlank(gblRecordJobCurrent.'Overview: Style Of Home'),!IsBlank(gblRecordJobCurrent.'Overview: Construction'),!IsBlank(gblRecordJobCurrent.'Overview: Exterior Covering'),!IsBlank(gblRecordJobCurrent.'Overview: Exterior Capping'),!IsBlank(gblRecordJobCurrent.'Overview: Existing Windows'),!IsBlank(gblRecordJobCurrent.'Overview: Special Equipment Needed'),!IsBlank(gblRecordJobCurrent.'Overview: Special Conditions'),!IsBlank(gblRecordJobCurrent.'Overview: Notes')], !Value))}, If(varCountNotes>0, varCountNotes&" note(s) have not been filled in", "Completed")),
+                      Success: !IsBlank(gblRecordJobCurrent.'Overview: Style Of Home') And !IsBlank(gblRecordJobCurrent.'Overview: Construction') And !IsBlank(gblRecordJobCurrent.'Overview: Exterior Covering') And !IsBlank(gblRecordJobCurrent.'Overview: Exterior Capping') And !IsBlank(gblRecordJobCurrent.'Overview: Existing Windows') And !IsBlank(gblRecordJobCurrent.'Overview: Special Equipment Needed') And !IsBlank(gblRecordJobCurrent.'Overview: Special Conditions') And !IsBlank(gblRecordJobCurrent.'Overview: Notes')
+                  }
+              )
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: =
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplateFill: =Color.Transparent//If(txt_Homeowner_Dealer_1.Text=ThisItem.Value, gblAppStyles.Status.Neutral, gblAppStyles.Rolodex.Fill)
+            TemplateSize: =64
+            Visible: =!IsEmpty(gal_FinalSteps.AllItems)
+            Width: =944
+            X: =80
+            Y: =210
+          Children:
+            - btn_Labor_Items__Quantity_1:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =Color.Transparent
+                  BorderThickness: =0
+                  Color: =gblAppStyles.Text.Color
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =DisplayMode.View
+                  Fill: =gblAppColors.Primary.White
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: =ThisItem.Item
+                  Width: =180
+                  X: =106
+                  Y: =7
+            - btn_Labor_Items__Description_1:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =Color.Transparent
+                  BorderStyle: =BorderStyle.None
+                  BorderThickness: =0
+                  Color: =gblAppStyles.Text.Color
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =DisplayMode.View
+                  Fill: =Color.White
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: =ThisItem.Message
+                  Width: =584
+                  X: =301
+                  Y: =7
+            - btn_FinalSteps_Status_5:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =gblAppStyles.ActionsMenu.QuantityBorderThickness
+                  Color: =Color.White//If(ThisItem.Completed, gblAppColors.Secondary.White,gblAppStyles.ActionsMenu.Color)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisabledFill: =gblAppStyles.Status.Success
+                  Fill: =If(ThisItem.Success, gblAppStyles.Status.Success, gblAppStyles.Status.Warning)
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =gblAppStyles.ActionsMenu.QuantityFontWeight
+                  Height: =36
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =180
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =8
+                  Text: =Blank()//ThisItem.Quantity
+                  Width: =36
+                  X: =42
+                  Y: =14
+            - img_FinalSteps_Status_5:
+                Control: Image@2.2.3
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Height: =34
+                  Image: ='icons8-checkmark'
+                  Visible: =ThisItem.Success
+                  Width: =36
+                  X: =btn_FinalSteps_Status_5.X
+                  Y: =16
+            - Label1:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(255, 255, 255, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =36
+                  OnSelect: =Select(Parent)
+                  Size: =20
+                  Text: ="!"
+                  Visible: =!ThisItem.Success
+                  Width: =36
+                  X: =42
+                  Y: =14
+            - Icon2_1:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Status.Neutral
+                  FocusedBorderColor: =Color.Transparent
+                  Height: =23
+                  Icon: =Icon.ChevronRight
+                  OnSelect: |-
+                    =Switch(
+                        ThisItem.Item,
+                        "Rooms",
+                        Navigate(
+                            'Rooms Screen',
+                            BorderStyle.None
+                        ),
+                        "Labor",
+                        Navigate(
+                            'Labor Screen',
+                            BorderStyle.None
+                        ),
+                        "Materials",
+                        Navigate(
+                            'Materials Screen',
+                            BorderStyle.None
+                        ),
+                        "Documents",
+                        Navigate(
+                            'Documents Screen',
+                            BorderStyle.None
+                        ),
+                        "Overview",
+                        Navigate(
+                            'Overview Screen',
+                            BorderStyle.None
+                        ),
+                        "Elevation Photos",
+                        With(
+                            {
+                                varElevationCount: CountRows(
+                                    Filter(
+                                        colCdsJobPhotos,
+                                        colCdsJobPhotos[@Job].Job = gblRecordJobCurrent.Job,
+                                        Type in [
+                                            gblOptionSets.Global.PhotoType.ElevationFront,
+                                            gblOptionSets.Global.PhotoType.ElevationRear,
+                                            gblOptionSets.Global.PhotoType.ElevationSide
+                                        ]
+                                    )
+                                )
+                            },
+                            Navigate(
+                                'Photos Screen',
+                                ScreenTransition.None,
+                                {
+                                    locModeElevation: true,
+                                    locModeDefault: false,
+                                    locModeWindow: false,
+                                    locShowTypes: varElevationCount = 0,
+                                    locShowPhotos: varElevationCount > 0,
+                                    locAddPhotoLabel: "",
+                                    locReturnScreen: 'Final Steps Screen'
+                                }
+                            )
+                        )
+                    )
+                  TabIndex: =0
+                  Visible: =!ThisItem.Success
+                  Width: =23
+                  X: =845
+                  Y: =21
+      - lbl_FinalSteps_Items__Header:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            OnSelect: =
+            Text: ="        Status                   Items                       Message"
+            Width: =944
+            X: =80
+            Y: =170
+      - ico_FinalSteps_Title:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppStyles.Status.Disabled
+            Height: =60
+            Icon: =Icon.Cars
+            Width: =49
+            X: =123*1
+            Y: =90
+      - con_FinalSteps_Confirm:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =768
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locShowConfirmFinishJob
+            Width: =1024
+          Children:
+            - lbl_FinalSteps_Confirmation__Clickshield:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Fill: =RGBA(0, 0, 0, 0.5)
+                  Font: =Font.'Open Sans'
+                  Height: =768
+                  OnSelect: =
+                  Text: =""
+                  Width: =1024
+            - btn_FinalSteps_Confirm__Base:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =Blank()
+                  EnableSpellCheck: =true
+                  Font: =gblAppStyles.Text.Font
+                  Height: =If(locLeadTestPerformed, 550, 300)
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  MaxLength: =2000
+                  Mode: =TextMode.MultiLine
+                  PaddingLeft: =20
+                  PaddingTop: =16
+                  Width: =650
+                  X: =190
+                  Y: =(Parent.Height - Self.Height) / 2
+            - btn_FinalSteps_Confirm__Body:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =146
+                  LineHeight: =1.5
+                  PaddingLeft: =30
+                  PaddingRight: =30
+                  PaddingTop: =30
+                  Size: =gblAppStyles.Text.SubtitleSize
+                  Text: ="Finishing the job will change its status to completed and upload measurements information.  Are you sure you want to proceed?"
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =btn_FinalSteps_Confirm__Base.Width
+                  X: =btn_FinalSteps_Confirm__Title.X
+                  Y: =btn_FinalSteps_Confirm__Title.Y+btn_FinalSteps_Confirm__Title.Height
+            - btn_FinalSteps_Confirm__OK:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =If(locBlockUserInput,DisplayMode.View, DisplayMode.Edit)
+                  Fill: =gblAppStyles.Status.Success
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =ColorFade(Self.Fill, -10%)
+                  OnSelect: |-
+                    =// Block user input
+                    UpdateContext({locBlockUserInput: true});
+                    // Go to save screen and save only the current job
+                    Set(
+                        gblRecordJobCurrent,
+                        Patch(
+                            colCdsJobs,
+                            LookUp(
+                                colCdsJobs,
+                                appJobIDText = gblRecordJobCurrent.appJobIDText
+                            ),
+                            {
+                                Completed: gblOptionSets.Job.CompletedJob.Yes,
+                                'Job Finished: Send Email?': gblOptionSets.Job.JobFinishedSendEmail.Yes,
+                                'Job Package: Send Documents?': gblOptionSets.Job.JobPackageSendDocuments.Yes,
+                                'Lead Test: Send Document?': If(
+                                    tog_FinalSteps_SendEmail.Value,
+                                    gblOptionSets.Job.LeadTestSendDocuments.Yes,
+                                    gblOptionSets.Job.LeadTestSendDocuments.No
+                                )
+                            }
+                        )
+                    );
+                    With(
+                        {
+                            varType: "colCdsJobs",
+                            varRecordRef: gblRecordJobCurrent.Job
+                        },
+                        If(
+                            IsBlank(
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                )
+                            ),
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "U"
+                                }
+                            )
+                        )
+                    );
+                    Set(gblTextClickedSaveScreen, "Jobs Screen");
+                    Navigate(
+                        'Saving Screen',
+                        ScreenTransition.Fade,
+                        {
+                            locSaveText: "Saving job to Vesta Data"
+                        }
+                    );
+                    UpdateContext({locBlockUserInput: false});
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =ColorFade(Self.Fill,-30%)
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Size: =20
+                  Text: ="OK"
+                  Width: =164
+                  X: =btn_FinalSteps_Confirm__Base.X+btn_FinalSteps_Confirm__Base.Width-Self.Width-30
+                  Y: =btn_FinalSteps_Confirm__Base.Y+btn_FinalSteps_Confirm__Base.Height-Self.Height-30
+            - btn_FinalSteps_Confirm__Cancel:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =gblAppColors.Secondary.Black
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =If(locBlockUserInput,DisplayMode.View, DisplayMode.Edit)
+                  Fill: =gblAppColors.Secondary.White
+                  FocusedBorderThickness: =Self.BorderThickness
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =ColorFade(Self.Fill, -10%)
+                  OnSelect: |
+                    =UpdateContext({locShowConfirmFinishJob: false});
+                  PressedBorderColor: =Self.BorderColor
+                  PressedColor: =Self.Fill
+                  PressedFill: =ColorFade(Self.Fill,-30%)
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Size: =20
+                  Text: ="Cancel"
+                  Width: =164
+                  X: =btn_FinalSteps_Confirm__Base.X+btn_FinalSteps_Confirm__Base.Width-btn_FinalSteps_Confirm__OK.Width-Self.Width-15*2-15
+                  Y: =btn_FinalSteps_Confirm__Base.Y+btn_FinalSteps_Confirm__Base.Height-Self.Height-30
+            - btn_FinalSteps_Confirm__Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =65
+                  PaddingLeft: =30
+                  PaddingTop: =30
+                  Size: =gblAppStyles.Text.TitleSize
+                  Text: ="Confirm Finished Job"
+                  Width: =btn_FinalSteps_Confirm__Base.Width
+                  X: =btn_FinalSteps_Confirm__Base.X
+                  Y: =btn_FinalSteps_Confirm__Base.Y
+            - lbl_FinalSteps_Title_1:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =60
+                  PaddingLeft: =30
+                  Size: =14
+                  Text: ="Send lead test document?"
+                  Visible: =locLeadTestPerformed
+                  Width: =467
+                  X: =btn_FinalSteps_Confirm__Base.X
+                  Y: =385
+            - tog_FinalSteps_SendEmail:
+                Control: Classic/Toggle@2.1.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =Color.Transparent
+                  Color: =Color.Transparent
+                  Default: |-
+                    =locLeadTestPerformed And (gblRecordJobCurrent.'Lead Test: Send Document?'=gblOptionSets.Job.LeadTestSendDocuments.Yes Or IsBlank(gblRecordJobCurrent.'Lead Test: Last Sent Date'))
+                  FalseText: ="a"
+                  FocusedBorderColor: =Color.Transparent
+                  Font: =Font.'Segoe UI'
+                  Height: =40
+                  HoverBorderColor: =Color.Transparent
+                  OnChange: =
+                  OnCheck: |-
+                    =Set(gblRecordJobCurrent,Patch(colCdsJobs, LookUp(colCdsJobs, appJobIDText=gblRecordJobCurrent.appJobIDText), {'Lead Test: Send Document?': 'Lead Test: Send Document? (Jobs)'.Yes}));
+                  OnUncheck: |-
+                    =Set(gblRecordJobCurrent,Patch(colCdsJobs, LookUp(colCdsJobs, appJobIDText=gblRecordJobCurrent.appJobIDText), {'Lead Test: Send Document?': 'Lead Test: Send Document? (Jobs)'.No}));
+                  PressedBorderColor: =Self.BorderColor
+                  TrueFill: =gblAppStyles.Status.Success
+                  TrueText: ="a"
+                  Visible: =locLeadTestPerformed
+                  Width: =109
+                  X: =735
+                  Y: =395
+            - lbl_FinalSteps_Title_2:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =60
+                  PaddingLeft: =30
+                  Size: =14
+                  Text: ="Owner's email"
+                  Visible: =locLeadTestPerformed
+                  Width: =467
+                  X: =190
+                  Y: =457
+            - txt_JobDetails_CoilColor_1:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =gblRecordJobCurrent.'Email (1)'
+                  DisplayMode: =If(tog_FinalSteps_SendEmail.Value,  DisplayMode.Edit, DisplayMode.Disabled)
+                  Fill: =gblAppColors.Secondary.GrayLight
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnChange: |-
+                    =Set(gblRecordJobCurrent, Patch(colCdsJobs, LookUp(colCdsJobs, appJobIDText=gblRecordJobCurrent.appJobIDText), {'Email (1)': Self.Text}))
+                  OnSelect: =
+                  PaddingLeft: =20
+                  Visible: =locLeadTestPerformed
+                  Width: =300
+                  X: =510
+                  Y: =462
+            - lbl_FinalSteps_Title_3:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Semibold
+                  Height: =60
+                  PaddingLeft: =30
+                  Size: =14
+                  Text: ="Email Options"
+                  Visible: =locLeadTestPerformed
+                  Width: =650
+                  X: =190
+                  Y: =320
+      - lbl_FinalSteps_BlockUserInput:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Height: =768
+            Text: =""
+            Visible: =locBlockUserInput And gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+            Width: =1024

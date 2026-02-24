@@ -1,0 +1,1083 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Windows Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |-
+        =UpdateContext(
+            {
+                locClickedWindowActionsMenu: false,
+                locShowWindowActionsMenu: false
+            }
+        );
+      OnVisible: |-
+        =ClearCollect(
+            colNotCompletedWindows,
+            Filter(
+                colCdsWindowMeasurements,
+                'Job Entry'.'Job Entry'=gblRecordJobEntryCurrent_.'Job Entry',
+                !Completed,
+                Type = gblOptionSets.WindowMeasurement.Type.Tech,
+                Status <> gblOptionSets.WindowMeasurement.Status.Inactive
+            )
+        );
+    Children:
+      - gal_Windows_Attributes:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Group: grp_Windows_Main
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            DelayItemLoading: =false
+            Height: =592
+            Items: |-
+              =Sort(
+                  Filter(
+                      colCdsJobEntrySelections,
+                      'Job Entry'.'Job Entry' = gblRecordJobEntryCurrent_.'Job Entry'
+                  ),
+                  'Job Entry Option (Attribute)'.Name,
+                  SortOrder.Ascending
+              )
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: |
+              =Set(
+                  gblRecordJobEntryOption_Hierarchy,
+                  If(
+                      IsBlank(ThisItem.'Job Entry Option (Value)'),
+                      ThisItem.'Job Entry Option (Attribute)',
+                      ThisItem.'Job Entry Option (Value)'
+                  )
+              );
+              Set(
+                  gblRecordJobEntrySelection,
+                  ThisItem
+              );
+              Navigate(
+                  'Options Screen',
+                  ScreenTransition.None,
+                  {locShowSaveButton: false}
+              );
+            TabIndex: =0
+            TemplatePadding: =0
+            TemplateSize: =180
+            Visible: =CountRows(gal_Windows_Select.AllItems)>0
+            Width: =636
+            WrapCount: =3
+            X: =370
+            Y: =176
+          Children:
+            - lbl_Windows_Attributes__Card:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: |-
+                    =If(
+                        // has tech data
+                        !IsBlank(ThisItem.'Job Entry Option (Value)'),
+                        gblAppStyles.Status.Neutral,
+
+                        // has no tech data or sales data
+                        IsBlank(ThisItem.'Job Entry Option (Value)') And IsBlank(ThisItem.'Job Entry Option (Value) (Sales)'),
+                        gblAppStyles.Status.Warning,
+
+                        gblAppStyles.Card.BorderColor
+                    )
+                  BorderThickness: |-
+                    =If(
+                        // has tech data
+                        !IsBlank(ThisItem.'Job Entry Option (Value)'),
+                        3,
+
+                        // has no tech data or sales data
+                        IsBlank(ThisItem.'Job Entry Option (Value)') And IsBlank(ThisItem.'Job Entry Option (Value) (Sales)'),
+                        3,
+
+                        1
+                    )
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =gblAppStyles.Card.Fill
+                  FocusedBorderThickness: =1
+                  Font: =Font.'Open Sans'
+                  Height: =Parent.TemplateHeight-(gblAppStyles.Card.MarginLeft*2)
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =Select(Parent)
+                  PaddingRight: =3.75
+                  PaddingTop: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =11.24
+                  Text: =
+                  Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                  X: =(Parent.TemplateWidth-Self.Width)/2
+                  Y: =(Parent.TemplateHeight-Self.Height)/2
+            - lbl_Windows_Attributes__Title:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Card.TitleColor
+                  Fill: =Color.Transparent
+                  Font: =gblAppStyles.Text.TitleFont
+                  Height: =41
+                  OnSelect: =Select(Parent)
+                  Size: =gblAppStyles.Card.TitleSize
+                  Text: =ThisItem.'Job Entry Option (Attribute)'.Name
+                  Width: =186
+                  X: =15
+                  Y: =41
+            - lbl_Windows_Attributes__Subtitle:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Card.SubtitleColor
+                  Fill: =Color.Transparent
+                  Font: =Font.'Segoe UI'
+                  Height: =83
+                  Italic: "=IsBlank(ThisItem.'Job Entry Option (Value)') And IsBlank(ThisItem.'Job Entry Option (Value) (Sales)')\r\n   "
+                  LineHeight: =1.5
+                  OnSelect: =Select(Parent)
+                  PaddingLeft: =15
+                  PaddingRight: =15
+                  PaddingTop: =0
+                  Size: =If(Len(Self.Text)>40,gblAppStyles.Card.SubtitleSize-2, gblAppStyles.Card.SubtitleSize)
+                  Text: |-
+                    =Coalesce(
+                        Coalesce(
+                            ThisItem.'Job Entry Option (Value)'.Value,
+                            ThisItem.'Job Entry Option (Value)'.Name
+                        ),
+                        Coalesce(
+                            ThisItem.'Job Entry Option (Value) (Sales)'.Value,
+                            ThisItem.'Job Entry Option (Value) (Sales)'.Name
+                        ),
+                        "Select Option"
+                    )
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =186
+                  X: =15
+                  Y: =82
+            - lbl_Window_Overlay:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =gblAppColors.Secondary.GrayMedium
+                  BorderStyle: =BorderStyle.None
+                  BorderThickness: =1
+                  Color: =
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =If(gblRecordJobCurrent.Completed='Completed (Jobs)'.No,DisplayMode.Edit,DisplayMode.View)
+                  Fill: =Color.Transparent
+                  FocusedBorderThickness: =1
+                  Font: =Font.'Open Sans'
+                  Height: =Parent.TemplateHeight-(gblAppStyles.Card.MarginLeft*2)
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =gblAppStyles.Card.HoverFill
+                  OnSelect: =Select(Parent)
+                  PaddingRight: =3.75
+                  PaddingTop: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =gblAppStyles.Card.PressedFill
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =11.24
+                  Text: =
+                  Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                  X: =(Parent.TemplateWidth-Self.Width)/2*1
+                  Y: =(Parent.TemplateHeight-Self.Height)/2*1
+      - ico_Windows_Select__Base:
+          Control: Label@2.5.1
+          Group: grp_Windows_Select
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =gal_Windows_Select.Fill
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Open Sans'
+            Height: =App.Height-gal_Windows_Select.Y
+            TabIndex: =0
+            Text: =
+            Width: =gal_Windows_Select.Width
+            X: =cmp_Windows_Sidebar.Width
+            Y: =gal_Windows_Select.Y
+      - gal_Windows_Select:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Group: grp_Windows_Select
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            Default: =LookUp(colProjectSidebar, ID=gblProjectSidebarItemCurrent.ID) //TODO gblRecordJobEntryCurrent_
+            DelayItemLoading: =false
+            Fill: =gblAppStyles.ActionsMenu.Fill
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Height: =lbl_Windows_Select__AddWindows.Y-Self.Y
+            Items: =colProjectSidebar
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: |-
+              =If(
+                  And(
+                      locClickedWindowActionsMenu,
+                      locShowWindowActionsMenu,
+                      gblProjectSidebarItemCurrent.ID = ThisItem.ID
+                  ),
+                  UpdateContext({locShowWindowActionsMenu: false}),
+                  And(
+                      locClickedWindowActionsMenu,
+                      !locShowWindowActionsMenu
+                  ),
+                  UpdateContext({locShowWindowActionsMenu: true})
+              );
+              UpdateContext({locClickedWindowActionsMenu: false});
+              Set(
+                  gblProjectSidebarItemCurrent,
+                  ThisItem
+              );
+              If(
+                  And(
+                      ThisItem.Category = "Job Entry",
+                      !(App.ActiveScreen.Name="Windows Screen")
+                  ),
+                  Navigate(
+                      'Windows Screen',
+                      ScreenTransition.None,
+                      {locShowWindowActionsMenu: locShowWindowActionsMenu}
+                  ),
+                  ThisItem.Category = "Window Measurement",
+                  Set(
+                      gblRecordWindowMeasurement_Tech,
+                      LookUp(
+                          colCdsWindowMeasurements,
+                          'Window Measurement' = ThisItem.ID
+                      )
+                  );
+                  // check if Job Completed status
+              If(
+                      gblRecordJobCurrent.Completed = gblOptionSets.Job.CompletedJob.No,
+                      Set(
+                          gblRecordWindowChoice,
+                          LookUp(
+                              colCdsWindowChoices,
+                              'Window Choice' = gblRecordJobEntryCurrent_.'Window Choice'.'Window Choice'
+                          )
+                      );
+                      Set(
+                          gblRecordWindowMeasurement_Sales,
+                          LookUp(
+                              colCdsWindowMeasurements,
+                              'Window Measurement' = gblRecordJobEntryCurrent_.'Measurement (Sales)'.'Window Measurement'
+                          )
+                      );
+                      Clear(colMeasureWidth);
+                      Clear(colMeasureHeight);
+                      Clear(colMeasureJambDepth);
+                      Clear(colMeasureMaxProjection);
+                      Clear(colMeasureSoffitDepth);
+                      Clear(colMeasureWallThickness);
+                      With(
+                          {
+                              varWidthMin: Value(gblRecordWindowChoice.'Min Width'),
+                              varWidthRange: Value(gblRecordWindowChoice.'Max Width') - Value(gblRecordWindowChoice.'Min Width'),
+                              varHeightMin: Value(gblRecordWindowChoice.'Min Height'),
+                              varHeightRange: Value(gblRecordWindowChoice.'Max Height') - Value(gblRecordWindowChoice.'Min Height'),
+                              varJambDepthMin: Value(gblRecordWindowChoice.'Min Jamb Depth'),
+                              varJambDepthRange: Value(gblRecordWindowChoice.'Max Jamb Depth') - Value(gblRecordWindowChoice.'Min Jamb Depth'),
+                              varMaxProjectionMin: Value(gblRecordWindowChoice.'Min Max Projection'),
+                              varMaxProjectionRange: Value(gblRecordWindowChoice.'Max Max Projection') - Value(gblRecordWindowChoice.'Min Max Projection'),
+                              varSoffitDepthMin: Value(gblRecordWindowChoice.'Min Soffit Depth'),
+                              varSoffitDepthRange: Value(gblRecordWindowChoice.'Max Soffit Depth') - Value(gblRecordWindowChoice.'Min Soffit Depth'),
+                              varWallThicknessMin: Value(gblRecordWindowChoice.'Min Wall Thickness'),
+                              varWallThicknessRange: Value(gblRecordWindowChoice.'Max Wall Thickness') - Value(gblRecordWindowChoice.'Min Wall Thickness')
+                          },
+                          Concurrent(
+                              ForAll(
+                                  Sequence(varWidthRange + 1),
+                                  Collect(
+                                      colMeasureWidth,
+                                      {tblValue: ThisRecord.Value + varWidthMin - 1}
+                                  )
+                              ),
+                              ForAll(
+                                  Sequence(varHeightRange + 1),
+                                  Collect(
+                                      colMeasureHeight,
+                                      {tblValue: ThisRecord.Value + varHeightMin - 1}
+                                  )
+                              ),
+                              ForAll(
+                                  Sequence(varJambDepthRange + 1),
+                                  Collect(
+                                      colMeasureJambDepth,
+                                      {tblValue: ThisRecord.Value + varJambDepthMin - 1}
+                                  )
+                              ),
+                              ForAll(
+                                  Sequence(varMaxProjectionRange + 1),
+                                  Collect(
+                                      colMeasureMaxProjection,
+                                      {tblValue: ThisRecord.Value + varMaxProjectionMin - 1}
+                                  )
+                              ),
+                              ForAll(
+                                  Sequence(varSoffitDepthRange + 1),
+                                  Collect(
+                                      colMeasureSoffitDepth,
+                                      {tblValue: ThisRecord.Value + varSoffitDepthMin - 1}
+                                  )
+                              ),
+                              ForAll(
+                                  Sequence(varWallThicknessRange + 1),
+                                  Collect(
+                                      colMeasureWallThickness,
+                                      {tblValue: ThisRecord.Value + varWallThicknessMin - 1}
+                                  )
+                              )
+                          )
+                      );
+                      Concurrent(
+                          Set(
+                              gblMeasurementWidthWhole,
+                              RoundDown(
+                                  If(
+                                      gblRecordWindowMeasurement_Tech.Width = 0,
+                                      gblRecordWindowMeasurement_Sales.Width,
+                                      gblRecordWindowMeasurement_Tech.Width
+                                  ),
+                                  0
+                              )
+                          ),
+                          Set(
+                              gblMeasurementHeightWhole,
+                              RoundDown(
+                                  If(
+                                      gblRecordWindowMeasurement_Tech.Height = 0,
+                                      gblRecordWindowMeasurement_Sales.Height,
+                                      gblRecordWindowMeasurement_Tech.Height
+                                  ),
+                                  0
+                              )
+                          ),
+                          Set(
+                              gblMeasurementJambDepthWhole,
+                              RoundDown(
+                                  gblRecordWindowMeasurement_Tech.'Jamb Depth',
+                                  0
+                              )
+                          ),
+                          Set(
+                              gblMeasurementMaxProjectionWhole,
+                              RoundDown(
+                                  gblRecordWindowMeasurement_Tech.'Max Projection',
+                                  0
+                              )
+                          ),
+                          Set(
+                              gblMeasurementSoffitDepthWhole,
+                              RoundDown(
+                                  gblRecordWindowMeasurement_Tech.'Soffit Depth',
+                                  0
+                              )
+                          ),
+                          Set(
+                              gblMeasurementWallThicknessWhole,
+                              RoundDown(
+                                  gblRecordWindowMeasurement_Tech.'Wall Thickness',
+                                  0
+                              )
+                          ),
+                          Set(
+                              gblMeasurementWidthFraction,
+                              With(
+                                  {
+                                      varWidth: If(
+                                          gblRecordWindowMeasurement_Tech.Width = 0,
+                                          gblRecordWindowMeasurement_Sales.Width,
+                                          gblRecordWindowMeasurement_Tech.Width
+                                      )
+                                  },
+                                  varWidth - RoundDown(
+                                      varWidth,
+                                      0
+                                  )
+                              )
+                          ),
+                          Set(
+                              gblMeasurementHeightFraction,
+                              With(
+                                  {
+                                      varHeight: If(
+                                          gblRecordWindowMeasurement_Tech.Height = 0,
+                                          gblRecordWindowMeasurement_Sales.Height,
+                                          gblRecordWindowMeasurement_Tech.Height
+                                      )
+                                  },
+                                  varHeight - RoundDown(
+                                      varHeight,
+                                      0
+                                  )
+                              )
+                          ),
+                          Set(
+                              gblMeasurementJambDepthFraction,
+                              gblRecordWindowMeasurement_Tech.'Jamb Depth' - RoundDown(
+                                  gblRecordWindowMeasurement_Tech.'Jamb Depth',
+                                  0
+                              )
+                          ),
+                          Set(
+                              gblMeasurementMaxProjectionFraction,
+                              gblRecordWindowMeasurement_Tech.'Max Projection' - RoundDown(
+                                  gblRecordWindowMeasurement_Tech.'Max Projection',
+                                  0
+                              )
+                          ),
+                          Set(
+                              gblMeasurementSoffitDepthFraction,
+                              gblRecordWindowMeasurement_Tech.'Soffit Depth' - RoundDown(
+                                  gblRecordWindowMeasurement_Tech.'Soffit Depth',
+                                  0
+                              )
+                          ),
+                          Set(
+                              gblMeasurementWallThicknessFraction,
+                              gblRecordWindowMeasurement_Tech.'Wall Thickness' - RoundDown(
+                                  gblRecordWindowMeasurement_Tech.'Wall Thickness',
+                                  0
+                              )
+                          )
+                      );
+                      Set(
+                          gblMeasurementMaxUI,
+                          gblRecordWindowChoice.'Max UI'
+                      );
+                  );
+                  // reset screen
+                  Reset(gal_Windows_Select);
+                  // next screen
+                  If(
+                      !Or(
+                          App.ActiveScreen.Name="Measure Window Screen",
+                          App.ActiveScreen.Name="Measurements Screen"
+                      ),
+                      If(
+                          gblRecordJobCurrent.Completed = gblOptionSets.Job.CompletedJob.No,
+                          Navigate(
+                              'Measure Window Screen',
+                              ScreenTransition.None,
+                              {locShowWindowActionsMenu: locShowWindowActionsMenu}
+                          ),
+                          Navigate(
+                              'Measurements Screen',
+                              ScreenTransition.None
+                          );
+                      )
+                  )
+              )
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplateFill: =If(gblProjectSidebarItemCurrent.ID=ThisItem.ID, ColorFade(gal_Windows_Select.Fill, -5%), Color.Transparent)
+            TemplatePadding: =0
+            TemplateSize: =72
+            Width: =250
+            X: =cmp_Windows_Sidebar.Width
+            Y: =cmp_Windows_Titlebar.Y+cmp_Windows_Titlebar.Height
+          Children:
+            - con_Windows_Select:
+                Control: GroupContainer@1.3.0
+                Variant: AutoLayout
+                Properties:
+                  BorderColor: =Color.DarkGray
+                  BorderStyle: =BorderStyle.None
+                  DropShadow: =DropShadow.None
+                  Height: =72
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.Center
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =250
+                Children:
+                  - lbl_Windows_Select__Title:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =22
+                        PaddingLeft: =66
+                        Size: =12
+                        Text: =ThisItem.Title
+                        Width: =Parent.Width
+                  - lbl_Windows_Select__Description:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =18
+                        PaddingLeft: =66
+                        Size: =9
+                        Text: =ThisItem.Description
+                        Visible: =!IsBlank(ThisItem.Description)
+                        Width: =Parent.Width
+                        Y: =22
+                  - lbl_Windows_Select__Lead:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =18
+                        PaddingLeft: =66
+                        Size: =9
+                        Text: |-
+                          =With(
+                              {
+                                  varRecordWindowMeasurement: If(
+                                      ThisItem.Category="Window Measurement",
+                                      LookUp(
+                                          colCdsWindowMeasurements,
+                                          'Window Measurement'=ThisItem.ID
+                                      ),
+                                      Blank()
+                                  )
+                              },
+                              If(
+                                  !IsBlank(varRecordWindowMeasurement.'Window Mull'.'Sequence Number'),
+                                  "Mull " & varRecordWindowMeasurement.'Window Mull'.'Sequence Number'
+                              )
+                              &
+                              If(
+                                  !IsBlank(varRecordWindowMeasurement.'Window Mull'.'Sequence Number')
+                                  And !IsBlank(varRecordWindowMeasurement.'Lead Test: Exterior Result'),
+                                  ", "
+                              )
+                              &
+                              If(
+                                  varRecordWindowMeasurement.'Lead Test: Exterior Result'=gblOptionSets.JobEntry.LeadTestResult.Yes
+                                  Or varRecordWindowMeasurement.'Lead Test: Interior Result'=gblOptionSets.JobEntry.LeadTestResult.Yes,
+                                  "Contains Lead",
+                                  varRecordWindowMeasurement.'Lead Test: Exterior Result'=gblOptionSets.JobEntry.LeadTestResult.No
+                                  Or varRecordWindowMeasurement.'Lead Test: Interior Result'=gblOptionSets.JobEntry.LeadTestResult.No,
+                                  "No Lead",
+                                  Blank()
+                              )
+                          )
+                        Visible: |-
+                          =With(
+                              {
+                                  varRecordWindowMeasurement: If(
+                                      ThisItem.Category="Window Measurement",
+                                      LookUp(
+                                          colCdsWindowMeasurements,
+                                          'Window Measurement'=ThisItem.ID
+                                      ),
+                                      Blank()
+                                  )
+                              },
+                              Or(
+                                  !IsBlank(varRecordWindowMeasurement.'Window Mull'.'Sequence Number'),
+                                  !IsBlank(varRecordWindowMeasurement.'Lead Test: Exterior Result')
+                              )
+                          )
+                        Width: =Parent.Width
+                        Y: =39
+            - ico_Windows_Select__Image:
+                Control: Image@2.2.3
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Height: =64
+                  Image: |-
+                    =ThisItem.Image
+                    /*
+                    LookUp(
+                        colCdsWindowStyles,
+                        LookUp(
+                            colCdsWindowChoices,
+                            colCdsWindowChoices[@'Window Choice'] = ThisItem.'Window Choice'.'Window Choice',
+                            Style
+                        ).'Window Style' = colCdsWindowStyles[@'Window Style']
+                    ).Thumbnail.Value
+                    */
+                  PaddingBottom: =If(ThisItem.Type="Window Choice", 6, 15)
+                  PaddingLeft: =If(ThisItem.Type="Window Choice", 6, 15)
+                  PaddingRight: =If(ThisItem.Type="Window Choice", 6, 15)
+                  PaddingTop: =If(ThisItem.Type="Window Choice", 6, 15)
+                  Width: =64
+                  X: =0*1
+                  Y: =(Parent.TemplateHeight-Self.Height)/2
+            - btn_Windows_Select__Status:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =gblAppStyles.ActionsMenu.QuantityBorderThickness
+                  Color: =Color.White//If(ThisItem.Completed, gblAppColors.Secondary.White,gblAppStyles.ActionsMenu.Color)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisabledFill: =gblAppStyles.Status.Success
+                  Fill: =gblAppStyles.Status.Success
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =gblAppStyles.ActionsMenu.QuantityFontWeight
+                  Height: =17
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =Select(Parent)
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =180
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =8
+                  Text: =Blank()//ThisItem.Quantity
+                  Visible: |-
+                    =And(
+                        ThisItem.Category="Window Measurement",
+                        LookUp(
+                            colCdsWindowMeasurements,
+                            'Window Measurement'=ThisItem.ID,
+                            Completed
+                        ) = gblOptionSets.WindowMeasurement.Completed.Yes
+                    )
+                  Width: =17
+                  X: =35
+                  Y: =gblAppStyles.ActionsMenu.QuantityY*1+3
+            - img_Windows_Select__Status:
+                Control: Image@2.2.3
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Height: =14
+                  Image: ='icons8-checkmark'
+                  Visible: |-
+                    =And(
+                        ThisItem.Category="Window Measurement",
+                        LookUp(
+                            colCdsWindowMeasurements,
+                            'Window Measurement'=ThisItem.ID,
+                            Completed
+                        ) = gblOptionSets.WindowMeasurement.Completed.Yes
+                    )
+                  Width: =18
+                  X: =35
+                  Y: =45*1
+            - btn_Windows_Select__Overlay:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =Color.Transparent
+                  DisabledColor: =Color.Transparent
+                  DisabledFill: =Color.Transparent
+                  Fill: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =72
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Color.Transparent
+                  HoverFill: =Color.Transparent
+                  OnSelect: |-
+                    =UpdateContext({locShowWindowActionsMenu: false});
+                    Select(Parent);
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.Transparent
+                  PressedFill: =Color.Transparent
+                  Text: =""
+                  Width: =250
+            - ico_Windows_Select__Dots:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppColors.Primary.Blue
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0
+                  Height: =44
+                  Icon: =Icon.More
+                  OnSelect: |-
+                    =UpdateContext({locClickedWindowActionsMenu: true});
+                    Select(Parent);
+                  PaddingBottom: =8
+                  PaddingTop: =8
+                  Rotation: =90
+                  TabIndex: =0
+                  Visible: '=gblRecordJobCurrent.Completed = gblOptionSets.Job.CompletedJob.No '
+                  Width: =32
+                  X: =Parent.Width - Self.Width
+                  Y: =(Parent.TemplateHeight-Self.Height)/2*1
+      - ico_Windows_Select__AddWindows:
+          Control: Classic/Icon@2.5.0
+          Group: grp_Windows_Select
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppColors.Primary.Blue
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Height: =28
+            Icon: =Icon.Add
+            OnSelect: =Blank()
+            TabIndex: =0
+            Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+            Width: =28
+            X: =lbl_Windows_Select__AddWindows.X+18
+            Y: =lbl_Windows_Select__AddWindows.Y+20
+      - lbl_Windows_Subtitle:
+          Control: Label@2.5.1
+          Group: grp_Windows_Main
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppColors.Secondary.GrayMediumDark
+            Font: =Font.'Segoe UI'
+            PaddingLeft: =10
+            Size: =14
+            Text: |-
+              =LookUp(
+                  colCdsWindowStyles,
+                  LookUp(
+                      colCdsWindowChoices,
+                      colCdsWindowChoices[@'Window Choice'] = gblRecordJobEntryCurrent_.'Window Choice'.'Window Choice',
+                      Style
+                  ).'Window Style' = colCdsWindowStyles[@'Window Style'],
+                  Name
+              ) & ", " & LookUp(
+                  colCdsWindowModels,
+                  LookUp(
+                      colCdsWindowChoices,
+                      colCdsWindowChoices[@'Window Choice'] = gblRecordJobEntryCurrent_.'Window Choice'.'Window Choice',
+                      Model
+                  ).'Window Model' = colCdsWindowModels[@'Window Model'],
+                  Name
+              )
+            Visible: =CountRows(gal_Windows_Select.AllItems)>0
+            Width: =638
+            X: =cmp_Windows_Sidebar.X+cmp_Windows_Sidebar.Width+gal_Windows_Select.Width+gblAppStyles.Padding.ButtonMargin
+            Y: =128
+      - lbl_Windows_Title:
+          Control: Label@2.5.1
+          Group: grp_Windows_Main
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            PaddingLeft: =10
+            Size: =20
+            Text: ="Window Options"
+            Visible: =CountRows(gal_Windows_Select.AllItems)>0
+            Width: =638
+            X: =cmp_Windows_Sidebar.X+cmp_Windows_Sidebar.Width+gal_Windows_Select.Width+gblAppStyles.Padding.ButtonMargin
+            Y: =cmp_Windows_Titlebar.Y+cmp_Windows_Titlebar.Height+30
+      - lbl_Windows_NoWindows:
+          Control: Label@2.5.1
+          Group: grp_Windows_NoWindows
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppColors.Secondary.GrayMediumDark
+            Font: =Font.'Segoe UI'
+            Size: =20
+            Text: |-
+              ="No windows were found for this room
+              "
+            Visible: |-
+              =IsBlank(
+                  LookUp(
+                      colCdsJobEntrySelections,
+                      'Job Entry'.'Job Entry' = gblRecordJobEntryCurrent_.'Job Entry'
+                  )
+              )
+            Width: =692
+            X: =332
+            Y: =537
+      - ico_Windows_NoWindows:
+          Control: Classic/Icon@2.5.0
+          Group: grp_Windows_NoWindows
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppStyles.Status.Disabled
+            DisplayMode: =DisplayMode.View
+            Height: =210
+            Icon: =Icon.Search
+            Visible: |-
+              =IsBlank(
+                  LookUp(
+                      colCdsJobEntrySelections,
+                      'Job Entry'.'Job Entry' = gblRecordJobEntryCurrent_.'Job Entry'
+                  )
+              )
+            Width: =210
+            X: =613
+            Y: =279
+      - lbl_Windows_Select__AddWindows:
+          Control: Label@2.5.1
+          Group: grp_Windows_Select
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            Fill: =Color.Transparent
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Segoe UI'
+            Height: =gal_Windows_Select.TemplateHeight
+            OnSelect: "=With(\n    {\n        varType: \"colCdsWindowMeasurements\",\n        varRecordRef: GUID()\n    },\n    // create new sales measurement\n    Set(\n        gblRecordWindowMeasurement_Tech,\n        Patch(\n            colCdsWindowMeasurements,\n            Defaults(colCdsWindowMeasurements),\n            {\n                Name: \"Tech 0\"\" x 0\"\"\",\n                'Exception?': gblOptionSets.WindowMeasurement.Exception.No,\n                Height: 0,\n                Job: gblRecordJobCurrent,\n                'Job Entry': gblRecordJobEntryCurrent_,\n                Type: gblOptionSets.WindowMeasurement.Type.Tech,\n                'United Inches (UI)': 0,\n                Width: 0,\n                'Window Measurement': varRecordRef\n            }\n        )\n    );\n    Collect(\n        colAUDRecords,\n        {\n            Type: varType,\n            RecordRef: varRecordRef,\n            Job: gblRecordJobCurrent.Job,\n            Operation: \"A\"\n        }\n    );\n    // set sales measurement to blank\n    Set(\n        gblRecordWindowMeasurement_Sales,\n        Blank()\n    )\n);\n// add window measurement to project sidebar\nCollect(\n    colProjectSidebar,\n    {\n        ID: gblRecordWindowMeasurement_Tech.'Window Measurement',\n        Title: $\"{RoundDown(gblRecordWindowMeasurement_Tech.Width, 0)} {Switch(\n            Mod(gblRecordWindowMeasurement_Tech.Width, 1),\n            0, \"\",\n            0.125, \"1/8\",\n            0.250, \"1/4\",\n            0.375, \"3/8\",\n            0.500, \"1/2\",\n            0.625, \"5/8\",\n            0.750, \"3/4\",\n            0.875, \"7/8\"\n        )}\"\" x {RoundDown(gblRecordWindowMeasurement_Tech.Height, 0)} {Switch(\n            Mod(gblRecordWindowMeasurement_Tech.Height, 1),\n            0, \"\",\n            0.125, \"1/8\",\n            0.250, \"1/4\",\n            0.375, \"3/8\",\n            0.500, \"1/2\",\n            0.625, \"5/8\",\n            0.750, \"3/4\",\n            0.875, \"7/8\"\n        )}\"\"\",\n        Category: \"Window Measurement\",\n        Description: \"Tech Measurement\",\n        Image: gblAppIcons.Ruler,\n        ImageDisabled: gblAppIcons.RulerDisabled,\n        Screen: 'Measure Window Screen'\n    }\n);\nSet(\n    gblProjectSidebarItemCurrent,\n    Last(colProjectSidebar)\n);\n// determine measurement ranges\nClear(colMeasureWidth);\nClear(colMeasureHeight);\nClear(colMeasureJambDepth);\nClear(colMeasureMaxProjection);\nClear(colMeasureSoffitDepth);\nClear(colMeasureWallThickness);\nWith(\n    {\n        varWidthMin: Value(gblRecordWindowChoice.'Min Width'),\n        varWidthRange: Value(gblRecordWindowChoice.'Max Width') - Value(gblRecordWindowChoice.'Min Width'),\n        varHeightMin: Value(gblRecordWindowChoice.'Min Height'),\n        varHeightRange: Value(gblRecordWindowChoice.'Max Height') - Value(gblRecordWindowChoice.'Min Height'),\n        varJambDepthMin: Value(gblRecordWindowChoice.'Min Jamb Depth'),\n        varJambDepthRange: Value(gblRecordWindowChoice.'Max Jamb Depth') - Value(gblRecordWindowChoice.'Min Jamb Depth'),\n        varMaxProjectionMin: Value(gblRecordWindowChoice.'Min Max Projection'),\n        varMaxProjectionRange: Value(gblRecordWindowChoice.'Max Max Projection') - Value(gblRecordWindowChoice.'Min Max Projection'),\n        varSoffitDepthMin: Value(gblRecordWindowChoice.'Min Soffit Depth'),\n        varSoffitDepthRange: Value(gblRecordWindowChoice.'Max Soffit Depth') - Value(gblRecordWindowChoice.'Min Soffit Depth'),\n        varWallThicknessMin: Value(gblRecordWindowChoice.'Min Wall Thickness'),\n        varWallThicknessRange: Value(gblRecordWindowChoice.'Max Wall Thickness') - Value(gblRecordWindowChoice.'Min Wall Thickness')\n    },\n    Concurrent(\n        ForAll(\n            Sequence(varWidthRange+1),\n            Collect(\n                colMeasureWidth,\n                {tblValue: ThisRecord.Value + varWidthMin - 1}\n            )\n        ),\n        ForAll(\n            Sequence(varHeightRange+1),\n            Collect(\n                colMeasureHeight,\n                {tblValue: ThisRecord.Value + varHeightMin - 1}\n            )\n        ),\n        ForAll(\n            Sequence(varJambDepthRange+1),\n            Collect(\n                colMeasureJambDepth,\n                {tblValue: ThisRecord.Value + varJambDepthMin - 1}\n            )\n        ),\n        ForAll(\n            Sequence(varMaxProjectionRange+1),\n            Collect(\n                colMeasureMaxProjection,\n                {tblValue: ThisRecord.Value + varMaxProjectionMin - 1}\n            )\n        ),\n        ForAll(\n            Sequence(varSoffitDepthRange+1),\n            Collect(\n                colMeasureSoffitDepth,\n                {tblValue: ThisRecord.Value + varSoffitDepthMin - 1}\n            )\n        ),\n        ForAll(\n            Sequence(varWallThicknessRange+1),\n            Collect(\n                colMeasureWallThickness,\n                {tblValue: ThisRecord.Value + varWallThicknessMin - 1}\n            )\n        )\n    )\n    \n);\nConcurrent(\n    Set(\n        gblMeasurementWidthWhole,\n        RoundDown(\n            If(\n                gblRecordWindowMeasurement_Tech.Width = 0,\n                gblRecordWindowMeasurement_Sales.Width,\n                gblRecordWindowMeasurement_Tech.Width\n            ),\n            0\n        )\n    ),\n    Set(\n        gblMeasurementHeightWhole,\n        RoundDown(\n            If(\n                gblRecordWindowMeasurement_Tech.Height = 0,\n                gblRecordWindowMeasurement_Sales.Height,\n                gblRecordWindowMeasurement_Tech.Height\n            ),\n            0\n        )\n    ),\n    Set(\n        gblMeasurementJambDepthWhole,\n        RoundDown(\n            gblRecordWindowMeasurement_Tech.'Jamb Depth',\n            0\n        )\n    ),\n    Set(\n        gblMeasurementMaxProjectionWhole,\n        RoundDown(\n            gblRecordWindowMeasurement_Tech.'Max Projection',\n            0\n        )\n    ),\n    Set(\n        gblMeasurementSoffitDepthWhole,\n        RoundDown(\n            gblRecordWindowMeasurement_Tech.'Soffit Depth',\n            0\n        )\n    ),\n    Set(\n        gblMeasurementWallThicknessWhole,\n        RoundDown(\n            gblRecordWindowMeasurement_Tech.'Wall Thickness',\n            0\n        )\n    ),\n    Set(\n        gblMeasurementWidthFraction,\n        With(\n            {\n                varWidth: If(\n                    gblRecordWindowMeasurement_Tech.Width = 0,\n                    gblRecordWindowMeasurement_Sales.Width,\n                    gblRecordWindowMeasurement_Tech.Width\n                )\n            },\n            varWidth - RoundDown(\n                varWidth,\n                0\n            )\n        )\n    ),\n    Set(\n        gblMeasurementHeightFraction,\n        With(\n            {\n                varHeight: If(\n                    gblRecordWindowMeasurement_Tech.Height = 0,\n                    gblRecordWindowMeasurement_Sales.Height,\n                    gblRecordWindowMeasurement_Tech.Height\n                )\n            },\n            varHeight - RoundDown(\n                varHeight,\n                0\n            )\n        )\n    ),\n    Set(\n        gblMeasurementJambDepthFraction,\n        gblRecordWindowMeasurement_Tech.'Jamb Depth' - RoundDown(\n            gblRecordWindowMeasurement_Tech.'Jamb Depth',\n            0\n        )\n    ),\n    Set(\n        gblMeasurementMaxProjectionFraction,\n        gblRecordWindowMeasurement_Tech.'Max Projection' - RoundDown(\n            gblRecordWindowMeasurement_Tech.'Max Projection',\n            0\n        )\n    ),\n    Set(\n        gblMeasurementSoffitDepthFraction,\n        gblRecordWindowMeasurement_Tech.'Soffit Depth' - RoundDown(\n            gblRecordWindowMeasurement_Tech.'Soffit Depth',\n            0\n        )\n    ),\n    Set(\n        gblMeasurementWallThicknessFraction,\n        gblRecordWindowMeasurement_Tech.'Wall Thickness' - RoundDown(\n            gblRecordWindowMeasurement_Tech.'Wall Thickness',\n            0\n        )\n    )\n);\nSet(\n    gblMeasurementMaxUI,\n    gblRecordWindowChoice.'Max UI'\n);\n// reset screen\nReset(gal_Windows_Select);\n// next screen\nNavigate(\n    'Measure Window Screen',\n    ScreenTransition.None,\n    {locShowWindowActionsMenu: locShowWindowActionsMenu}\n);\n// update not completed windows\nClearCollect(\n    colNotCompletedWindows,\n    Filter(\n        colCdsWindowMeasurements,\n        'Job Entry'.'Job Entry'=gblRecordJobEntryCurrent_.'Job Entry',\n        !Completed,\n        Type = gblOptionSets.WindowMeasurement.Type.Tech,\n        Status <> gblOptionSets.WindowMeasurement.Status.Inactive\n    )\n);"
+            PaddingLeft: =30+38
+            PaddingTop: =0
+            Size: =12
+            TabIndex: =0
+            Text: ="Add Measurement"
+            Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+            Width: =250
+            X: =cmp_Windows_Sidebar.Width
+            Y: =Min(cmp_Windows_Titlebar.X+cmp_Windows_Titlebar.Height+gal_Windows_Select.TemplateHeight*CountRows(gal_Windows_Select.AllItems),App.Height-Self.Height)
+      - ico_Windows_Notes:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: |-
+              =If(
+                  !IsBlank(
+                      LookUp(
+                          colCdsJobEntries,
+                          'Job Entry' = gblRecordJobEntryCurrent_.'Job Entry',
+                          Notes
+                      )
+                  ),
+                  gblAppStyles.Status.Info,
+                  gblAppStyles.Status.Neutral
+              )
+            FocusedBorderColor: =Color.Transparent
+            Height: =38
+            Icon: |-
+              =If(
+                  !IsBlank(
+                      LookUp(
+                          colCdsJobEntries,
+                          'Job Entry' = gblRecordJobEntryCurrent_.'Job Entry',
+                          Notes
+                      )
+                  ),
+                  Icon.Post,
+                  Icon.Note
+              )
+            OnSelect: |-
+              =Navigate(
+                  'Add Note Screen',
+                  ScreenTransition.None,
+                  {
+                      locRecordNoteCurrent: {
+                          TableName: "Job Entries",
+                          GUID: gblRecordJobEntryCurrent_.'Job Entry',
+                          BackScreen: App.ActiveScreen,
+                          Notes: gblRecordJobEntryCurrent_.Notes
+                      }
+                  }
+              );
+            TabIndex: =0
+            Visible: =!ico_Windows_NoWindows.Visible
+            Width: =Self.Height
+            X: =958*1
+            Y: =90*1
+      - lbl_Windows_Actions__Clickshield:
+          Control: Label@2.5.1
+          Group: grp_Windows_Actions
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            Fill: =RGBA(230, 230, 230, 0.5)
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Open Sans'
+            Height: =708
+            OnSelect: |-
+              =UpdateContext({locShowWindowActionsMenu: false})
+            TabIndex: =0
+            Text: =""
+            Visible: =locShowWindowActionsMenu
+            Width: =694
+            X: =330*1
+            Y: =60*1
+      - lbl_Windows_Actions__Background:
+          Control: Label@2.5.1
+          Group: grp_Windows_Actions
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            Fill: =gblAppStyles.ActionsMenu.Fill
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Open Sans'
+            Height: =708
+            Text: =""
+            Visible: =locShowWindowActionsMenu
+            Width: =250
+            X: =332*1
+            Y: =60*1
+      - cmp_Windows_AddWindows:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Check}
+            IconColor: =Color.White
+            IconFill: =If(gblRecordJobEntryCurrent_.Completed, gblAppColors.Secondary.GrayMedium, gblAppColors.Secondary.Green)
+            NavigateScreen: =App.ActiveScreen
+            Text: ="Go to Measures"
+            Visible: =!IsEmpty(Filter(colProjectSidebar, Category="Window Measurement"))
+            Width: =260
+            X: =Parent.Width - Self.Width - gblAppStyles.Padding.ButtonMargin
+            Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+      - btn_Window_AddWindow:
+          Control: Classic/Button@2.2.0
+          Properties:
+            AutoDisableOnSelect: =false
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =Color.Transparent
+            DisabledBorderColor: =RGBA(0, 0, 0, 0)
+            DisabledColor: =RGBA(0, 0, 0, 0)
+            DisabledFill: =RGBA(0, 0, 0, 0)
+            Fill: =Color.Transparent
+            Font: =Font.'Open Sans'
+            Height: =cmp_Windows_AddWindows.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Color.Transparent
+            HoverFill: =Color.Transparent
+            OnSelect: =Select(gal_Windows_Select, 2)
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Color.Transparent
+            PressedFill: =Color.Transparent
+            Text: =""
+            Visible: =cmp_Windows_AddWindows.Visible
+            Width: =cmp_Windows_AddWindows.Width
+            X: =cmp_Windows_AddWindows.X
+            Y: =cmp_Windows_AddWindows.Y
+      - gal_Windows_Actions__Select:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Group: grp_Windows_Actions
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            BorderStyle: =BorderStyle.None
+            DelayItemLoading: =false
+            Fill: =Color.Transparent//gblAppStyles.ActionsMenu.Fill
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =2
+            Height: =652
+            Items: =Filter(colActionsMenuItems, ShowJobEntry)
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: |-
+              =If(
+                  ThisItem.Value="Rename Room",
+                  Navigate('Add Room Screen', ScreenTransition.None, {locFormMode: "Edit"}),
+                  Navigate(ThisItem.Screen,  ScreenTransition.None)
+              )
+            TabIndex: =0
+            TemplatePadding: =
+            TemplateSize: =52
+            Visible: =locShowWindowActionsMenu
+            Width: =250
+            X: =gal_Windows_Select.X+gal_Windows_Select.Width+2*1
+            Y: =116*1
+          Children:
+            - lbl_Windows_Actions__Select:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =44
+                  OnSelect: =Select(Parent)
+                  Size: =gblAppStyles.Text.Size
+                  Text: |-
+                    =If(
+                        ThisItem.Value = "Delete",
+                        "Delete All",
+                        ThisItem.Value
+                    )
+                  X: =gblAppStyles.ActionsMenu.ActionX
+                  Y: =gblAppStyles.ActionsMenu.ActionY
+            - ico_Windows_Actions__Select:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =ThisItem.Color
+                  Height: =42
+                  Icon: =ThisItem.Icon
+                  OnSelect: =Select(Parent)
+                  Rotation: =ThisItem.Rotate
+                  Width: =30
+                  X: =gblAppStyles.ActionsMenu.IconX
+                  Y: =gblAppStyles.ActionsMenu.IconY
+      - lbl_Windows_Actions__Title:
+          Control: Label@2.5.1
+          Group: grp_Windows_Actions
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            Color: =gblAppStyles.ActionsMenu.Color
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =gblAppStyles.Text.Font
+            Height: =56
+            OnSelect: =
+            PaddingLeft: =30
+            PaddingTop: =10
+            Size: =gblAppStyles.ActionsMenu.SizeTitle
+            Text: ="Actions"
+            Visible: =locShowWindowActionsMenu
+            Width: =250
+            X: =332*1
+            Y: =60*1
+      - cmp_Windows_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Project"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =708
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =60
+      - cmp_Windows_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Rooms Screen'
+            Color: =Color.White
+            Context: |-
+              =$"{gblRecordJobEntryCurrent_.'Room: Type'}, {gblRecordJobEntryCurrent_.'Room: Floor'}"
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024

@@ -1,0 +1,649 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Hidden ADMIN Screen:
+    Properties:
+      Fill: =RGBA(255, 255, 255, 1)
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+    Children:
+      - tog_Autoload:
+          Control: Classic/Toggle@2.1.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Default: =gblAppAutoload
+            Font: =Font.'Open Sans'
+            Height: =32
+            OnChange: =
+            OnSelect: =Set(gblAppAutoload, Self.Value)
+            TrueFill: =RGBA(56, 96, 178, 1)
+            Width: =100
+            X: =66
+            Y: =120
+      - tog_OfflineEnabled:
+          Control: Classic/Toggle@2.1.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Default: =gblAppLoadOffline
+            Font: =Font.'Open Sans'
+            Height: =32
+            OnChange: =
+            OnSelect: =Set(gblAppLoadOffline, Self.Value)
+            TrueFill: =RGBA(56, 96, 178, 1)
+            Width: =100
+            X: =66
+            Y: =183
+      - lbl_Autoload:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Text: ="Autoload"
+            X: =183
+            Y: =114
+      - lbl_OfflineEnabled:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Text: ="Load Offline"
+            X: =183
+            Y: =177
+      - tog_Loading_AutoAdvance:
+          Control: Classic/Toggle@2.1.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Default: =gblAppAutoAdvance
+            Font: =Font.'Open Sans'
+            Height: =32
+            OnChange: =
+            OnSelect: =Set(gblAppAutoAdvance, Self.Value)
+            TrueFill: =RGBA(56, 96, 178, 1)
+            Width: =100
+            X: =66
+            Y: =242
+      - lbl_Loading_AutoAdvance:
+          Control: Label@2.5.1
+          Properties:
+            Align: =TextPosition.Left
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Text: ="Auto Advance?"
+            X: =183
+            Y: =234
+      - dtb_Admin_RecordCounts:
+          Control: DataTable@1.0.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(0, 18, 107, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Font: =Font.'Segoe UI'
+            HeadingColor: =RGBA(255, 255, 255, 1)
+            HeadingFill: =RGBA(56, 96, 178, 1)
+            HeadingFont: =Font.'Segoe UI'
+            HeadingSize: =10
+            Height: =Parent.Height
+            HoverFill: =RGBA(186, 202, 226, .2)
+            Items: |-
+              =Table(
+                  {
+                      tblCount: CountRows(colAUDRecords),
+                      tblName: "localAUDRecords"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobs),
+                      tblName: "localCdsJobs"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobEntries),
+                      tblName: "localCdsJobEntries"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobEntrySelections),
+                      tblName: "localCdsJobEntrySelections"
+                  },
+                  {
+                      tblCount: CountRows(colCdsWindowMeasurements),
+                      tblName: "localCdsWindowMeasurements"
+                  },
+                  {
+                      tblCount: CountRows(colCdsRooms),
+                      tblName: "localCdsRooms"
+                  },
+                  {
+                      tblCount: CountRows(colCdsWindowModels),
+                      tblName: "localCdsWindowModels"
+                  },
+                  {
+                      tblCount: CountRows(colCdsWindowChoices),
+                      tblName: "localCdsWindowChoices"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobStages),
+                      tblName: "localCdsJobStages"
+                  },
+                  {
+                      tblCount: CountRows(colCdsWindowStyles),
+                      tblName: "localCdsWindowStyles"
+                  },
+                  {
+                      tblCount: CountRows(colCdsMarketSegments),
+                      tblName: "localCdsMarketSegments"
+                  },
+                  {
+                      tblCount: CountRows(colCdsAccounts),
+                      tblName: "localCdsAccounts"
+                  },
+                  {
+                      tblCount: CountRows(colCdsWindowMulls),
+                      tblName: "localCdsWindowMulls"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobRooms),
+                      tblName: "localCdsJobRooms"
+                  },
+                  {
+                      tblCount: CountRows(colCdsLaborItems),
+                      tblName: "localCdsLaborItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsMarketLaborItems),
+                      tblName: "localCdsMarketLaborItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobLaborItems),
+                      tblName: "localCdsJobLaborItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsMaterialItems),
+                      tblName: "localCdsMaterialItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsMarketMaterialItems),
+                      tblName: "localCdsMarketMaterialItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobMaterialItems),
+                      tblName: "localCdsJobMaterialItems"
+                  },
+                  {
+                      tblCount: CountRows(colCdsDocuments),
+                      tblName: "localCdsDocuments"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobDocuments),
+                      tblName: "localCdsJobDocuments"
+                  },
+                  {
+                      tblCount: CountRows(colCdsJobEntryOptions),
+                      tblName: "localCdsJobEntryOptions"
+                  }
+              )
+            SelectedFill: =RGBA(56, 96, 178, .2)
+            Size: =12
+            Visible: =!tog_Autoload.Value
+            Width: =424
+            X: =600
+            Y: =0*0
+          Children:
+            - tblCount_Column1_1:
+                Control: DataTableColumn@1.0.1
+                Variant: Textual
+                IsLocked: true
+                Properties:
+                  AutoWidth: =false
+                  FieldDisplayName: ="tblCount"
+                  FieldName: ="tblCount"
+                  Order: =2
+                  Text: =ThisItem.tblCount
+                  Width: =204
+            - tblName_Column1_1:
+                Control: DataTableColumn@1.0.1
+                Variant: Textual
+                IsLocked: true
+                Properties:
+                  AutoWidth: =false
+                  FieldDisplayName: ="tblName"
+                  FieldName: ="tblName"
+                  Order: =1
+                  Text: =ThisItem.tblName
+                  Width: =241
+      - Button3:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =RGBA(56, 96, 178, 1)
+            Font: =Font.'Open Sans'
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnSelect: =Back()
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Text: ="Back"
+            X: =69
+            Y: =631
+      - Button4:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =RGBA(141, 198, 63, 1)
+            Font: =Font.'Open Sans'
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnSelect: =Navigate('Saving Screen', ScreenTransition.Fade)
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Text: ="Reload"
+            X: =69
+            Y: =562
+      - Button2:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =RGBA(246, 88, 16, 1)
+            Font: =Font.'Open Sans'
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnSelect: |-
+              =// clear collections
+              Clear(colAUDRecords);
+              Clear(colCdsAccounts);
+              Clear(colCdsDataEntryChoices);
+              Clear(colCdsDocuments);
+              Clear(colCdsJobDocuments);
+              Clear(colCdsEmployees);
+              Clear(colCdsJobEntries);
+              Clear(colCdsJobEntrySelections);
+              Clear(colCdsJobLaborItems);
+              Clear(colCdsJobMaterialItems);
+              Clear(colCdsJobPhotos);
+              Clear(colCdsJobs);
+              Clear(colCdsJobStages);
+              Clear(colCdsLaborItems);
+              Clear(colCdsJobRooms);
+              Clear(colCdsMarketLaborItems);
+              Clear(colCdsMarketMaterialItems);
+              Clear(colCdsMarketSegments);
+              Clear(colCdsMaterialItems);
+              Clear(colCdsMaterialItemColors);
+              Clear(colCdsRooms);
+              Clear(colCdsWindowChoices);
+              Clear(colCdsWindowMeasurements);
+              Clear(colCdsWindowModels);
+              Clear(colCdsWindowMulls);
+              Clear(colCdsWindowStyles);
+              Clear(colStagingCdsJobEntryOptions_Header);
+              Clear(colStagingCdsJobEntryOptions_Attribute);
+              Clear(colStagingCdsJobEntryOptions_HierarchyStep);
+              Clear(colStagingCdsJobEntryOptions_Value);
+              Clear(colCdsJobEntryOptions);
+              Clear(colCdsOptionSets);
+
+              // clear local data
+              If(
+                  gblAppLoadOffline,
+                  Concurrent(
+                      SaveData(
+                          colAUDRecords,
+                          "localAUDRecords"
+                      ),
+                      SaveData(
+                          colCdsAccounts,
+                          "localCdsAccounts"
+                      ),
+                      SaveData(
+                          colCdsDataEntryChoices,
+                          "localCdsDataEntryChoices"
+                      ),
+                      SaveData(
+                          colCdsDocuments,
+                          "localCdsDocuments"
+                      ),
+                      SaveData(
+                          colCdsJobDocuments,
+                          "localCdsJobDocuments"
+                      ),
+                      SaveData(
+                          colCdsEmployees,
+                          "localCdsEmployees"
+                      ),
+                      SaveData(
+                          colCdsJobEntries,
+                          "localCdsJobEntries"
+                      ),
+                      SaveData(
+                          colCdsJobEntrySelections,
+                          "localCdsJobEntrySelections"
+                      ),
+                      SaveData(
+                          colCdsJobLaborItems,
+                          "localCdsJobLaborItems"
+                      ),
+                      SaveData(
+                          colCdsJobMaterialItems,
+                          "localCdsJobMaterialItems"
+                      ),
+                      SaveData(
+                          colCdsJobPhotos,
+                          "localCdsJobPhotos"
+                      ),
+                      SaveData(
+                          colCdsJobRooms,
+                          "localCdsJobRooms"
+                      ),
+                      SaveData(
+                          colCdsJobs,
+                          "localCdsJobs"
+                      ),
+                      SaveData(
+                          colCdsJobStages,
+                          "localCdsJobStages"
+                      ),
+                      SaveData(
+                          colCdsLaborItems,
+                          "localCdsLaborItems"
+                      ),
+                      SaveData(
+                          colCdsMarketLaborItems,
+                          "localCdsMarketLaborItems"
+                      ),
+                      SaveData(
+                          colCdsMarketMaterialItems,
+                          "localCdsMarketMaterialItems"
+                      ),
+                      SaveData(
+                          colCdsMarketSegments,
+                          "localCdsMarketSegments"
+                      ),
+                      SaveData(
+                          colCdsMaterialItems,
+                          "localCdsMaterialItems"
+                      ),
+                      SaveData(
+                          colCdsMaterialItemColors,
+                          "localCdsMaterialItemColors"
+                      ),
+                      SaveData(
+                          colCdsRooms,
+                          "localCdsRooms"
+                      ),
+                      SaveData(
+                          colCdsWindowChoices,
+                          "localCdsWindowChoices"
+                      ),
+                      SaveData(
+                          colCdsWindowMeasurements,
+                          "localCdsWindowMeasurements"
+                      ),
+                      SaveData(
+                          colCdsWindowModels,
+                          "localCdsWindowModels"
+                      ),
+                      SaveData(
+                          colCdsWindowMulls,
+                          "localCdsWindowMulls"
+                      ),
+                      SaveData(
+                          colCdsWindowStyles,
+                          "localCdsWindowStyles"
+                      ),
+                      SaveData(
+                          colStagingCdsJobEntryOptions_Header,
+                          "localCdsJobEntryOptions_Header"
+                      ),
+                      SaveData(
+                          colStagingCdsJobEntryOptions_Attribute,
+                          "localCdsJobEntryOptions_Attribute"
+                      ),
+                      SaveData(
+                          colStagingCdsJobEntryOptions_HierarchyStep,
+                          "localCdsJobEntryOptions_HierarchyStep"
+                      ),
+                      SaveData(
+                          colStagingCdsJobEntryOptions_Value,
+                          "localCdsJobEntryOptions_Value"
+                      ),
+                      SaveData(
+                          colCdsOptionSets,
+                          "localCdsOptionSets"
+                      )
+                  )
+              )
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Text: ="Purge"
+            X: =69
+            Y: =497
+      - lbl_Autoload_1:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Height: =54
+            Size: =28
+            Text: ="Toggles"
+            Width: =175
+            X: =66
+            Y: =30
+      - lbl_Autoload_2:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Height: =54
+            Size: =28
+            Text: ="Buttons"
+            Width: =486
+            X: =62
+            Y: =400
+      - lbl_Autoload_3:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            FontWeight: =FontWeight.Lighter
+            Height: =54
+            Italic: =true
+            Size: =14
+            Text: ="light goes on, light goes off"
+            Width: =254
+            X: =241
+            Y: =30
+      - lbl_Autoload_4:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            FontWeight: =FontWeight.Lighter
+            Height: =54
+            Italic: =true
+            Size: =14
+            Text: ="hmmmm... I wonder what this one does"
+            Width: =436
+            X: =237
+            Y: =403
+      - Button5:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =RGBA(109, 49, 162, 1)
+            Font: =Font.'Open Sans'
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnSelect: |-
+              =// Get list of unique window choices for any jobs currently on the device
+              ClearCollect(
+                  colWindowChoices_ForJobsOnDevice,
+                  Distinct(
+                      AddColumns(
+                          colCdsJobEntries,
+                          WindowChoiceID,
+                          'Window Choice'.'Window Choice'
+                      ).WindowChoiceID,
+                      WindowChoiceID
+                  )
+              );
+              // Add a column for the job entry option headers to the window choices
+              ClearCollect(
+                  colJobEntryOptionHeaders_ForJobsOnDevice,
+                  Distinct(
+                      AddColumns(
+                          colWindowChoices_ForJobsOnDevice,
+                          HeaderID,
+                          LookUp(
+                              colCdsWindowChoices,
+                              'Window Choice' = Value,
+                              'Job Entry Option (Header)'
+                          ).'Job Entry Option'
+                      ).HeaderID,
+                      HeaderID
+                  )
+              );
+              // Determine whether a new set of Job Entry Options must be downloaded to the device
+              Set(
+                  gblShouldAppDownloadJobEntryOptions,
+                  false in AddColumns(
+                      colJobEntryOptionHeaders_ForJobsOnDevice,
+                      OnDevice,
+                      Value in colCdsJobEntryOptions.'Job Entry Option'
+                  ).OnDevice
+              );
+              // Loop through each column header and download its child options
+              If(
+                  gblShouldAppDownloadJobEntryOptions,
+                  ForAll(
+                      colJobEntryOptionHeaders_ForJobsOnDevice As currentRecord,
+                      // Get header record
+                      Collect(
+                          colCdsJobEntryOptions,
+                          Filter(
+                              'Job Entry Options',
+                              'Job Entry Option'=currentRecord.Value,
+                              Status=gblOptionSets.JobEntryOption.Status.Active,
+                              'Legacy?'=gblOptionSets.JobEntryOption.IsLegacy.No
+                          )
+                      );
+                      // Get attributes, hierarchy steps and values
+                      Collect(
+                          colCdsJobEntryOptions,
+                          Filter(
+                              'Job Entry Options',
+                              'Job Entry Option (Header Root)'.'Job Entry Option'=currentRecord.Value,
+                              Status=gblOptionSets.JobEntryOption.Status.Active,
+                              'Legacy?'=gblOptionSets.JobEntryOption.IsLegacy.No
+                          )
+                      )
+                  );
+                  UpdateContext({locSaveJobEntryOptions: true});
+              );
+              Clear(colWindowChoices_ForJobsOnDevice);
+              Clear(colJobEntryOptionHeaders_ForJobsOnDevice);
+              Set(gblShouldAppDownloadJobEntryOptions, false)
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Text: =CountRows(colCdsJobEntryOptions)
+            Visible: =false
+            Width: =320
+            X: =690
+            Y: =715
+      - Button6:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =RGBA(109, 49, 162, 1)
+            Font: =Font.'Open Sans'
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnSelect: =Clear(colCdsJobEntryOptions)
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Text: ="Clear colCdsJobEntry Options"
+            Visible: =false
+            Width: =320
+            X: =690
+            Y: =655
+      - Label4:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Height: =53
+            Text: |+
+              ="Material Items Count: " &CountIf(colCdsMaterialItems,true)
+            Width: =413
+            X: =69
+            Y: =290
+      - Label4_1:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Height: =53
+            Text: |
+              ="Market Material Items Collection Count: " &CountIf(colCdsMarketMaterialItemTest,true)
+            Width: =413
+            X: =69
+            Y: =331
+      - Button1:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =RGBA(56, 96, 178, 1)
+            Font: =Font.'Open Sans'
+            Height: =52
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnSelect: |-
+              =
+              Clear(colCdsMarketMaterialItemTest);
+              ClearCollect(
+                  colCdsMarketSegmentsIds,
+                  Distinct('Market Segments', 'Market Segment')
+              );
+              ForAll(
+                  colCdsMarketSegmentsIds,
+                  Collect(
+                      colCdsMarketMaterialItemTest,
+                      Filter(
+                          'Market Material Items',
+                          'Market Segment'.'Market Segment'= colCdsMarketSegmentsIds[@Value]
+                      )
+                  )
+              )
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Text: ="Material Items Count"
+            X: =340
+            Y: =510

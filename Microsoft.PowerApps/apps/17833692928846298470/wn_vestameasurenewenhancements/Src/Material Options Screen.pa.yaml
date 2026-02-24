@@ -1,0 +1,400 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Material Options Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |-
+        =// reset controls
+        Reset(gal_MaterialOptions_Selection);
+        // clear variables
+        UpdateContext(
+            {
+                locShowSaveButton: false,
+                locGUIDJobMaterialItem: Blank()
+            }
+        );
+        // clear collections
+        ClearCollect(
+            colMaterialItemColors,
+            {
+                Value: "",
+                Attribute: "Color"
+            }
+        );
+      OnVisible: |-
+        =If(
+            !IsBlank(locMaterialItemGrade),
+            ClearCollect(
+                colMaterialItemOptions,
+                {
+                    Attribute: "Species",
+                    ID: "",
+                    Value: locMaterialItemSpecies
+                },
+                {
+                    Attribute: "Grade",
+                    ID: "",
+                    Value: locMaterialItemGrade
+                }
+            );
+            UpdateContext({locShowSaveButton: true}),
+            ClearCollect(
+                colMaterialItemOptions,
+                {
+                    Attribute: "Species",
+                    ID: "",
+                    Value: ""
+                }
+            )
+        )
+    Children:
+      - cmp_MaterialOptions_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Materials"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =App.Height-cmp_MaterialOptions_Titlebar.Height
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =cmp_MaterialOptions_Titlebar.Y+cmp_MaterialOptions_Titlebar.Height
+      - cmp_MaterialOptions_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Windows Screen'
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =20
+            Title: ="Vesta Measure"
+            Width: =1024
+      - lbl_MaterialOptions_Actions__Background:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =ColorValue("#faf9f8")
+            Font: =Font.'Open Sans'
+            Height: =708
+            Text: =""
+            Width: =250
+            X: =80
+            Y: =60
+      - gal_MaterialOptions_Selected:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            Default: =LookUp(colMaterialItemOptions, Attribute=locCurrentMaterialOptionProperty)
+            DelayItemLoading: =false
+            Fill: =gblAppStyles.ActionsMenu.Fill
+            Height: =708
+            Items: =colMaterialItemOptions
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: |-
+              =UpdateContext({locCurrentMaterialOptionProperty: ThisItem.Attribute})
+            TabIndex: =0
+            TemplateFill: =If(ThisItem.IsSelected, ColorFade(gal_MaterialOptions_Selected.Fill, -5%), Color.Transparent)
+            TemplatePadding: =0
+            TemplateSize: =68
+            Width: =250
+            X: =cmp_MaterialOptions_Sidebar.X+cmp_MaterialOptions_Sidebar.Width
+            Y: =cmp_MaterialOptions_Titlebar.Y+cmp_MaterialOptions_Titlebar.Height
+          Children:
+            - lbl_MaterialOptions_Selected__Value:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.ActionsMenu.Color
+                  Font: =Font.'Open Sans'
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  PaddingLeft: =30
+                  PaddingTop: =15
+                  Size: =gblAppStyles.ActionsMenu.SizeTitle
+                  Text: =Coalesce(ThisItem.Value, "Select An Option")
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =Parent.TemplateWidth
+                  Wrap: =false
+            - lbl_MaterialOptions_Selected__Attribute:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.ActionsMenu.Color
+                  Font: =gblAppStyles.Text.Font
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  PaddingLeft: =30
+                  PaddingTop: =40
+                  Size: =gblAppStyles.ActionsMenu.SizeSubtitle
+                  Text: =ThisItem.Attribute
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =Parent.TemplateWidth
+      - con_MaterialOptions:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =694
+            X: =330
+            Y: =60
+          Children:
+            - gal_MaterialOptions_Selection:
+                Control: Gallery@2.15.0
+                Variant: Vertical
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =Color.Transparent
+                  DelayItemLoading: =false
+                  Height: =If(locShowSaveButton And locCurrentMaterialOptionProperty="Grade", 500, Parent.Height-Self.Y)
+                  Items: |-
+                    =Switch(
+                        locCurrentMaterialOptionProperty,
+                        "Species",
+                        SortByColumns(Filter(colCdsDataEntryChoices, Type=gblOptionSets.Global.DataEntryType.LumberSpecies),"wn_value", SortOrder.Ascending),
+                        "Grade",
+                        SortByColumns(Filter(colCdsDataEntryChoices, Type=gblOptionSets.Global.DataEntryType.LumberGrade),"wn_value", SortOrder.Ascending)
+                    )
+                  LoadingSpinner: =LoadingSpinner.None
+                  OnSelect: |-
+                    =// show the save button once all selections have been made
+                    If(locCurrentMaterialOptionProperty="Grade", UpdateContext({locShowSaveButton: true}));
+
+                    // add the next window attribute to window properties
+                    If(LookUp(colMaterialItemOptions, Attribute=locCurrentMaterialOptionProperty, Value)="",
+                        Switch(locCurrentMaterialOptionProperty,
+                            "Species", Collect(colMaterialItemOptions, {Attribute: "Grade",ID: "", Value: ""})
+                        )
+                    );
+
+                    // change to the next window property
+                    UpdateContext({locCurrentMaterialOptionProperty:
+                        Switch(locCurrentMaterialOptionProperty,
+                            "Species", "Grade",
+                            "Grade"
+                        )
+                    });
+
+                    // write the selection to the window property
+                    Patch(colMaterialItemOptions, LookUp(colMaterialItemOptions, Attribute=gal_MaterialOptions_Selected.Selected.Attribute), {ID: Blank(), Value:ThisItem.Value});
+                    Reset(gal_MaterialOptions_Selected);Reset(gal_MaterialOptions_Selection);
+                  ShowScrollbar: =false
+                  TabIndex: =0
+                  TemplatePadding: =0
+                  TemplateSize: =180
+                  Width: =635
+                  WrapCount: =3
+                  X: =30
+                  Y: =80
+                Children:
+                  - btn_Material_Colors__Base_1:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderColor: =gblAppStyles.Card.BorderColor
+                        BorderThickness: =1
+                        Color: =RGBA(255, 255, 255, 1)
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        Fill: =If(gal_MaterialOptions_Selected.Selected.Value=ThisItem.Value, gblAppStyles.Status.Neutral, gblAppStyles.Card.Fill)
+                        FocusedBorderThickness: =1
+                        Font: =Font.'Open Sans'
+                        Height: =Parent.TemplateHeight-(gblAppStyles.Card.MarginLeft*2)
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =Self.Fill
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =gblAppStyles.Card.PaddingLeft
+                        PaddingRight: =gblAppStyles.Card.PaddingRight
+                        PressedBorderColor: =Self.BorderColor
+                        PressedFill: =Self.Fill
+                        RadiusBottomLeft: =gblAppStyles.Card.Radius
+                        RadiusBottomRight: =gblAppStyles.Card.Radius
+                        RadiusTopLeft: =gblAppStyles.Card.Radius
+                        RadiusTopRight: =gblAppStyles.Card.Radius
+                        Size: =11.24
+                        Text: =
+                        Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                        X: =(Parent.TemplateWidth-Self.Width)/2
+                        Y: =(Parent.TemplateHeight-Self.Height)/2
+                  - lbl_MaterialColors_Selection_1:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =LayoutAlignItems.Center
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =If(gal_MaterialOptions_Selected.Selected.Value=ThisItem.Value, gblAppColors.Secondary.White, gblAppStyles.Card.TitleColor)
+                        Fill: =Color.Transparent
+                        Font: =gblAppStyles.Text.TitleFont
+                        FontWeight: =FontWeight.Lighter
+                        Height: =150
+                        LineHeight: =1.3
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =10
+                        PaddingRight: =10
+                        Size: =gblAppStyles.Card.TitleSize
+                        Text: =ThisItem.Value
+                        Width: =186
+                        X: =15
+                        Y: =15
+                  - btn_MaterialColors_Selection_1:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderColor: =Color.Transparent
+                        BorderThickness: =1
+                        Color: =
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        Fill: =Color.Transparent
+                        FocusedBorderThickness: =1
+                        Font: =Font.'Open Sans'
+                        Height: =Parent.TemplateHeight-(gblAppStyles.Card.MarginLeft*2)
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =If(gal_MaterialOptions_Selected.Selected.Value<>ThisItem.Value, gblAppStyles.Card.HoverFill)
+                        OnSelect: =Select(Parent)
+                        PaddingRight: =3.75
+                        PaddingTop: =3.75
+                        PressedBorderColor: =Self.BorderColor
+                        PressedFill: =If(gal_MaterialOptions_Selected.Selected.Value<>ThisItem.Value, gblAppStyles.Card.PressedFill)
+                        RadiusBottomLeft: =gblAppStyles.Card.Radius
+                        RadiusBottomRight: =gblAppStyles.Card.Radius
+                        RadiusTopLeft: =gblAppStyles.Card.Radius
+                        RadiusTopRight: =gblAppStyles.Card.Radius
+                        Size: =11.24
+                        Text: =
+                        Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                        X: =(Parent.TemplateWidth-Self.Width)/2*1
+                        Y: =(Parent.TemplateHeight-Self.Height)/2*1
+            - lbl_MaterialOptions_Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Size: =20
+                  Text: ="Lumber "&locCurrentMaterialOptionProperty
+                  Width: =638
+                  X: =40
+                  Y: =30
+            - cmp_MaterialOptions_AdvanceButton:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.Check}
+                  IconColor: =Color.White
+                  IconFill: =gblAppColors.Secondary.Green
+                  NavigateScreen: ='Measure Window Screen'
+                  Text: ="Save Options"
+                  Visible: =locShowSaveButton And locCurrentMaterialOptionProperty="Grade"
+                  Width: =231
+                  X: =422
+                  Y: =Parent.Height-Self.Height-gblAppStyles.Padding.ButtonMargin
+            - btn_MaterialOptions_AdvanceButton:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =Color.Transparent
+                  DisabledColor: =Color.Transparent
+                  DisabledFill: =Color.Transparent
+                  Fill: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_MaterialOptions_AdvanceButton.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Color.Transparent
+                  HoverFill: =Color.Transparent
+                  OnSelect: |
+                    =With(
+                        {
+                            varType: "colCdsJobMaterialItems",
+                            varRecordRef: locGUIDJobMaterialItem
+                        },
+                        // update color in job materials record 
+                        Patch(
+                            colCdsJobMaterialItems,
+                            LookUp(
+                                colCdsJobMaterialItems,
+                                'Job Material Item'= locGUIDJobMaterialItem
+                            ),
+                            {
+                                'Lumber: Species': LookUp(colMaterialItemOptions, Attribute="Species", Value),
+                                'Lumber: Grade': LookUp(colMaterialItemOptions, Attribute="Grade", Value)
+                            }
+                        );
+                        If(
+                            IsBlank(
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                )
+                            ),
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "U"
+                                }
+                            )
+                        )
+                    );
+                    // save local changes
+                    IfError( // This line of code is added to hide the errors
+
+                    If(
+                        gblAppLoadOffline,
+                        SaveData(
+                            colAUDRecords,
+                            "localAUDRecords"
+                        );
+                        SaveData(
+                            colCdsJobMaterialItems,
+                            "localCdsJobMaterialItems"
+                        )
+                    )
+                    ,Blank())  // This line of code is added to hide the errors
+
+                    ;
+                    // leave the screen and reset
+                    Reset(gal_MaterialOptions_Selected);
+                    Reset(gal_MaterialOptions_Selection);
+                    Navigate(
+                        'Materials Screen',
+                        BorderStyle.None
+                    );
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.Transparent
+                  PressedFill: =Color.Transparent
+                  Text: =""
+                  Visible: =cmp_MaterialOptions_AdvanceButton.Visible
+                  Width: =cmp_MaterialOptions_AdvanceButton.Width
+                  X: =cmp_MaterialOptions_AdvanceButton.X
+                  Y: =cmp_MaterialOptions_AdvanceButton.Y

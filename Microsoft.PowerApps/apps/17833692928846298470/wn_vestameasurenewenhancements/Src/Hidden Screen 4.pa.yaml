@@ -1,0 +1,648 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Hidden Screen 4:
+    Properties:
+      Fill: =RGBA(255, 255, 255, 1)
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+    Children:
+      - gal_Hidden_Choices:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            DelayItemLoading: =false
+            Height: =678
+            Items: =colCdsWindowChoices
+            LoadingSpinner: =LoadingSpinner.None
+            TabIndex: =0
+            TemplateSize: =624
+            Width: =360
+            Y: =90
+          Children:
+            - Label7_19:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Name
+                  Width: =224
+                  X: =117
+            - Label7_22:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Window Choice'
+                  Width: =224
+                  X: =117
+                  Y: =40
+            - Label7_23:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Style.'Window Style'
+                  Width: =224
+                  X: =117
+                  Y: =80
+            - Label4_36:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: |-
+                    ="ID
+                    "
+                  Width: =117
+                  Y: =40
+            - Label4_33:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Name"
+                  Width: =117
+            - Label4_37:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Style"
+                  Width: =117
+                  Y: =85
+            - Label7_25:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Model.'Window Model'
+                  Width: =224
+                  X: =117
+                  Y: =125
+            - Label4_39:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Model"
+                  Width: =117
+                  Y: =130
+            - Label7_29:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Manufacturer.Account
+                  Width: =224
+                  X: =117
+                  Y: =170
+            - Label4_43:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Account"
+                  Width: =117
+                  Y: =175
+            - Label7_109:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Include Jamb Depth'&" "&ThisItem.'Min Jamb Depth'&" "&ThisItem.'Max Jamb Depth'
+                  Width: =224
+                  X: =117
+                  Y: =376
+            - Label4_45:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Incl Jamb"
+                  Width: =117
+                  Y: =381
+            - Label7_110:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Include Max Projection'&" "&ThisItem.'Min Max Projection'&" "&ThisItem.'Max Max Projection'
+                  Width: =224
+                  X: =117
+                  Y: =421
+            - Label4_46:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Incl Max"
+                  Width: =117
+                  Y: =426
+            - Label7_111:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Include Soffit Depth'&" "&ThisItem.'Min Soffit Depth'&" "&ThisItem.'Max Soffit Depth'
+                  Width: =224
+                  X: =117
+                  Y: =466
+            - Label4_121:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Incl Soffit"
+                  Width: =117
+                  Y: =471
+            - Label7_112:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Include Wall Thickness'&" "&ThisItem.'Min Wall Thickness'&" "&ThisItem.'Max Wall Thickness'
+                  Width: =224
+                  X: =117
+                  Y: =511
+            - Label4_122:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Incl Wall"
+                  Width: =117
+                  Y: =516
+            - Label7_113:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Style.Name
+                  Width: =224
+                  X: =117
+                  Y: =215
+            - Label4_123:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Style"
+                  Width: =117
+                  Y: =220
+            - Label7_114:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Model.Name
+                  Width: =224
+                  X: =117
+                  Y: =260
+            - Label4_124:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Model"
+                  Width: =117
+                  Y: =265
+            - Label7_115:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Manufacturer.'Account Name'
+                  Width: =224
+                  X: =117
+                  Y: =305
+            - Label4_125:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Account"
+                  Width: =117
+                  Y: =310
+            - Label7_116:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Job Entry Option (Header)'.'Job Entry Option'
+                  Width: =224
+                  X: =117
+                  Y: =556
+            - Label4_126:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Header"
+                  Width: =117
+                  Y: =561
+      - gal_Hidden_Documents:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            DelayItemLoading: =false
+            Height: =678
+            Items: =colCdsDocuments
+            LoadingSpinner: =LoadingSpinner.None
+            TabIndex: =0
+            TemplateSize: =220
+            Width: =360
+            X: =344
+            Y: =90
+          Children:
+            - Label7_40:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Name
+                  Width: =224
+                  X: =117
+            - Label7_42:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Verbiage
+                  Width: =224
+                  X: =117
+                  Y: =80
+            - Label4_53:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Name"
+                  Width: =117
+            - Label4_55:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Verbiage"
+                  Width: =117
+                  Y: =85
+            - Label7_43:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Title
+                  Width: =224
+                  X: =117
+                  Y: =125
+            - Label4_56:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Title"
+                  Width: =117
+                  Y: =130
+            - Label7_44:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Document
+                  Width: =224
+                  X: =117
+                  Y: =170
+            - Label4_57:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Document"
+                  Width: =117
+                  Y: =175
+      - gal_Hidden_JobDocuments:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            DelayItemLoading: =false
+            Height: =678
+            Items: =colCdsJobDocuments
+            LoadingSpinner: =LoadingSpinner.None
+            TabIndex: =0
+            TemplateSize: =436
+            Width: =320
+            X: =704
+            Y: =90
+          Children:
+            - Label7_45:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Name
+                  Width: =224
+                  X: =117
+            - Label7_46:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.appJobDocumentIdText
+                  Width: =224
+                  X: =117
+                  Y: =40
+            - Label7_47:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Document.Document
+                  Width: =224
+                  X: =117
+                  Y: =80
+            - Label4_59:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="appGUID"
+                  Width: =117
+                  Y: =40
+            - Label4_58:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Name"
+                  Width: =117
+            - Label4_60:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Document Record"
+                  Width: =117
+                  Y: =85
+            - Label7_48:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.DocumentDate
+                  Width: =224
+                  X: =117
+                  Y: =125
+            - Label4_61:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Date"
+                  Width: =117
+                  Y: =130
+            - Label7_49:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Homeowner Signature (1)'.Full
+                  Width: =224
+                  X: =117
+                  Y: =170
+            - Label4_62:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Signature (1)"
+                  Width: =117
+                  Y: =175
+            - Label4_95:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Signature (2)"
+                  Width: =117
+                  Y: =215
+            - Label7_84:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Homeowner Signature (2)'.Full
+                  Width: =193
+                  X: =117
+                  Y: =212
+            - Label4_96:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Technician"
+                  Width: =117
+                  Y: =255
+            - Label7_85:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Technician Signature'.Full
+                  Width: =193
+                  X: =117
+                  Y: =250
+            - Label4_97:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Date (1)"
+                  Width: =117
+                  Y: =295
+            - Label4_98:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Date (2)"
+                  Width: =117
+                  Y: =335
+            - Label4_99:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Technician"
+                  Width: =117
+                  Y: =375
+            - Label7_86:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Homeowner Signature Date (1)'
+                  Width: =193
+                  X: =117
+                  Y: =292
+            - Label7_87:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Homeowner Signature Date (2)'
+                  Width: =193
+                  X: =117
+                  Y: =330
+            - Label7_88:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Technician Signature Date'
+                  Width: =193
+                  X: =117
+                  Y: =372

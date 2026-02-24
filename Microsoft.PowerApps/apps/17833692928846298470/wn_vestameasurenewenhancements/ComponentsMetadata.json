@@ -1,0 +1,46 @@
+{
+  "Components": [
+    {
+      "Name": "cmp_Sidebar",
+      "TemplateName": "7c26d3acac35486393c9559b79cfbbf6",
+      "Description": "",
+      "AllowCustomization": true,
+      "AllowAccessToGlobals": false
+    },
+    {
+      "Name": "cmp_AdvanceButton",
+      "TemplateName": "1dcc7b87eb984e09921f82250916b942",
+      "Description": "",
+      "AllowCustomization": true,
+      "AllowAccessToGlobals": false
+    },
+    {
+      "Name": "cmp_Titlebar",
+      "TemplateName": "d4a9d74da26b4d62b2e4e47151aad579",
+      "Description": "",
+      "AllowCustomization": true,
+      "AllowAccessToGlobals": false
+    },
+    {
+      "Name": "cmp_Calculator",
+      "TemplateName": "d8d2a55d5d794ab6bcc49f65ba3e14ac",
+      "Description": "",
+      "AllowCustomization": true,
+      "AllowAccessToGlobals": false
+    },
+    {
+      "Name": "cmp_AddNotes",
+      "TemplateName": "65e2ef73b2834c29a5fca61fc27de3de",
+      "Description": "",
+      "AllowCustomization": true,
+      "AllowAccessToGlobals": false
+    },
+    {
+      "Name": "cmp_AdvanceButton_1",
+      "TemplateName": "d066b604b300470b903c33ffc832a785",
+      "Description": "",
+      "AllowCustomization": true,
+      "AllowAccessToGlobals": false
+    }
+  ]
+}

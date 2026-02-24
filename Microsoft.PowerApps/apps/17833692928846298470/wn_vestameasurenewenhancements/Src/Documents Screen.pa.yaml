@@ -1,0 +1,287 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Documents Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+    Children:
+      - cmp_Signatures_AdvanceButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_Documents_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Check}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Secondary.Green
+            NavigateScreen: ='Photos Screen'
+            Text: ="Go to Photos"
+            Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+            Width: =246
+            X: =740
+            Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+      - gal_Signatures:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Group: grp_Documents_Main
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            DelayItemLoading: =false
+            Fill: =Color.Transparent
+            Height: =493
+            Items: =Filter(colCdsJobDocuments, appJobIdText=gblRecordJobCurrent.appJobIDText)
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: |
+              =Set(
+                  gblRecordCurrentDocument,
+                  ThisItem
+              );
+              Navigate(
+                  'Sign Document Screen',
+                  ScreenTransition.None,
+                  {locContractVerbiage: gblRecordCurrentDocument.Document.Verbiage}
+              );
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplateFill: =Color.Transparent//If(txt_Homeowner_Dealer_1.Text=ThisItem.Value, gblAppStyles.Status.Neutral, gblAppStyles.Rolodex.Fill)
+            TemplateSize: =280
+            Width: =869
+            WrapCount: =3
+            X: =116
+            Y: =164
+          Children:
+            - btn_Signatures_Document:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: |-
+                    =If(
+                        ThisItem.Completed='Completed (Job Documents)'.Yes,
+                        gblAppColors.Secondary.White,
+                        gblAppStyles.Text.Color
+                    )
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: |-
+                    =gblAppColors.Secondary.White
+                    /*
+                    If(
+                        ThisItem.Completed='Completed (Job Documents)'.Yes,
+                        gblAppStyles.Status.Success,
+                        gblAppColors.Secondary.White
+                    )
+                    */
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =Parent.TemplateHeight
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: |
+                    =Set(
+                        gblRecordCurrentDocument,
+                        ThisItem
+                    );
+                    Navigate('Sign Document Screen');
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: =""
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =Parent.TemplateWidth-20
+                  X: =10
+                  Y: =4
+            - lbl_Documents_Name:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Lighter
+                  Height: =76
+                  OnSelect: =Select(Parent)
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  Size: =gblAppStyles.Text.SubtitleSize
+                  Text: =ThisItem.Name
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =263
+                  X: =10
+                  Y: =204
+            - ico_Documents_Icon:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Disabled
+                  Height: =134
+                  Icon: =Icon.DocumentWithContent
+                  Width: =134
+                  X: =82
+                  Y: =42
+            - btn_Documents_Completed:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =gblAppStyles.ActionsMenu.QuantityBorderThickness
+                  Color: =Color.White//If(ThisItem.Completed, gblAppColors.Secondary.White,gblAppStyles.ActionsMenu.Color)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =gblAppStyles.Status.Success//If(ThisItem.Completed, gblAppStyles.Status.Success,gblAppStyles.ActionsMenu.QuantityFill)
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =gblAppStyles.ActionsMenu.QuantityFontWeight
+                  Height: =42
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =180
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =8
+                  Text: =Blank()//ThisItem.Quantity
+                  Visible: =ThisItem.Completed
+                  Width: =42
+                  X: =169
+                  Y: =140
+            - img_Documents_Completed:
+                Control: Image@2.2.3
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Height: =40
+                  Image: ='icons8-checkmark'
+                  Visible: =ThisItem.Completed
+                  Width: =42
+                  X: =169
+                  Y: =142
+            - btn_Documents_Document:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =Color.Transparent
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =Parent.TemplateHeight
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =gblAppStyles.Card.HoverFill
+                  OnSelect: |
+                    =Set(
+                        gblRecordCurrentDocument,
+                        ThisItem
+                    );
+                    UpdateContext({locDocumentRecord: ThisItem.Document.Document});
+                    Navigate(
+                        'Sign Document Screen',
+                        ScreenTransition.None,
+                        {
+                            locContractVerbiage: LookUp(
+                                colCdsDocuments,
+                                colCdsDocuments[@Document] = locDocumentRecord,
+                                Verbiage
+                            ),
+                            locResetScrollable: 1,
+                            locHideScreen: true
+                        }
+                    );
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  PaddingTop: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =gblAppStyles.Card.PressedFill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: =""
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =Parent.TemplateWidth-20
+                  X: =btn_Signatures_Document.X
+                  Y: =btn_Signatures_Document.Y
+      - lbl_Documents_Title:
+          Control: Label@2.5.1
+          Group: grp_Documents_Main
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            Height: =49
+            PaddingLeft: =25
+            Size: =gblAppStyles.Text.TitleSize
+            Text: ="Documents"
+            Width: =681
+            X: =172
+            Y: =85
+      - cmp_Documents_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Documents"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =App.Height-cmp_Documents_Titlebar.Height
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =cmp_Documents_Titlebar.Y+cmp_Documents_Titlebar.Height
+      - cmp_Documents_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Jobs Screen'
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - ico_Documents_Title:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppStyles.Status.Disabled
+            DisplayMode: =DisplayMode.View
+            Height: =49
+            Icon: =Icon.DocumentWithContent
+            Width: =49
+            X: =123*1
+            Y: =85*1

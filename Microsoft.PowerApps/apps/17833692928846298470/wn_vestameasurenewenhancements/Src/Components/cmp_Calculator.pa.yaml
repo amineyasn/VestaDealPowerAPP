@@ -1,0 +1,207 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+ComponentDefinitions:
+  cmp_Calculator:
+    DefinitionType: CanvasComponent
+    CustomProperties:
+      Default:
+        PropertyKind: Input
+        DisplayName: Default
+        Description: A custom property
+        DataType: Number
+        Default: =20
+      OK:
+        PropertyKind: Output
+        DisplayName: OK
+        Description: A custom property
+        DataType: Boolean
+      Reset:
+        PropertyKind: Input
+        DisplayName: Reset
+        Description: A custom property
+        RaiseOnReset: true
+        DataType: Boolean
+        Default: =true
+      Text:
+        PropertyKind: Input
+        DisplayName: Text
+        Description: A custom property
+        DataType: Text
+        Default: ="Removal Item 1"
+      Value:
+        PropertyKind: Output
+        DisplayName: Value
+        Description: A custom property
+        DataType: Number
+    Properties:
+      Height: =600
+      OK: =varOK
+      OnReset: =Set(varScreenNumber, Blank()); Set(varOK, false)
+      Value: =Value(btn_Caclulator_Display__Number.Text)
+      Width: =380
+    Children:
+      - btn_Caclulator_Base:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =8
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisplayMode: =DisplayMode.View
+            Fill: =ColorValue("#d2d0ce")
+            Font: =Font.'Open Sans'
+            Height: =600
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Text: =
+            Width: =380
+      - btn_Caclulator_Display__Background:
+          Control: Classic/Button@2.2.0
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =0
+            Color: =Color.Black
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisplayMode: =DisplayMode.View
+            Fill: =Color.White
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Normal
+            Height: =123
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Self.Color
+            HoverFill: =Self.Fill
+            OnSelect: =
+            PressedBorderColor: =Self.Fill
+            PressedFill: =Self.Fill
+            RadiusBottomLeft: =5
+            RadiusBottomRight: =Self.RadiusBottomLeft
+            RadiusTopLeft: =Self.RadiusBottomLeft
+            RadiusTopRight: =Self.RadiusBottomLeft
+            Size: =36
+            Text: =Coalesce(varScreenNumber, Text(cmp_Calculator.Default))
+            Width: =322
+            X: =(cmp_Calculator.Width-Self.Width)/2
+            Y: =27
+      - btn_Caclulator_Display__Number:
+          Control: Classic/Button@2.2.0
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =0
+            Color: =Color.Black
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisplayMode: =DisplayMode.View
+            Fill: =Color.White
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Segoe UI'
+            FontWeight: =FontWeight.Normal
+            Height: =96
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Self.Color
+            HoverFill: =Self.Fill
+            OnSelect: =
+            PressedBorderColor: =Self.Fill
+            PressedFill: =Self.Fill
+            RadiusBottomLeft: =5
+            RadiusBottomRight: =Self.RadiusBottomLeft
+            RadiusTopLeft: =Self.RadiusBottomLeft
+            RadiusTopRight: =Self.RadiusBottomLeft
+            Size: =36
+            Text: =Coalesce(varScreenNumber, Text(cmp_Calculator.Default),"1")
+            Width: =322
+            X: =(cmp_Calculator.Width-Self.Width)/2
+            Y: =54
+      - btn_Caclulator_Display__Item:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Height: =50
+            Text: =cmp_Calculator.Text
+            Width: =322
+            X: =29
+            Y: =27
+      - gal_Caclulator_Buttons:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            DelayItemLoading: =false
+            Height: =426
+            Items: =["1","2",3,4,5,6,7,8,9,"C",0,"OK"]//
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: |-
+              =If(
+                  ThisItem.Value = "C",
+                  Set(
+                      varScreenNumber,
+                      "0"
+                  ),
+                  ThisItem.Value = "OK",
+                  Set(
+                      varOK,
+                      true
+                  ),
+                  varScreenNumber = "0",
+                  Set(
+                      varScreenNumber,
+                      ThisItem.Value
+                  ),
+                  Len(varScreenNumber) <= 4,
+                  Set(
+                      varScreenNumber,
+                      varScreenNumber & ThisItem.Value
+                  )
+              )
+            TabIndex: =0
+            TemplateSize: =99
+            Width: =338
+            WrapCount: =3
+            X: =20
+            Y: =174
+          Children:
+            - btn_Caclulator_Buttons:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =If(ThisItem.Value="C", ColorValue("#DC5B57"), ThisItem.Value="OK", Color.White, Color.Black)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =If(ThisItem.Value="OK", ColorValue("#1FA770"), Color.White)
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =78
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorValue("#50BDED")
+                  OnSelect: =Select(Parent)
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.White
+                  PressedFill: =ColorFade(Self.HoverFill,-10%)
+                  RadiusBottomLeft: =180
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =20
+                  Text: =ThisItem.Value
+                  Visible: =!(ThisItem.Value=Blank())
+                  Width: =Self.Height
+                  X: =(Parent.TemplateWidth-Self.Width)/2

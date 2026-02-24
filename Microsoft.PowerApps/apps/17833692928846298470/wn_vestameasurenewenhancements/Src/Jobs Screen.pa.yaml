@@ -1,0 +1,935 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Jobs Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |
+        =// Set Variables
+        Set(
+            gblTextClickedSaveScreen,
+            Blank()
+        );
+        Set(
+            gblRecordJobCurrent,
+            Blank()
+        );
+        UpdateContext({locBlockUserInput: false});
+        Set(
+            gblRecordUserCurrent,
+            First(
+                Filter(
+                    Employees,
+                    'Employees (Views)'.'My Employee Record'
+                )
+            )
+        );
+        Set(
+            gblRecordJobSpotlight,
+            With(
+                {
+                    varRecordCurrent: LookUp(
+                        Sort(
+                            colCdsJobs,
+                            DateAdd(
+                                'Start Date Time',
+                                -30,
+                                TimeUnit.Minutes
+                            ),
+                            SortOrder.Descending
+                        ),
+                        'Start Date Time' <= Now() And Completed = 'Completed (Jobs)'.No And DateValue(
+                            Text(
+                                'Start Date Time',
+                                "[$-en-US]yyyy-mm-dd"
+                            )
+                        ) = Today()
+                    ),
+                    varRecordNext: LookUp(
+                        Sort(
+                            colCdsJobs,
+                            DateAdd(
+                                'Start Date Time',
+                                -30,
+                                TimeUnit.Minutes
+                            ),
+                            SortOrder.Ascending
+                        ),
+                        'Start Date Time' > Now() And Completed = 'Completed (Jobs)'.No
+                    )
+                },
+                If(
+                    !IsBlank(varRecordCurrent.Name),
+                    varRecordCurrent,
+                    varRecordNext
+                )
+            )
+        );
+        Reset(gal_Jobs_List);
+    Children:
+      - con_Jobs_List:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =376
+            X: =648
+            Y: =60
+          Children:
+            - gal_Jobs_List:
+                Control: Gallery@2.15.0
+                Variant: Vertical
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =Color.Transparent
+                  DelayItemLoading: =false
+                  Height: =613
+                  Items: |-
+                    =Sort(
+                        Filter(
+                            colCdsJobs,
+                            'Start Date Time' >= gblDateCurrent And 'Start Date Time' < gblDateCurrent + 1
+                        ),
+                        'Start Date Time',
+                        SortOrder.Ascending
+                    )
+                  LoadingSpinner: =LoadingSpinner.None
+                  ShowScrollbar: =false
+                  TabIndex: =0
+                  TemplatePadding: =0
+                  TemplateSize: =149
+                  Width: =325
+                  X: =19
+                  Y: =95
+                Children:
+                  - lbl_Jobs_List__Card:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.GrayMedium
+                        BorderThickness: =0
+                        Color: =RGBA(255, 255, 255, 1)
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        DisplayMode: =DisplayMode.View
+                        Fill: =gblAppStyles.Card.Fill
+                        FocusedBorderThickness: =1
+                        Font: =Font.'Open Sans'
+                        Height: =124
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =ColorFade(Self.Fill,15%)
+                        OnSelect: =
+                        PaddingRight: =3.75
+                        PaddingTop: =3.75
+                        PressedBorderColor: =Self.BorderColor
+                        PressedFill: =ColorFade(Self.Fill,30%)
+                        RadiusBottomLeft: =gblAppStyles.Card.Radius
+                        RadiusBottomRight: =gblAppStyles.Card.Radius
+                        RadiusTopLeft: =gblAppStyles.Card.Radius
+                        RadiusTopRight: =gblAppStyles.Card.Radius
+                        Size: =11.24
+                        Text: =
+                        Width: =315
+                        X: =2
+                        Y: =2
+                  - lbl_Jobs_List__OpenJob:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =TextPosition.Right
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =gblAppStyles.Status.Neutral
+                        Fill: =Color.Transparent
+                        Font: =gblAppStyles.Text.TitleFont
+                        FontWeight: =FontWeight.Lighter
+                        Height: =34
+                        OnSelect: =
+                        Size: =14
+                        Text: ="Open Job"
+                        Underline: =true
+                        Width: =104
+                        X: =202
+                        Y: =80
+                  - lbl_Jobs_List__Location:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =TextPosition.Left
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =gblAppStyles.Card.TitleColor
+                        Fill: =Color.Transparent
+                        Font: =gblAppStyles.Text.TitleFont
+                        FontWeight: =FontWeight.Lighter
+                        Height: =34
+                        OnSelect: =
+                        Size: =14
+                        Text: =ThisItem.'Address Street 1'
+                        Width: =292
+                        Wrap: =false
+                        X: =14
+                        Y: =46
+                  - lbl_Jobs_List__Time:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =TextPosition.Left
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =gblAppStyles.Card.TitleColor
+                        Fill: =Color.Transparent
+                        Font: =gblAppStyles.Text.TitleFont
+                        FontWeight: =FontWeight.Lighter
+                        Height: =34
+                        OnSelect: =
+                        Size: =14
+                        Text: =Text(ThisItem.'Start Date Time', DateTimeFormat.ShortTime)
+                        Width: =292
+                        X: =14
+                        Y: =12
+                  - ico_Jobs_List__CurrentJobTime:
+                      Control: Classic/Icon@2.5.0
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =gblAppStyles.Status.Neutral
+                        DisplayMode: =DisplayMode.View
+                        Height: =26
+                        Icon: =Icon.Clock
+                        Visible: =ThisItem.appJobIDText=gblRecordJobSpotlight.appJobIDText And gblRecordJobSpotlight.'Start Date Time'>=Today() And gblRecordJobSpotlight.'Start Date Time'<Today()+1
+                        Width: =26
+                        X: =280
+                        Y: =12
+                  - lbl_Jobs_List__Owner:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =TextPosition.Left
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =gblAppStyles.Card.TitleColor
+                        Fill: =Color.Transparent
+                        Font: =gblAppStyles.Text.TitleFont
+                        FontWeight: =FontWeight.Lighter
+                        Height: =34
+                        OnSelect: =
+                        Size: =14
+                        Text: =ThisItem.'Primary Contact'.'Full Name'
+                        Width: =188
+                        Wrap: =false
+                        X: =14
+                        Y: =78
+                  - btn_Jobs_List__Status:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderColor: =ColorFade(gblAppColors.Secondary.GrayMediumDark, 70%)
+                        BorderThickness: =If(ThisItem.Completed='Completed (Jobs)'.Yes, 0, 2)
+                        Color: =Color.White//If(ThisItem.Completed, gblAppColors.Secondary.White,gblAppStyles.ActionsMenu.Color)
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        DisabledFill: =gblAppStyles.Status.Success
+                        DisplayMode: =DisplayMode.View
+                        Fill: =If(ThisItem.Completed=gblOptionSets.Job.CompletedJob.Yes, gblAppStyles.Status.Success, Color.Transparent)
+                        FocusedBorderThickness: =Self.BorderThickness
+                        Font: =gblAppStyles.Text.Font
+                        FontWeight: =gblAppStyles.ActionsMenu.QuantityFontWeight
+                        Height: =22
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =Self.Fill
+                        PressedBorderColor: =Self.Fill
+                        PressedFill: =Self.Fill
+                        RadiusBottomLeft: =180
+                        RadiusBottomRight: =Self.RadiusBottomLeft
+                        RadiusTopLeft: =Self.RadiusBottomLeft
+                        RadiusTopRight: =Self.RadiusBottomLeft
+                        Size: =8
+                        Text: =Blank()//ThisItem.Quantity
+                        Visible: =ThisItem.Job<>gblRecordJobSpotlight.Job
+                        Width: =Self.Height
+                        X: =282
+                        Y: =14
+                  - img_Jobs_List__Checkmark:
+                      Control: Image@2.2.3
+                      Properties:
+                        BorderColor: =
+                        BorderThickness: =
+                        Height: =19
+                        Image: ='icons8-checkmark'
+                        Visible: =ThisItem.Completed = gblOptionSets.Job.CompletedJob.Yes And ThisItem.Job <> gblRecordJobSpotlight.Job
+                        Width: =24
+                        X: =280.5
+                        Y: =16
+                  - btn_Jobs_List__OpenJob:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderColor: =ColorFade(Self.Fill, -15%)
+                        Color: =Color.Transparent
+                        DisabledBorderColor: =Color.Transparent
+                        DisabledColor: =Color.Transparent
+                        DisabledFill: =Color.Transparent
+                        Fill: =Color.Transparent
+                        Font: =Font.'Open Sans'
+                        Height: =47
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Color.Transparent
+                        HoverFill: =Color.Transparent
+                        OnSelect: |-
+                          =// get the job record
+                          Set(
+                              gblRecordJobCurrent,
+                              ThisItem
+                          );
+                          If(
+                              gblRecordJobCurrent.'Is Source Vesta Deal?'<>gblOptionSets.Job.IsSourceVestaDeal.Yes,
+                              UpdateContext({locShowSwitchApp: true}),
+                              IsToday(gblRecordJobCurrent.'Start Date Time') Or gblRecordJobCurrent.Job in colAUDRecords.RecordRef,
+                              Navigate(
+                                  'Job Details Screen',
+                                  ScreenTransition.Fade,
+                                  {locReOpenClosedJobDecisionMade: false, locCurrentJobDetailsPage:1}
+                              ),
+                              Navigate(
+                                  'Load Job Screen',
+                                  ScreenTransition.Fade
+                              )
+                          )
+                        PressedBorderColor: =Self.Fill
+                        PressedColor: =Color.Transparent
+                        PressedFill: =Color.Transparent
+                        Text: |-
+                          =Blank()//With({wCountRows: CountRows(colAddLaborItems)}, "Add "&wCountRows&" Item"&If(wCountRows>1, "s"))
+                        Width: =115
+                        X: =202
+                        Y: =78
+            - ico_Jobs_List__LeftArrow:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Neutral
+                  DisabledColor: =gblAppStyles.Status.Disabled
+                  DisplayMode: |-
+                    =If(
+                        First(
+                            Sort(
+                                colCdsJobs,
+                                'Start Date Time',
+                                SortOrder.Ascending
+                            )
+                        ).'Start Date Time' <= gblDateCurrent,
+                        DisplayMode.Edit,
+                        DisplayMode.Disabled
+                    )
+                  FocusedBorderColor: =Color.Transparent
+                  Height: =34
+                  Icon: =Icon.ArrowLeft
+                  OnSelect: =Set(gblDateCurrent, gblDateCurrent-1)
+                  TabIndex: =0
+                  Width: =27
+                  X: =212
+                  Y: =39
+            - ico_Jobs_List__RightArrow:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Neutral
+                  DisabledColor: =gblAppStyles.Status.Disabled
+                  DisplayMode: |-
+                    =If(
+                        First(
+                            Sort(
+                                colCdsJobs,
+                                'Start Date Time',
+                                SortOrder.Descending
+                            )
+                        ).'Start Date Time' >= gblDateCurrent+1
+                        Or Today() > gblDateCurrent,
+                        DisplayMode.Edit,
+                        DisplayMode.Disabled
+                    )
+                  FocusedBorderColor: =Color.Transparent
+                  Height: =34
+                  Icon: =Icon.ArrowRight
+                  OnSelect: =Set(gblDateCurrent, gblDateCurrent+1)
+                  TabIndex: =0
+                  Width: =27
+                  X: =306
+                  Y: =39
+            - ico_Jobs_List__Calendar:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Neutral
+                  FocusedBorderColor: =Color.Transparent
+                  Height: =34
+                  Icon: =Icon.CalendarBlank
+                  OnSelect: |-
+                    =Set(
+                        gblDateCurrent,
+                        Today()
+                    );
+                  TabIndex: =0
+                  Width: =33
+                  X: =256
+                  Y: =39
+            - lbl_Jobs_List__Title:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  PaddingLeft: =0
+                  Size: =14
+                  Text: |-
+                    =Switch(
+                        gblDateCurrent,
+                        Today() - 1,
+                        "Yesterday's Jobs",
+                        Today(),
+                        "Today's Jobs",
+                        Today() + 1,
+                        "Tomorrow's Jobs",
+                        Text(
+                            gblDateCurrent,
+                            "[$-en-US]ddd, mmm d"
+                        ) & " Jobs"
+                    )
+                  Width: =193
+                  X: =19
+                  Y: =33
+            - lbl_Jobs_NoJobs:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppColors.Secondary.GrayMediumDark
+                  Font: =Font.'Segoe UI'
+                  Size: =14
+                  Text: ="No jobs were found"
+                  Visible: =IsEmpty(gal_Jobs_List.AllItems)
+                  Width: =337
+                  X: =13
+                  Y: =205
+            - ico_Jobs_NoJobs:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Disabled
+                  DisplayMode: =DisplayMode.View
+                  Height: =75
+                  Icon: =Icon.Search
+                  Visible: =IsEmpty(gal_Jobs_List.AllItems)
+                  Width: =75
+                  X: =144
+                  Y: =111
+      - con_Jobs_CurrentJob:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =648
+            Y: =60
+          Children:
+            - btn_Jobs_CurrentJob__Card:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =gblAppColors.Secondary.GrayMedium
+                  BorderThickness: =0
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =DisplayMode.View
+                  Fill: =gblAppStyles.Card.Fill
+                  FocusedBorderThickness: =1
+                  Font: =Font.'Open Sans'
+                  Height: =587
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =ColorFade(Self.Fill,15%)
+                  OnSelect: =
+                  PaddingRight: =3.75
+                  PaddingTop: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =ColorFade(Self.Fill,30%)
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =11.24
+                  Text: =
+                  Visible: =true//!IsBlank(gblRecordJobCurrent)
+                  Width: =578
+                  X: =47
+                  Y: =95
+            - btn_Jobs_CurrentJob__OpenJob:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =gblAppStyles.Status.Neutral
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =ColorFade(Self.Fill, -10%)
+                  OnSelect: |
+                    =Set(
+                        gblRecordJobCurrent,
+                        gblRecordJobSpotlight
+                    );
+                    If(
+                        gblRecordJobCurrent.'Is Source Vesta Deal?'<>gblOptionSets.Job.IsSourceVestaDeal.Yes,
+                        UpdateContext({locShowSwitchApp: true}),
+                        Navigate(
+                            'Job Details Screen',
+                            ScreenTransition.Fade,
+                            {
+                                locReOpenClosedJobDecisionMade: false,
+                                locCurrentJobDetailsPage: 1
+                            }
+                        )
+                    );
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =ColorFade(Self.Fill,-30%)
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Size: =20
+                  Text: ="Open Job"
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =200
+                  X: =408
+                  Y: =615
+            - lbl_Jobs_CurrentJob__Measures:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Card.TitleColor
+                  Fill: =Color.Transparent
+                  Font: =gblAppStyles.Text.TitleFont
+                  FontWeight: =FontWeight.Lighter
+                  Height: =34
+                  OnSelect: =
+                  Size: =gblAppStyles.Card.TitleSize
+                  Text: |-
+                    =With(
+                        {
+                            varRows: CountRows(
+                                Filter(
+                                    colCdsJobEntries,
+                                    colCdsJobEntries[@Job].Job = gblRecordJobSpotlight.Job
+                                )
+                            )
+                        },
+                        Concatenate(
+                            Coalesce(
+                                Text(varRows),
+                                "0"
+                            ),
+                            If(
+                                varRows = 1,
+                                " Measure",
+                                " Measures"
+                            )
+                        )
+                    )
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =260
+                  X: =102
+                  Y: =595
+            - ico_Jobs_CurrentJob__Measures:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Danger
+                  DisplayMode: =DisplayMode.View
+                  Height: =26
+                  Icon: =Icon.Home
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =26
+                  X: =65
+                  Y: =599
+            - lbl_Jobs_CurrentJob__Homeowner:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Card.TitleColor
+                  Fill: =Color.Transparent
+                  Font: =gblAppStyles.Text.TitleFont
+                  FontWeight: =FontWeight.Lighter
+                  Height: =34
+                  OnSelect: =
+                  Size: =gblAppStyles.Card.TitleSize
+                  Text: =gblRecordJobSpotlight.'Primary Contact'.'Full Name'
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =260
+                  X: =102
+                  Y: =557
+            - ico_Jobs_CurrentJob__Homeowner:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Success
+                  DisplayMode: =DisplayMode.View
+                  Height: =26
+                  Icon: =Icon.Person
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =26
+                  X: =65
+                  Y: =561
+            - lbl_Jobs_CurrentJob__Time:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Card.TitleColor
+                  Fill: =Color.Transparent
+                  Font: =gblAppStyles.Text.TitleFont
+                  FontWeight: =FontWeight.Lighter
+                  Height: =34
+                  OnSelect: =
+                  Size: =gblAppStyles.Card.TitleSize
+                  Text: =Text(gblRecordJobSpotlight.'Start Date Time', DateTimeFormat.ShortTime)
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =523
+                  X: =102
+                  Y: =517
+            - ico_Jobs_CurrentJob__Time:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Neutral
+                  DisplayMode: =DisplayMode.View
+                  Height: =26
+                  Icon: =Icon.Clock
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =26
+                  X: =65
+                  Y: =521
+            - img_Jobs_CurrentJob__Location:
+                Control: Image@2.2.3
+                Properties:
+                  BorderColor: =ColorFade(gblAppColors.Secondary.GrayMediumDark, 70%)
+                  BorderThickness: =0.5
+                  Height: =370
+                  Image: |-
+                    =LookUp(
+                        colCdsJobs,
+                        Job = gblRecordJobSpotlight.Job,
+                        'Map Image'
+                    ).Full
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =btn_Jobs_CurrentJob__Card.Width-0.5
+                  X: =btn_Jobs_CurrentJob__Card.X
+                  Y: =95
+            - lbl_Jobs_CurrentJob__HideText:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Fill: =RGBA(255, 255, 255, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =30
+                  Text: =""
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =578
+                  X: =47
+                  Y: =448
+            - lbl_Jobs_CurrentJob__Location:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Card.TitleColor
+                  Fill: =Color.Transparent
+                  Font: =gblAppStyles.Text.TitleFont
+                  OnSelect: =
+                  Size: =20
+                  Text: |-
+                    =Concatenate(
+                        gblRecordJobSpotlight.'Address Street 1',
+                        ", ",
+                        gblRecordJobSpotlight.City
+                    )
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =540
+                  Wrap: =false
+                  X: =61
+                  Y: =469
+            - lbl_Jobs_CurrentJob__Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Size: =gblAppStyles.Text.TitleSize
+                  Text: |-
+                    =If(
+                        !IsBlank(gblRecordJobSpotlight), "Next Job",
+                        gblRecordJobSpotlight.'Start Date Time'<Now(), "Current Job", "Next Job"
+                    )
+                  Width: =523
+                  X: =47
+                  Y: =33
+            - lbl_Jobs_Separator:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Fill: =ColorFade(gblAppColors.Secondary.GrayMediumDark, 70%)
+                  Font: =Font.'Open Sans'
+                  Height: =1
+                  Text: =""
+                  Visible: =!IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =578
+                  X: =47
+                  Y: =448
+            - lbl_Jobs_NoMap:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppColors.Secondary.GrayMediumDark
+                  Font: =Font.'Segoe UI'
+                  Size: =18
+                  Text: ="No location map was found"
+                  Visible: =!img_Jobs_CurrentJob__Location.Visible And !IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =337
+                  X: =168
+                  Y: =333
+            - ico_Jobs_NoMap:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Disabled
+                  DisplayMode: =DisplayMode.View
+                  Height: =132
+                  Icon: =Icon.Search
+                  Visible: =!img_Jobs_CurrentJob__Location.Visible And !IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =132
+                  X: =270
+                  Y: =169
+            - lbl_Jobs_NoSpotlight:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppColors.Secondary.GrayMediumDark
+                  Font: =Font.'Segoe UI'
+                  Size: =18
+                  Text: ="All jobs have been completed for today"
+                  Visible: =IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =576
+                  X: =48
+                  Y: =425
+            - ico_Jobs_NoSpotlight:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Disabled
+                  DisplayMode: =DisplayMode.View
+                  Height: =132
+                  Icon: =Icon.Check
+                  Visible: =IsBlank(gblRecordJobSpotlight.Name)
+                  Width: =132
+                  X: =270
+                  Y: =261
+      - cmp_Jobs_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: =
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - ico_Jobs_Refresh:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =Color.White
+            FocusedBorderColor: =Color.Transparent
+            Height: =60
+            Icon: =Icon.Reload
+            OnSelect: |-
+              =Set(gblTextClickedSaveScreen, "Jobs Screen");
+              Navigate(
+                  'Saving Screen',
+                  ScreenTransition.Fade,
+                  {locSaveText: "Refreshing data from Vesta Data..."}
+              )
+            PaddingBottom: =20
+            PaddingTop: =20
+            TabIndex: =0
+            Width: =60
+      - ico_Jobs_HiddenMenu:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =Parent.Fill
+            Height: =24
+            Icon: =Icon.Cancel
+            OnSelect: =Navigate('Hidden ADMIN Screen')
+            TabIndex: =0
+            Width: =24
+            Y: =744
+      - con_SwitchApps_Confirm:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =768
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locShowSwitchApp
+            Width: =1024
+          Children:
+            - lbl_SwitchApps_Confirmation__Clickshield:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Fill: =RGBA(0, 0, 0, 0.5)
+                  Font: =Font.'Open Sans'
+                  Height: =768
+                  OnSelect: =
+                  Text: =""
+                  Width: =1024
+            - btn_SwitchApps_Confirm__Base:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =Blank()
+                  EnableSpellCheck: =true
+                  Font: =gblAppStyles.Text.Font
+                  Height: =300
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  MaxLength: =2000
+                  Mode: =TextMode.MultiLine
+                  PaddingLeft: =20
+                  PaddingTop: =16
+                  Width: =650
+                  X: =190
+                  Y: =(Parent.Height - Self.Height) / 2
+            - btn_SwitchApps_Confirm__Body:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =146
+                  LineHeight: =1.5
+                  PaddingLeft: =30
+                  PaddingRight: =30
+                  PaddingTop: =30
+                  Size: =gblAppStyles.Text.SubtitleSize
+                  Text: ="This job must be opened in Vesta Measure (Legacy).  Are you sure you want to proceed?"
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =btn_SwitchApps_Confirm__Base.Width
+                  X: =btn_SwitchApps_Confirm__Title.X
+                  Y: =btn_SwitchApps_Confirm__Title.Y+btn_SwitchApps_Confirm__Title.Height
+            - btn_SwitchApps_Confirm__OK:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =If(locBlockUserInput,DisplayMode.View, DisplayMode.Edit)
+                  Fill: =gblAppStyles.Status.Success
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =ColorFade(Self.Fill, -10%)
+                  OnSelect: |-
+                    =// Open Vesta Measure (new) app
+                    Launch(LookUp(colCdsVestaSettings, Key="Vesta Measure (Legacy) App URL", Value));
+                    UpdateContext({locShowSwitchApp: false});
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =ColorFade(Self.Fill,-30%)
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Size: =20
+                  Text: ="OK"
+                  Width: =164
+                  X: =btn_SwitchApps_Confirm__Base.X+btn_SwitchApps_Confirm__Base.Width-Self.Width-30
+                  Y: =btn_SwitchApps_Confirm__Base.Y+btn_SwitchApps_Confirm__Base.Height-Self.Height-30
+            - btn_SwitchApps_Confirm__Cancel:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =gblAppColors.Secondary.Black
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =If(locBlockUserInput,DisplayMode.View, DisplayMode.Edit)
+                  Fill: =gblAppColors.Secondary.White
+                  FocusedBorderThickness: =Self.BorderThickness
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =ColorFade(Self.Fill, -10%)
+                  OnSelect: |
+                    =UpdateContext({locShowSwitchApp: false});
+                  PressedBorderColor: =Self.BorderColor
+                  PressedColor: =Self.Fill
+                  PressedFill: =ColorFade(Self.Fill,-30%)
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Size: =20
+                  Text: ="Cancel"
+                  Width: =164
+                  X: =btn_SwitchApps_Confirm__Base.X+btn_SwitchApps_Confirm__Base.Width-btn_SwitchApps_Confirm__OK.Width-Self.Width-15*2-15
+                  Y: =btn_SwitchApps_Confirm__Base.Y+btn_SwitchApps_Confirm__Base.Height-Self.Height-30
+            - btn_SwitchApps_Confirm__Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =65
+                  PaddingLeft: =30
+                  PaddingTop: =30
+                  Size: =gblAppStyles.Text.TitleSize
+                  Text: ="Switch To Vesta Measure (Legacy)?"
+                  Width: =btn_SwitchApps_Confirm__Base.Width
+                  X: =btn_SwitchApps_Confirm__Base.X
+                  Y: =btn_SwitchApps_Confirm__Base.Y

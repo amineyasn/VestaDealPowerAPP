@@ -1,0 +1,738 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Materials Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |-
+        =// eliminate any items selected for deletion where 'delete items' button was not pressed
+        Clear(colDeleteMaterialItems);
+        // Save local data
+
+        IfError( // This line of code is added to hide the errors
+        If(
+            gblAppLoadOffline,
+            SaveData(
+                colAUDRecords,
+                "localAUDRecords"
+            );
+            SaveData(
+                colCdsJobMaterialItems,
+                "localCdsJobMaterialItems"
+            );
+        )
+        ,Blank())  // This line of code is added to hide the errors
+        ;
+        //reset screen
+        UpdateContext(
+            {
+                locShowColorsSelection: false,
+                locShowCalculator: false
+            }
+        );
+        Reset(gal_Materials_Items)
+      OnVisible: |-
+        =UpdateContext(
+            {
+                locShowColorsSelection: false,
+                locShowCalculator: false
+            }
+        )
+    Children:
+      - cmp_Materials_AdvanceButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_Materials_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Check}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Secondary.Green
+            NavigateScreen: ='Documents Screen'
+            Text: ="Go to Signatures"
+            Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+            Width: =270
+            X: =713
+            Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+      - cmp_Materials_AddItemsButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_Materials_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Add}
+            IconColor: =Color.White
+            IconFill: =gblAppStyles.Status.Neutral
+            NavigateScreen: ='Add Materials Items Screen'
+            Text: ="Add Items"
+            Visible: =!cmp_Materials_DeleteItemsButton.Visible
+            Width: =225
+            X: =cmp_Materials_Sidebar.Width + gblAppStyles.Padding.ButtonMargin
+            Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+      - cmp_Materials_DeleteItemsButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_Materials_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Trash}
+            IconColor: =Color.White
+            IconFill: =gblAppStyles.Status.Danger
+            NavigateScreen: ='Add Labor Items Screen'
+            Text: ="Delete Items"
+            Visible: =CountRows(Filter(gal_Materials_Items.AllItems, 'Job Material Item' in colDeleteMaterialItems.'Job Material Item'))>0
+            Width: =225
+            X: =cmp_Materials_Sidebar.Width + gblAppStyles.Padding.ButtonMargin
+            Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+      - btn_Materials_DeleteItemsButton:
+          Control: Classic/Button@2.2.0
+          Group: grp_Materials_Main
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =Color.Transparent
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =Color.Transparent
+            Font: =Font.'Open Sans'
+            Height: =cmp_Materials_DeleteItemsButton.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Color.Transparent
+            HoverFill: =Color.Transparent
+            OnSelect: |-
+              =// Remove each record from the local job material items collection
+              ForAll(
+                  colDeleteMaterialItems,
+                  With(
+                      {
+                          varType: "colCdsJobMaterialItems",
+                          varRecordRef: colDeleteMaterialItems[@'Job Material Item']
+                      },
+                      If(
+                          varRecordRef in Filter(
+                              colAUDRecords,
+                              Type = "colCdsJobMaterialItems"
+                              And Operation = "A"
+                          ).RecordRef,
+                          // if labor item was created on local device
+                          Remove(
+                              colCdsJobMaterialItems,
+                              LookUp(
+                                  colCdsJobMaterialItems,
+                                  'Job Material Item' = varRecordRef
+                              )
+                          );
+                          Remove(
+                              colAUDRecords,
+                              LookUp(
+                                  colAUDRecords,
+                                  Type = varType
+                                  And RecordRef = varRecordRef
+                                  And Operation = "A"
+                              )
+                          ),
+                          // if labor item was downloaded from the server
+                          Collect(
+                              colAUDRecords,
+                              {
+                                  Type: varType,
+                                  RecordRef: varRecordRef,
+                                  Job: gblRecordJobCurrent.Job,
+                                  Operation: "D"
+                              }
+                          )
+                      )
+                  )
+              );
+              UpdateIf(
+                  colCdsJobMaterialItems,
+                  'Job Material Item' in Filter(
+                      colAUDRecords,
+                      Type = "colCdsJobMaterialItems",
+                      Operation = "D").RecordRef,
+                  {
+                      Status: gblOptionSets.JobMaterialItem.Status.Inactive,
+                      'Status Reason': gblOptionSets.JobMaterialItem.StatusReason.Inactive
+                  }
+              );
+              // save local changes
+              If(
+                  gblAppLoadOffline,
+                  SaveData(
+                      colAUDRecords,
+                      "localAUDRecords"
+                  );
+                  SaveData(
+                      colCdsJobMaterialItems,
+                      "localCdsJobMaterialItems"
+                  );
+              );
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Color.Transparent
+            PressedFill: =Color.Transparent
+            Visible: =cmp_Materials_DeleteItemsButton.Visible
+            Width: =cmp_Materials_DeleteItemsButton.Width
+            X: =cmp_Materials_DeleteItemsButton.X
+            Y: =cmp_Materials_DeleteItemsButton.Y
+      - gal_Materials_Items:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Group: grp_Materials_Main
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            DelayItemLoading: =false
+            Fill: =Color.Transparent
+            Height: =440
+            Items: |-
+              =Filter(
+                  colCdsJobMaterialItems,
+                  appJobIDText = gblRecordJobCurrent.appJobIDText,
+                  Status <> gblOptionSets.JobMaterialItem.Status.Inactive
+              )
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: =
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplateFill: =Color.Transparent//If(txt_Homeowner_Dealer_1.Text=ThisItem.Value, gblAppStyles.Status.Neutral, gblAppStyles.Rolodex.Fill)
+            TemplateSize: =64
+            Visible: =!IsEmpty(Self.AllItems)
+            Width: =871
+            X: =113*1
+            Y: =203
+          Children:
+            - ico_Materials_Items__Notes:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: |-
+                    =If(
+                        !IsBlank(ThisItem.Notes),
+                        gblAppStyles.Status.Info,
+                        gblAppStyles.Status.Neutral
+                    )
+                  Fill: =Color.Transparent
+                  FocusedBorderColor: =Color.Transparent
+                  Height: =44
+                  Icon: |-
+                    =If(
+                        !IsBlank(ThisItem.Notes),
+                        Icon.Post,
+                        Icon.Note
+                    )
+                  OnSelect: |-
+                    =Navigate(
+                        'Add Note Screen',
+                        ScreenTransition.None,
+                        {
+                            locRecordNoteCurrent: {
+                                TableName: "Job Material Items",
+                                GUID: ThisItem.'Job Material Item',
+                                BackScreen: App.ActiveScreen,
+                                Notes: ThisItem.Notes
+                            }
+                        }
+                    );
+                  PaddingBottom: =6
+                  PaddingLeft: =6
+                  PaddingRight: =6
+                  PaddingTop: =6
+                  TabIndex: =0
+                  Width: =44
+                  X: =817
+                  Y: =(Parent.TemplateHeight - Self.Height) / 2
+            - btn_Materials_Items__Description:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =gblAppStyles.Text.Color
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =DisplayMode.View
+                  Fill: =gblAppColors.Secondary.White
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: =ThisItem.Name
+                  Width: =311
+                  X: =496
+                  Y: =7
+            - ico_Materials_Items__Actions:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =Color.Transparent
+                  BorderThickness: =2
+                  Color: |-
+                    =If(
+                        ThisItem.'Job Material Item' in colDeleteMaterialItems.'Job Material Item',
+                        gblAppStyles.Status.Danger,
+                        gblAppColors.Secondary.GrayMedium
+                    )
+                  Height: =28
+                  Icon: =Icon.Trash
+                  OnSelect: |
+                    =If(
+                        ThisItem.'Job Material Item' in colDeleteMaterialItems.'Job Material Item',
+                        Remove(
+                            colDeleteMaterialItems,
+                            LookUp(
+                                colDeleteMaterialItems,
+                                'Job Material Item' = ThisItem.'Job Material Item'
+                            )
+                        ),
+                        Collect(
+                            colDeleteMaterialItems,
+                            ThisItem
+                        )
+                    );
+                  TabIndex: =0
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                  Width: =28
+                  X: =770//818
+                  Y: =18
+            - btn_Materials_Items__Options:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =gblAppColors.Secondary.Black
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisabledColor: =RGBA(166,166,166,1)
+                  DisabledFill: =gblAppStyles.Status.Disabled
+                  DisplayMode: |-
+                    =With(
+                        {varMaterialItemType: LookUp(
+                            colCdsMarketMaterialItems,
+                            'Market Material Item' = ThisItem.'Market Material Item'.'Market Material Item',
+                            'Material Item'
+                        ).Type},
+
+                    If(
+                        gblRecordJobCurrent.Completed = 'Completed (Jobs)'.No And varMaterialItemType = 'Material Item Type'.COIL,
+                        DisplayMode.Edit,
+                        varMaterialItemType <> 'Material Item Type'.COIL,
+                        DisplayMode.Disabled,
+                        DisplayMode.View
+                    ))
+                  Fill: =gblAppColors.Secondary.White
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  Italic: |-
+                    =IsBlank(ThisItem.'Lumber: Grade')
+                  OnSelect: |-
+                    =Navigate(
+                        'Material Options Screen',
+                        BorderStyle.None,
+                        {
+                            locCurrentMaterialItem: LookUp(
+                                colCdsMarketMaterialItems,
+                                'Market Material Item' = ThisItem.'Market Material Item'.'Market Material Item',
+                                'Material Item'
+                            ).Name,
+                            locGUIDJobMaterialItem: ThisItem.'Job Material Item',
+                            locCurrentMaterialOptionProperty: "Species",
+                            locMaterialItemSpecies: ThisItem.'Lumber: Species',
+                            locMaterialItemGrade: ThisItem.'Lumber: Grade'
+                        }
+                    )
+                  PaddingLeft: =10
+                  PaddingRight: =10
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: |-
+                    =With(
+                        {
+                            varMaterialItemType: LookUp(
+                                colCdsMarketMaterialItems,
+                                'Market Material Item' = ThisItem.'Market Material Item'.'Market Material Item',
+                                'Material Item'
+                            ).Type
+                        },
+                        If(
+                            varMaterialItemType = 'Material Item Type'.COIL And !IsBlank(ThisItem.'Lumber: Grade'),
+                            ThisItem.'Lumber: Species' & Char(13) & ThisItem.'Lumber: Grade',
+                            gblRecordJobCurrent.Completed = 'Completed (Jobs)'.No And varMaterialItemType = 'Material Item Type'.COIL And IsBlank(ThisItem.'Lumber: Grade'),
+                            "tap to select"
+                        )
+                    )
+                  Width: =147
+                  X: =btn_Materials_Items__Color.X+btn_Materials_Items__Color.Width+15
+                  Y: =7
+            - btn_Materials_Items__Color:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =gblAppColors.Secondary.Black
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =If(gblRecordJobCurrent.Completed='Completed (Jobs)'.No, DisplayMode.Edit, DisplayMode.View)
+                  Fill: =gblAppColors.Secondary.White
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  Italic: =IsBlank(ThisItem.Color)
+                  OnSelect: |-
+                    =Navigate(
+                        'Material Colors Screen',
+                        BorderStyle.None,
+                        {
+                            locCurrentMaterialItem: LookUp(
+                                colCdsMarketMaterialItems,
+                                'Market Material Item' = ThisItem.'Market Material Item'.'Market Material Item',
+                                'Material Item'
+                            ).Name,
+                            locGUIDJobMaterialItem: ThisItem.'Job Material Item',
+                            locMaterialColorSelected: ThisItem.Color,
+                            locMaterialColorIsCustomValue: With(
+                                {
+                                    varMaterialItemName: LookUp(
+                                        colCdsMarketMaterialItems,
+                                        'Market Material Item' = ThisItem.'Market Material Item'.'Market Material Item',
+                                        'Material Item'
+                                    ).Name
+                                },
+                                IsBlank(
+                                    LookUp(
+                                        colCdsMaterialItemColors,
+                                        'Material Item' = varMaterialItemName
+                                        And Name = ThisItem.Color
+                                    )
+                                ) And !IsBlank(ThisItem.Color)
+                            ),
+                            locMaterialColorIsPredefinedOptions: With(
+                                {
+                                    varMaterialItemName: LookUp(
+                                        colCdsMarketMaterialItems,
+                                        'Market Material Item' = ThisItem.'Market Material Item'.'Market Material Item',
+                                        'Material Item'
+                                    ).Name
+                                },
+                                !IsEmpty(
+                                    Filter(
+                                        colCdsMaterialItemColors,
+                                        'Material Item' = varMaterialItemName
+                                    )
+                                )
+                            )
+                        }
+                    )
+                  PaddingLeft: =10
+                  PaddingRight: =10
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: =Coalesce(ThisItem.Color, "tap to select")
+                  Width: =147
+                  X: =btn_Materials_Items__Quantity.X+btn_Materials_Items__Quantity.Width+15
+                  Y: =7
+            - btn_Materials_Items__Quantity:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: |-
+                    =If(
+                        ThisItem.Quantity = 0,
+                        gblAppStyles.Status.Danger,
+                        Color.Transparent
+                    )
+                  BorderThickness: |-
+                    =If(
+                        ThisItem.Quantity = 0,
+                        3,
+                       0
+                    )
+                  Color: =gblAppColors.Secondary.Black
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =If(gblRecordJobCurrent.Completed='Completed (Jobs)'.No, DisplayMode.Edit, DisplayMode.View)
+                  Fill: =gblAppColors.Secondary.White
+                  FocusedBorderThickness: =Self.BorderThickness
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  Italic: =IsBlank(ThisItem.Quantity)
+                  OnSelect: |-
+                    =UpdateContext({locShowCalculator: true})
+                  PaddingLeft: =10
+                  PaddingRight: =10
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: =If(IsBlank(ThisItem.Quantity), "tap to select", ThisItem.Quantity)
+                  Width: =140
+                  X: =16
+                  Y: =7
+      - lbl_Materials_Title:
+          Control: Label@2.5.1
+          Group: grp_Materials_Main
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            Height: =49
+            PaddingLeft: =20
+            Size: =gblAppStyles.Text.TitleSize
+            Text: ="Materials"
+            Width: =681
+            X: =172
+            Y: =85
+      - ico_Materials_Title:
+          Control: Classic/Icon@2.5.0
+          Group: grp_Materials_Main
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppStyles.Status.Disabled
+            DisplayMode: =DisplayMode.View
+            Height: =49
+            Icon: =Icon.PaperClip
+            Width: =49
+            X: =123*1
+            Y: =85*1
+      - cmp_Materials_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Materials"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =App.Height-cmp_Materials_Titlebar.Height
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =cmp_Materials_Titlebar.Y+cmp_Materials_Titlebar.Height
+      - cmp_Materials_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Jobs Screen'
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - lbl_Materials_Calculator__Clickshield:
+          Control: Label@2.5.1
+          Group: grp_Materials_Calculator
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =RGBA(230, 230, 230, 0.5)
+            Font: =Font.'Open Sans'
+            Height: =708
+            Text: =""
+            Visible: =locShowCalculator
+            Width: =944
+            X: =80
+            Y: =60
+      - cmp_Materials_Calculator:
+          Control: CanvasComponent
+          ComponentName: cmp_Calculator
+          Group: grp_Materials_Calculator
+          Properties:
+            Default: =gal_Materials_Items.Selected.Quantity
+            Height: =600
+            Reset: =locResetCalculator
+            Text: =gal_Materials_Items.Selected.Name&" Quantity"
+            Visible: =locShowCalculator
+            Width: =380
+            X: =355
+            Y: =70
+      - tog_Materials_Calculator:
+          Control: Classic/Toggle@2.1.0
+          Group: grp_Materials_Calculator
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Default: =locShowCalculator And !cmp_Materials_Calculator.OK
+            Font: =Font.'Open Sans'
+            OnUncheck: |-
+              =With(
+                  {
+                      varType: "colCdsJobMaterialItems",
+                      varRecordRef: gal_Materials_Items.Selected.'Job Material Item'
+                  },
+                  // update job material item with quantity
+                  Patch(
+                      colCdsJobMaterialItems,
+                      LookUp(
+                          colCdsJobMaterialItems,
+                          'Job Material Item' = gal_Materials_Items.Selected.'Job Material Item'
+                      ),
+                      {Quantity: cmp_Materials_Calculator.Value}
+                  );
+                  If(
+                      IsBlank(
+                          LookUp(
+                              colAUDRecords,
+                              Type = varType
+                              And RecordRef = varRecordRef
+                          )
+                      ),
+                      Collect(
+                          colAUDRecords,
+                          {
+                              Type: varType,
+                              RecordRef: varRecordRef,
+                              Job: gblRecordJobCurrent.Job,
+                              Operation: "U"
+                          }
+                      )
+                  )
+              );
+              // save local changes
+              IfError( // This line of code is added to hide the errors
+              If(
+                  gblAppLoadOffline,
+                  SaveData(
+                      colAUDRecords,
+                      "localAUDRecords"
+                  );
+                  SaveData(
+                      colCdsJobMaterialItems,
+                      "localCdsJobMaterialItems"
+                  );
+              )
+              ,Blank())  // This line of code is added to hide the errors
+
+              ;
+              // Hide and reset calculator
+              UpdateContext({
+                  locShowCalculator: false,
+                  locResetCalculator: true
+              });
+              UpdateContext({locResetCalculator: false})
+            Reset: =locResetCalculator
+            TrueFill: =RGBA(56, 96, 178, 1)
+            Visible: =false
+            X: =932
+            Y: =740
+      - lbl_Materials_Items__Header:
+          Control: Label@2.5.1
+          Group: grp_Materials_Main
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            OnSelect: =
+            Text: ="       Quantity                      Color                        Options                     Item"
+            Visible: =!locShowColorsSelection And !locShowCalculator And gal_Materials_Items.Visible
+            Width: =853
+            X: =131*1
+            Y: =163*1
+      - lbl_Materials_NoMaterials:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppColors.Secondary.GrayMediumDark
+            Font: =Font.'Segoe UI'
+            Size: =20
+            Text: |-
+              ="No materials have been added to this job
+              "
+            Visible: =IsEmpty(gal_Materials_Items.AllItems)
+            Width: =692
+            X: =206*1
+            Y: =496*1
+      - ico_Materials_NoMaterials:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppStyles.Status.Disabled
+            DisplayMode: =DisplayMode.View
+            Height: =210
+            Icon: =Icon.Information
+            Visible: =IsEmpty(gal_Materials_Items.AllItems)
+            Width: =210
+            X: =447*1
+            Y: =238*1
+      - txt_Materials_Color__Color:
+          Control: Classic/TextInput@2.3.2
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            Color: =gblAppStyles.Text.Color
+            Default: =Blank()
+            Font: =gblAppStyles.Text.Font
+            Height: =50
+            HintText: ="Enter a color"
+            HoverBorderColor: =RGBA(0, 18, 107, 1)
+            HoverColor: =Self.Color
+            HoverFill: =Self.Fill
+            MaxLength: =20
+            OnChange: =
+            PaddingLeft: =20
+            Visible: =locShowColorsSelection
+            Width: =443
+            X: =327
+            Y: =163

@@ -1,0 +1,959 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Sign Document Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |-
+        =// revert to prior document state if user leaves screen before saving
+        If(
+            locJobDocumentSave = false,
+            ClearCollect(
+                colCdsJobDocuments,
+                colJobDocumentsCancel
+            )
+        );
+        // reset screen
+        UpdateContext(
+            {
+                locHideScreen: false,
+                locJobDocumentSave: false,
+                locShowSignatureCapture: false,
+                locShowSignatureWarning: false
+            }
+        )
+      OnVisible: |-
+        =UpdateContext({locResetScrollable: Blank()});
+        ClearCollect(
+            colJobDocumentsCancel,
+            colCdsJobDocuments
+        );
+    Children:
+      - cmp_SignDoc_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Documents"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =App.Height-cmp_SignDoc_Titlebar.Height
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =cmp_SignDoc_Titlebar.Y+cmp_SignDoc_Titlebar.Height
+      - cmp_SignDoc_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Jobs Screen'
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - cvs_SignDoc_Scrollable:
+          Control: FluidGrid@2.3.0
+          Properties:
+            BorderThickness: =0
+            Height: =681
+            Width: =888
+            X: =115
+            Y: =86
+          Children:
+            - crd_SignDoc_Verbiage:
+                Control: DataCard@1.0.2
+                Properties:
+                  Fill: =gblAppColors.Secondary.White
+                  Height: =100
+                  Width: =888
+                  X: =0
+                  Y: =1
+                Children:
+                  - lbl_SignDoc_Verbiage:
+                      Control: Label@2.5.1
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Segoe UI'
+                        Height: =Coalesce(locResetScrollable, 237)
+                        LineHeight: =1.5
+                        PaddingLeft: =30
+                        PaddingRight: =20
+                        PaddingTop: =20
+                        Size: =gblAppStyles.Text.Size
+                        Text: |-
+                          =Text(Today(), "[$-en-US]mmmm d, yyyy")&"
+
+                          "&
+                           locContractVerbiage&"
+                           "
+                        VerticalAlign: =VerticalAlign.Top
+                        Width: =861
+            - crd_SignDoc_Title:
+                Control: DataCard@1.0.2
+                Variant: BlankCard
+                Properties:
+                  Fill: =gblAppColors.Secondary.White
+                  Height: =lbl_SignDoc_Title.Height+10
+                  Width: =888
+                  X: =0
+                  Y: =0
+                Children:
+                  - lbl_SignDoc_Title:
+                      Control: Label@2.5.1
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Segoe UI'
+                        Height: =Coalesce(locResetScrollable, 40)
+                        PaddingLeft: =30
+                        PaddingRight: =20
+                        PaddingTop: =25
+                        Size: =gblAppStyles.Text.TitleSize
+                        Text: =gblRecordCurrentDocument.Name
+                        VerticalAlign: =VerticalAlign.Top
+                        Width: =Parent.Width
+            - crd_SignDoc_Signatures:
+                Control: DataCard@1.0.2
+                Variant: BlankCard
+                Properties:
+                  Height: =325
+                  Width: =888
+                  X: =0
+                  Y: =2
+                Children:
+                  - cmp_SignDoc_AdvanceButton:
+                      Control: CanvasComponent
+                      ComponentName: cmp_AdvanceButton
+                      Properties:
+                        ButtonFill: =Color.White
+                        Color: =Color.Black
+                        Fill: =Color.Transparent
+                        Height: =60
+                        Icon: |-
+                          ={Value: Icon.Check}
+                        IconColor: =Color.White
+                        IconFill: =gblAppColors.Secondary.Green
+                        NavigateScreen: ='Documents Screen'
+                        Text: ="Complete Form"
+                        Visible: =!IsBlank(img_SignDoc_Homeowner1.Image) And !IsBlank(img_SignDoc_Technician.Image) And gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                        Width: =265
+                        X: =603
+                        Y: =214
+                  - lbl_SignDoc_AdvanceButton:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        FocusedBorderColor: =Color.Transparent
+                        FocusedBorderThickness: =0.01
+                        Font: =Font.'Open Sans'
+                        Height: =cmp_SignDoc_AdvanceButton.Height
+                        OnSelect: |-
+                          =With(
+                              {
+                                  varType: "colCdsJobDocuments",
+                                  varRecordRef: gblRecordCurrentDocument.'Job Document'
+                              },
+                              // change document completed status to 'yes'
+                              Patch(
+                                  colCdsJobDocuments,
+                                  LookUp(
+                                      colCdsJobDocuments,
+                                      'Job Document' = varRecordRef
+                                  ),
+                                  {
+                                      DocumentDate: Today(),
+                                      Completed: gblOptionSets.JobDocument.Completed.Yes
+                                  }
+                              );
+                              // update job documents in the AUD records collection
+                              If(
+                                  IsBlank(
+                                      LookUp(
+                                          colAUDRecords,
+                                          Type = varType
+                                          And RecordRef= varRecordRef
+                                      )
+                                  ),
+                                  Collect(
+                                      colAUDRecords,
+                                      {
+                                          Type: varType,
+                                          RecordRef: varRecordRef,
+                                          Job: gblRecordJobCurrent.Job,
+                                          Operation: "U"
+                                      }
+                                  )
+                              )
+                          );
+                          //Save local data
+                          If(
+                              gblAppLoadOffline,
+                              SaveData(
+                                  colAUDRecords,
+                                  "localAUDRecords"
+                              );
+                              SaveData(
+                                  colCdsJobDocuments,
+                                  "localCdsJobDocuments"
+                              )
+                          );
+                          // flag to save the document changes once screen is hidden
+                          UpdateContext({locJobDocumentSave: true});
+                          // next screen
+                          Navigate('Documents Screen');
+                        TabIndex: =0
+                        Text: =""
+                        Visible: =cmp_SignDoc_AdvanceButton.Visible
+                        Width: =cmp_SignDoc_AdvanceButton.Width
+                        X: =cmp_SignDoc_AdvanceButton.X
+                        Y: =cmp_SignDoc_AdvanceButton.Y
+                  - btn_SignDoc_Technician:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        Align: =TextPosition.Left
+                        BorderColor: =ColorFade(Self.Fill, -15%)
+                        BorderThickness: =0
+                        Color: =gblAppStyles.Text.Color
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        Fill: =Color.White
+                        FocusedBorderColor: =Color.Transparent
+                        FocusedBorderThickness: =0.01
+                        Font: =gblAppStyles.Text.Font
+                        FontWeight: =FontWeight.Normal
+                        Height: =64
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =Self.Fill
+                        OnSelect: =
+                        PaddingLeft: =20
+                        PressedBorderColor: =Self.Fill
+                        PressedFill: =Self.Fill
+                        RadiusBottomLeft: =5
+                        RadiusBottomRight: =Self.RadiusBottomLeft
+                        RadiusTopLeft: =Self.RadiusBottomLeft
+                        RadiusTopRight: =Self.RadiusBottomLeft
+                        Size: =gblAppStyles.Text.Size
+                        Text: =If(IsBlank(img_SignDoc_Technician.Image) And gblRecordJobCurrent.Completed='Completed (Jobs)'.No, "Click to sign")
+                        Width: =300
+                        X: =342
+                        Y: =70
+                  - lbl_SignDoc_Technician__Date:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =TextPosition.Right
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =gblAppStyles.Text.Color
+                        Font: =gblAppStyles.Text.Font
+                        Height: =24
+                        PaddingRight: =10
+                        Size: =9
+                        Text: |+
+                          =Text(LookUp(colCdsJobDocuments, 'Job Document' = gblRecordCurrentDocument.'Job Document', 'Technician Signature Date'), DateTimeFormat.ShortDate)
+
+                        Width: =300
+                        X: =342
+                        Y: =110
+                  - img_SignDoc_Technician:
+                      Control: Image@2.2.3
+                      Properties:
+                        AccessibleLabel: ="abc"
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        BorderStyle: =BorderStyle.None
+                        DisplayMode: =If(gblRecordJobCurrent.Completed='Completed (Jobs)'.No, DisplayMode.Edit, DisplayMode.View)
+                        FocusedBorderColor: =Color.Transparent
+                        FocusedBorderThickness: =0.01
+                        Height: =64
+                        Image: |-
+                          =Coalesce(
+                              LookUp(
+                                  colCdsJobDocuments,
+                                  'Job Document' = gblRecordCurrentDocument.'Job Document',
+                                  'Technician Signature'
+                              ).Full,
+                              LookUp(
+                                  colCdsJobDocuments,
+                                  'Job Document' = gblRecordCurrentDocument.'Job Document',
+                                  'Technician Signature'
+                              ).Value
+                          )
+                        OnSelect: |-
+                          =//Set(locShowSignatureCapture, true); Set(locWhoseSignature, "Technician");
+                          UpdateContext(
+                              {
+                                  locShowSignatureCapture: true,
+                                  locWhoseSignature: "Technician"
+                              }
+                          )
+                        TabIndex: =0
+                        Width: =300
+                        X: =342
+                        Y: =70
+                  - lbl_SignDoc_Technician:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Segoe UI'
+                        Height: =50
+                        Text: ="Technician Signature"
+                        Width: =300
+                        X: =342
+                        Y: =20
+                  - btn_SignDoc_Homeowner2:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        Align: =TextPosition.Left
+                        BorderColor: =ColorFade(Self.Fill, -15%)
+                        BorderThickness: =0
+                        Color: =gblAppStyles.Text.Color
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        Fill: =Color.White
+                        FocusedBorderColor: =Color.Transparent
+                        FocusedBorderThickness: =0.01
+                        Font: =gblAppStyles.Text.Font
+                        FontWeight: =FontWeight.Normal
+                        Height: =64
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =Self.Fill
+                        OnSelect: =
+                        PaddingLeft: =20
+                        PressedBorderColor: =Self.Fill
+                        PressedFill: =Self.Fill
+                        RadiusBottomLeft: =5
+                        RadiusBottomRight: =Self.RadiusBottomLeft
+                        RadiusTopLeft: =Self.RadiusBottomLeft
+                        RadiusTopRight: =Self.RadiusBottomLeft
+                        Size: =gblAppStyles.Text.Size
+                        Text: =If(IsBlank(img_SignDoc_Homeowner2.Image) And gblRecordJobCurrent.Completed='Completed (Jobs)'.No, "Click to sign")
+                        Width: =300
+                        Y: =210
+                  - lbl_SignDoc_Homeowner2__Date:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =TextPosition.Right
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =gblAppStyles.Text.Color
+                        Font: =gblAppStyles.Text.Font
+                        Height: =24
+                        PaddingRight: =10
+                        Size: =9
+                        Text: |+
+                          =Text(LookUp(colCdsJobDocuments, 'Job Document' = gblRecordCurrentDocument.'Job Document', 'Homeowner Signature Date (2)'), DateTimeFormat.ShortDate)
+
+                        Width: =300
+                        Y: =250
+                  - img_SignDoc_Homeowner2:
+                      Control: Image@2.2.3
+                      Properties:
+                        AccessibleLabel: ="abc"
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        BorderStyle: =BorderStyle.None
+                        DisplayMode: =If(gblRecordJobCurrent.Completed='Completed (Jobs)'.No, DisplayMode.Edit, DisplayMode.View)
+                        FocusedBorderColor: =Color.Transparent
+                        FocusedBorderThickness: =0.01
+                        Height: =64
+                        Image: |-
+                          =Coalesce(
+                              LookUp(
+                                  colCdsJobDocuments,
+                                  'Job Document' = gblRecordCurrentDocument.'Job Document',
+                                  'Homeowner Signature (2)'
+                              ).Full,
+                              LookUp(
+                                  colCdsJobDocuments,
+                                  'Job Document' = gblRecordCurrentDocument.'Job Document',
+                                  'Homeowner Signature (2)'
+                              ).Value
+                          )
+                        OnSelect: |-
+                          =UpdateContext(
+                              {
+                                  locShowSignatureWarning: true,
+                                  locWhoseSignature: "Homeowner 2"
+                              }
+                          )
+                        TabIndex: =0
+                        Width: =300
+                        Y: =210
+                  - lbl_SignDoc_Homeowner2:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Segoe UI'
+                        Height: =50
+                        Text: ="Homeowner 2 Signature"
+                        Width: =300
+                        Y: =160
+                  - btn_SignDoc_Homeowner1:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        Align: =TextPosition.Left
+                        BorderColor: =ColorFade(Self.Fill, -15%)
+                        BorderThickness: =0
+                        Color: =gblAppStyles.Text.Color
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        Fill: =Color.White
+                        FocusedBorderColor: =Color.Transparent
+                        FocusedBorderThickness: =0.01
+                        Font: =gblAppStyles.Text.Font
+                        FontWeight: =FontWeight.Normal
+                        Height: =64
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =Self.Fill
+                        OnSelect: =
+                        PaddingLeft: =20
+                        PressedBorderColor: =Self.Fill
+                        PressedFill: =Self.Fill
+                        RadiusBottomLeft: =5
+                        RadiusBottomRight: =Self.RadiusBottomLeft
+                        RadiusTopLeft: =Self.RadiusBottomLeft
+                        RadiusTopRight: =Self.RadiusBottomLeft
+                        Size: =gblAppStyles.Text.Size
+                        Text: =If(IsBlank(img_SignDoc_Homeowner1.Image) And gblRecordJobCurrent.Completed='Completed (Jobs)'.No, "Click to sign")
+                        Width: =300
+                        Y: =70
+                  - lbl_SignDoc_Homeowner1__Date:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =TextPosition.Right
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =gblAppStyles.Text.Color
+                        Font: =gblAppStyles.Text.Font
+                        Height: =24
+                        PaddingRight: =10
+                        Size: =9
+                        Text: |+
+                          =Text(LookUp(colCdsJobDocuments, 'Job Document' = gblRecordCurrentDocument.'Job Document', 'Homeowner Signature Date (1)'), DateTimeFormat.ShortDate)
+                        Width: =300
+                        Y: =110
+                  - img_SignDoc_Homeowner1:
+                      Control: Image@2.2.3
+                      Properties:
+                        AccessibleLabel: ="abc"
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        BorderStyle: =BorderStyle.None
+                        DisplayMode: =If(gblRecordJobCurrent.Completed='Completed (Jobs)'.No, DisplayMode.Edit, DisplayMode.View)
+                        FocusedBorderColor: =Color.Transparent
+                        FocusedBorderThickness: =0.01
+                        Height: =64
+                        Image: |-
+                          =Coalesce(
+                              LookUp(
+                                  colCdsJobDocuments,
+                                  'Job Document' = gblRecordCurrentDocument.'Job Document',
+                                  'Homeowner Signature (1)'
+                              ).Full,
+                              LookUp(
+                                  colCdsJobDocuments,
+                                  'Job Document' = gblRecordCurrentDocument.'Job Document',
+                                  'Homeowner Signature (1)'
+                              ).Value
+                          )
+                        OnSelect: |-
+                          =UpdateContext(
+                              {
+                                  locShowSignatureWarning: true,
+                                  locWhoseSignature: "Homeowner 1"
+                              }
+                          )
+                        TabIndex: =0
+                        Width: =300
+                        Y: =70
+                  - lbl_SignDoc_Homeowner1:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =TextPosition.Left
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Segoe UI'
+                        Height: =50
+                        Text: ="Homeowner 1 Signature"
+                        Width: =300
+                        Y: =20
+      - lbl_SignDoc_Capture_Clickshield:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =RGBA(230, 230, 230, 0.5)
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Open Sans'
+            Height: =708
+            OnSelect: =Blank()//Set(varShowWindowActions, false)
+            TabIndex: =0
+            Text: =""
+            Visible: =locShowSignatureCapture Or locShowSignatureWarning
+            Width: =944
+            X: =80
+            Y: =60*1
+      - btn_SignDoc_Capture__Background:
+          Control: Classic/Button@2.2.0
+          Properties:
+            Align: =TextPosition.Left
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =0
+            Color: =gblAppStyles.Text.Color
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisplayMode: =DisplayMode.View
+            Fill: =Color.White
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =gblAppStyles.Text.Font
+            FontWeight: =FontWeight.Normal
+            Height: =250
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Self.Color
+            HoverFill: =Self.Fill
+            OnSelect: =
+            PaddingLeft: =20
+            PressedBorderColor: =Self.Fill
+            PressedFill: =Self.Fill
+            RadiusBottomLeft: =5
+            RadiusBottomRight: =Self.RadiusBottomLeft
+            RadiusTopLeft: =Self.RadiusBottomLeft
+            RadiusTopRight: =Self.RadiusBottomLeft
+            Size: =gblAppStyles.Text.Size
+            Text: =
+            Visible: =locShowSignatureCapture
+            Width: =800
+            X: =(App.Width-cmp_SignDoc_Sidebar.Width-Self.Width)/2+cmp_SignDoc_Sidebar.Width
+            Y: =(App.Height-Self.Height)/2
+      - lbl_SignDoc_Capture__Signor:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Text: =locWhoseSignature&" Signature"
+            Visible: =locShowSignatureCapture
+            Width: =394
+            X: =224
+            Y: =421
+      - lbl_SignDoc_Capture__Line:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =gblAppColors.Secondary.GrayMediumDark
+            Font: =Font.'Open Sans'
+            Height: =2
+            Text: =""
+            Visible: =locShowSignatureCapture
+            Width: =740
+            X: =179
+            Y: =419
+      - btn_SignDoc_Warning__BackgroundWarning:
+          Control: Classic/Button@2.2.0
+          Group: grp_SignDoc_Warning
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =0
+            Color: =gblAppStyles.Text.Color
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisplayMode: =DisplayMode.View
+            Fill: =Color.White
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =gblAppStyles.Text.Font
+            FontWeight: =FontWeight.Normal
+            Height: =btn_SignDoc_Capture__Background.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Self.Color
+            HoverFill: =Self.Fill
+            OnSelect: =
+            PaddingBottom: =50
+            PaddingLeft: =20
+            PressedBorderColor: =Self.Fill
+            PressedFill: =Self.Fill
+            RadiusBottomLeft: =5
+            RadiusBottomRight: =Self.RadiusBottomLeft
+            RadiusTopLeft: =Self.RadiusBottomLeft
+            RadiusTopRight: =Self.RadiusBottomLeft
+            Size: =16
+            Text: ="I have read this document and agree to all of the terms and conditions."
+            Visible: =locShowSignatureWarning
+            Width: =btn_SignDoc_Capture__Background.Width
+            X: =btn_SignDoc_Capture__Background.X
+            Y: =btn_SignDoc_Capture__Background.Y
+      - ico_SignDoc_Warning__CancelWarning:
+          Control: Classic/Icon@2.5.0
+          Group: grp_SignDoc_Warning
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            Color: =gblAppColors.Secondary.GrayMedium
+            FocusedBorderColor: =Color.Transparent
+            Height: =29
+            Icon: =Icon.Cancel
+            OnSelect: |-
+              =UpdateContext(
+                  {
+                      locShowSignatureWarning: false,
+                      locShowSignatureCapture: false
+                  }
+              )
+            TabIndex: =0
+            Visible: =locShowSignatureWarning
+            Width: =29
+            X: =681
+            Y: =446
+      - lbl_SignDoc_Warning__CancelWarning:
+          Control: Label@2.5.1
+          Group: grp_SignDoc_Warning
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =2
+            Font: =Font.'Segoe UI'
+            OnSelect: |-
+              =//Set(locShowSignatureWarning, false );Set(locShowSignatureCapture, false );
+              UpdateContext(
+                  {
+                      locShowSignatureWarning: false,
+                      locShowSignatureCapture: false
+                  }
+              )
+            Size: =16
+            TabIndex: =0
+            Text: ="Cancel"
+            Visible: =locShowSignatureWarning
+            Width: =82
+            X: =724
+            Y: =441
+      - tmr_SignDoc_ShowScreen:
+          Control: Timer@2.1.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =ColorFade(Self.BorderColor, 70%)
+            DisabledColor: =ColorFade(Self.Fill, 90%)
+            DisabledFill: =ColorFade(Self.Fill, 70%)
+            Duration: =100
+            Fill: =RGBA(56, 96, 178, 1)
+            Font: =Font.'Open Sans'
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnTimerEnd: |-
+              =UpdateContext({locHideScreen: false})
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Start: =locHideScreen
+            Visible: =false
+            X: =115
+            Y: =10
+      - lbl_SignDoc_Loading__Main:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =gblAppColors.Secondary.GrayLight
+            Font: =Font.'Open Sans'
+            Height: =708
+            Text: =""
+            Visible: =locHideScreen
+            Width: =944
+            X: =80
+            Y: =60
+      - lbl_SignDoc_Loading__FullScreen:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =RGBA(149, 149, 149, 0.2)
+            Font: =Font.'Open Sans'
+            Height: =App.Height
+            Text: =""
+            Visible: =locHideScreen
+            Width: =App.Width
+      - btn_SignDoc_Capture:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =Color.Transparent
+            DisabledBorderColor: =Color.Transparent
+            DisabledColor: =Color.Transparent
+            DisabledFill: =Color.Transparent
+            Fill: =Color.Transparent
+            Font: =Font.'Open Sans'
+            Height: =34
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Color.Transparent
+            HoverFill: =Color.Transparent
+            OnSelect: |+
+              =If(
+                  locWhoseSignature = "Homeowner 1",
+                  Patch(
+                      colCdsJobDocuments,
+                      LookUp(
+                          colCdsJobDocuments,
+                          'Job Document' = gblRecordCurrentDocument.'Job Document'
+                      ),
+                      {
+                          'Homeowner Signature (1)': pen_SignDoc_Capture__Signature.Image,
+                          'Homeowner Signature Date (1)': Today()
+                      }
+                  ),
+                  locWhoseSignature = "Homeowner 2",
+                  Patch(
+                      colCdsJobDocuments,
+                      LookUp(
+                          colCdsJobDocuments,
+                          'Job Document' = gblRecordCurrentDocument.'Job Document'
+                      ),
+                      {
+                          'Homeowner Signature (2)': pen_SignDoc_Capture__Signature.Image,
+                          'Homeowner Signature Date (2)': Today()
+                      }
+                  ),
+                  locWhoseSignature = "Technician",
+                  Patch(
+                      colCdsJobDocuments,
+                      LookUp(
+                          colCdsJobDocuments,
+                          'Job Document' = gblRecordCurrentDocument.'Job Document'
+                      ),
+                      {
+                          'Technician Signature': pen_SignDoc_Capture__Signature.Image,
+                          'Technician Signature Date': Today()
+                      }
+                  )
+              );
+              With(
+                  {
+                      varType: "colCdsJobDocuments",
+                      varRecordRef: gblRecordCurrentDocument.'Job Document'
+                  },
+                  If(
+                      IsBlank(
+                          LookUp(
+                              colAUDRecords,
+                              Type = varType
+                              And RecordRef = varRecordRef
+                          )
+                      ),
+                      Collect(
+                      colAUDRecords,
+                          {
+                              Type: varType,
+                              RecordRef: varRecordRef,
+                              Job: gblRecordJobCurrent.Job,
+                              Operation: "U"
+                          }
+                      )
+                  )
+              );
+              // save local data
+              If(
+                  gblAppLoadOffline,
+                  SaveData(
+                      colAUDRecords,
+                      "localAUDRecords"
+                  );
+                  SaveData(
+                      colCdsJobDocuments,
+                      "localCdsJobDocuments"
+                  )
+              );
+              UpdateContext({locShowSignatureCapture: false});
+              Reset(pen_SignDoc_Capture__Signature);
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Color.Transparent
+            PressedFill: =Color.Transparent
+            Text: =""
+            Visible: =locShowSignatureCapture And !locShowSignatureWarning
+            Width: =113
+            X: =806
+            Y: =457
+      - ico_SignDoc_Warning__OK:
+          Control: Classic/Icon@2.5.0
+          Group: grp_SignDoc_Warning
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppStyles.Status.Success
+            FocusedBorderColor: =Color.Transparent
+            Height: =29
+            Icon: =Icon.Check
+            OnSelect: |-
+              =UpdateContext({locShowSignatureWarning: false})
+            TabIndex: =0
+            Visible: =locShowSignatureWarning
+            Width: =29
+            X: =822
+            Y: =446
+      - lbl_SignDoc_Warning__OK:
+          Control: Label@2.5.1
+          Group: grp_SignDoc_Warning
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =2
+            Font: =Font.'Segoe UI'
+            OnSelect: |-
+              =UpdateContext(
+                  {
+                      locShowSignatureCapture: true,
+                      locShowSignatureWarning: false
+                  }
+              )
+            PaddingLeft: =50
+            Size: =16
+            TabIndex: =0
+            Text: ="OK"
+            Visible: =locShowSignatureWarning
+            Width: =97
+            X: =822
+            Y: =441
+      - pen_SignDoc_Capture__Signature:
+          Control: PenInput@2.3.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderThickness: =0
+            Fill: =Color.Transparent
+            Height: =btn_SignDoc_Capture__Background.Height
+            ShowControls: =false
+            Visible: =locShowSignatureCapture
+            Width: =btn_SignDoc_Capture__Background.Width
+            X: =btn_SignDoc_Capture__Background.X
+            Y: =btn_SignDoc_Capture__Background.Y
+      - lbl_SignDoc_Capture__SignatureShield:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Height: =68
+            Text: =
+            Visible: =locShowSignatureCapture
+            Width: =165
+            X: =787
+            Y: =441
+      - ico_SignDoc_Capture__Done:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            Color: =gblAppStyles.Status.Success
+            FocusedBorderColor: =Color.Transparent
+            Height: =29
+            Icon: =Icon.Check
+            OnSelect: =Select(lbl_SignDoc_Capture__Done)
+            TabIndex: =0
+            Visible: =locShowSignatureCapture
+            Width: =29
+            X: =806
+            Y: =457
+      - lbl_SignDoc_Capture__Done:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =2
+            Font: =Font.'Segoe UI'
+            OnSelect: |
+              =With(
+                  {
+                      varType: "colCdsJobDocuments",
+                      varRecordRef: gblRecordCurrentDocument.'Job Document'
+                  },
+                  If(
+                      locWhoseSignature = "Homeowner 1",
+                      Patch(
+                          colCdsJobDocuments,
+                          LookUp(
+                              colCdsJobDocuments,
+                              'Job Document' = varRecordRef
+                          ),
+                          {
+                              'Homeowner Signature (1)': pen_SignDoc_Capture__Signature.Image,
+                              'Homeowner Signature Date (1)': Today()
+                          }
+                      ),
+                      locWhoseSignature = "Homeowner 2",
+                      Patch(
+                          colCdsJobDocuments,
+                          LookUp(
+                              colCdsJobDocuments,
+                              'Job Document' = varRecordRef
+                          ),
+                          {
+                              'Homeowner Signature (2)': pen_SignDoc_Capture__Signature.Image,
+                              'Homeowner Signature Date (2)': Today()
+                          }
+                      ),
+                      locWhoseSignature = "Technician",
+                      Patch(
+                          colCdsJobDocuments,
+                          LookUp(
+                              colCdsJobDocuments,
+                              'Job Document' = varRecordRef
+                          ),
+                          {
+                              'Technician Signature': pen_SignDoc_Capture__Signature.Image,
+                              'Technician Signature Date': Today()
+                          }
+                      )
+                  );
+                  // update job documents in the AUD records collection
+                  If(
+                      IsBlank(
+                          LookUp(
+                              colAUDRecords,
+                              Type = varType
+                              And RecordRef= varRecordRef
+                          )
+                      ),
+                      Collect(
+                          colAUDRecords,
+                          {
+                              Type: varType,
+                              RecordRef: varRecordRef,
+                              Job: gblRecordJobCurrent.Job,
+                              Operation: "U"
+                          }
+                      )
+                  )
+              );
+              // save local data
+              If(
+                  gblAppLoadOffline,
+                  SaveData(
+                      colAUDRecords,
+                      "localAUDRecords"
+                  );
+                  SaveData(
+                      colCdsJobDocuments,
+                      "localCdsJobDocuments"
+                  )
+              );
+              UpdateContext({locShowSignatureCapture: false});
+              Reset(pen_SignDoc_Capture__Signature);
+            Size: =16
+            TabIndex: =0
+            Text: ="Apply"
+            Visible: =locShowSignatureCapture
+            Width: =69
+            X: =850
+            Y: =451

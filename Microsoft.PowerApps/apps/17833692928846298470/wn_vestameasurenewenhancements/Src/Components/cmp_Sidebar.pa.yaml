@@ -1,0 +1,179 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+ComponentDefinitions:
+  cmp_Sidebar:
+    DefinitionType: CanvasComponent
+    CustomProperties:
+      Color:
+        PropertyKind: Input
+        DisplayName: Color
+        Description: A custom property
+        DataType: Color
+        Default: =Color.White
+      Default:
+        PropertyKind: Input
+        DisplayName: Default
+        Description: A custom property
+        DataType: Text
+        Default: ="Rooms"
+      HoverFill:
+        PropertyKind: Input
+        DisplayName: HoverFill
+        Description: A custom property
+        DataType: Color
+        Default: =RGBA(0, 121, 187, 0.15)
+      IconSize:
+        PropertyKind: Input
+        DisplayName: IconSize
+        Description: A custom property
+        DataType: Number
+        Default: =35
+      Items:
+        PropertyKind: Input
+        DisplayName: Items
+        Description: A custom property
+        DataType: Table
+        Default: |-
+          =Table(
+          {Title: "Homeowner", Icon: Icon.Home, Screen: App.ActiveScreen},
+          {Title: "Rooms", Icon: Icon.People, Screen: App.ActiveScreen},
+          {Title: "Labour", Icon: Icon.People, Screen: App.ActiveScreen},
+          {Title: "Materials", Icon: Icon.People, Screen: App.ActiveScreen},
+          {Title: "Signatures", Icon: Icon.People, Screen: App.ActiveScreen},
+          {Title: "Summary", Icon: Icon.People, Screen: App.ActiveScreen},
+          {Title: "Final Steps", Icon: Icon.People, Screen: App.ActiveScreen},
+          {Title: "Notes", Icon: Icon.Note, Screen: App.ActiveScreen}
+          )
+      SelectedColor:
+        PropertyKind: Input
+        DisplayName: SelectedColor
+        Description: A custom property
+        DataType: Color
+        Default: =RGBA(153, 207, 236, 1)
+      SelectedFill:
+        PropertyKind: Input
+        DisplayName: SelectedFill
+        Description: A custom property
+        DataType: Color
+        Default: =RGBA(0, 121, 187, 0.4)
+      TemplateSize:
+        PropertyKind: Input
+        DisplayName: TemplateSize
+        Description: A custom property
+        DataType: Number
+        Default: =100
+      TitleSize:
+        PropertyKind: Input
+        DisplayName: TitleSize
+        Description: A custom property
+        DataType: Number
+        Default: =11
+    Properties:
+      Fill: =ColorValue("#122632")
+      Width: =100
+    Children:
+      - gal_Sidebar:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            DelayItemLoading: =false
+            Height: =cmp_Sidebar.Height
+            Items: =cmp_Sidebar.Items
+            LoadingSpinner: =LoadingSpinner.None
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplatePadding: =0
+            TemplateSize: =cmp_Sidebar.TemplateSize
+            Width: =cmp_Sidebar.Width
+            X: =0.00
+          Children:
+            - lbl_Sidebar_Base:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(0, 0, 0, 0)
+                  Fill: =cmp_Sidebar.SelectedFill
+                  Font: =Font.'Open Sans'
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  PaddingRight: =3.75
+                  PaddingTop: =3.75
+                  Size: =9.75
+                  Text: =Blank()
+                  Visible: =cmp_Sidebar.Default=ThisItem.Title//ThisItem.IsSelected
+                  Width: =Parent.TemplateWidth
+                  X: =0.00
+            - ico_Sidebar_Icon:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =cmp_Sidebar.Color
+                  Height: =cmp_Sidebar.IconSize
+                  Icon: =ThisItem.Icon
+                  OnSelect: =Select(Parent)
+                  PaddingRight: =0.00
+                  PaddingTop: =0.00
+                  Width: =cmp_Sidebar.IconSize
+                  X: =(Parent.TemplateWidth-Self.Width)/2
+                  Y: =(Parent.TemplateHeight-Self.Height)/2-10
+            - lbl_Sidebar_Title:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =cmp_Sidebar.Color
+                  Font: =Font.'Open Sans'
+                  Height: =Parent.TemplateHeight-ico_Sidebar_Icon.Y-ico_Sidebar_Icon.Height
+                  OnSelect: =Select(Parent)
+                  PaddingRight: =3.75
+                  PaddingTop: =3.75
+                  Size: =8.25
+                  Text: =ThisItem.Title
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =Parent.TemplateWidth
+                  X: =0.00
+                  Y: =ico_Sidebar_Icon.Y+ico_Sidebar_Icon.Height+3
+            - lbl_Sidebar_Left:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(0, 0, 0, 0)
+                  Fill: =cmp_Sidebar.SelectedColor
+                  Font: =Font.'Open Sans'
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  PaddingRight: =3.75
+                  PaddingTop: =3.75
+                  Size: =9.75
+                  Text: =Blank()
+                  Visible: =cmp_Sidebar.Default=ThisItem.Title
+                  Width: =3.75
+                  X: =0.00
+            - lbl_Sidebar_Highlight:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =RGBA(0, 0, 0, 0)
+                  Fill: =Color.Transparent
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Open Sans'
+                  Height: =Parent.TemplateHeight
+                  HoverFill: =cmp_Sidebar.HoverFill
+                  OnSelect: =Navigate(ThisItem.Screen, BorderStyle.None)
+                  PaddingRight: =3.75
+                  PaddingTop: =3.75
+                  Size: =9.75
+                  TabIndex: =0
+                  Text: =Blank()
+                  Width: =Parent.TemplateWidth
+                  X: =0.00

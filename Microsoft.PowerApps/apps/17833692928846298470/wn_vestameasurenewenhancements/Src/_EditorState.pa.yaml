@@ -1,0 +1,57 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+EditorState:
+  ScreensOrder:
+    - Loading Screen
+    - Saving Screen
+    - Load Job Screen
+    - Hidden ADMIN Screen
+    - Jobs Screen
+    - Job Details Screen
+    - Rooms Screen
+    - Windows Screen
+    - Measure Window Screen
+    - Measurements Screen
+    - Window Photos Screen
+    - Options Screen
+    - Clone Window Screen
+    - Add Room Screen
+    - Lead Test Screen
+    - Mull Windows Screen
+    - Delete Window Screen
+    - Labor Screen
+    - Add Labor Items Screen
+    - Materials Screen
+    - Add Materials Items Screen
+    - Material Colors Screen
+    - Material Options Screen
+    - Documents Screen
+    - Sign Document Screen
+    - Overview Screen
+    - Add Note Screen
+    - Final Steps Screen
+    - Photos Screen
+    - Hidden Screen 1a
+    - Hidden Screen 1b
+    - Hidden Screen 2
+    - Hidden Screen 3
+    - Hidden Screen 4
+    - Hidden Screen 5
+    - Hidden Screen 6
+    - Hidden Screen 7
+    - Hidden Screen 8
+    - Incorrect Version Screen
+    - Window Setup Screen
+  ComponentDefinitionsOrder:
+    - cmp_Sidebar
+    - cmp_AdvanceButton
+    - cmp_Titlebar
+    - cmp_Calculator
+    - cmp_AddNotes
+    - cmp_AdvanceButton_1

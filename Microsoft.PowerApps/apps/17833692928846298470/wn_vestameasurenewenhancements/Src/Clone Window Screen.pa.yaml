@@ -1,0 +1,551 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Clone Window Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |-
+        =// reset controls
+        Reset(gal_Clone_Selection);
+        // clear variables
+        UpdateContext({locShowSaveButton: false});
+        // clear collections
+        ClearCollect(
+            colCloneProperties,
+            {
+                Value: "",
+                Attribute: "Room"
+            }
+        );
+      OnVisible: |-
+        =UpdateContext({locCurrentCloneProperty: "Quantity"});
+        ClearCollect(colCloneProperties,{Attribute: "Quantity", ID: "", Value: ""});
+    Children:
+      - cmp_Clone_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Project"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =708
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =60
+      - cmp_Clone_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Windows Screen'
+            Color: =Color.White
+            Context: |-
+              =$"{gblRecordJobEntryCurrent_.'Room: Type'}, {gblRecordJobEntryCurrent_.'Room: Floor'}"
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - gal_Clone_Selection:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            DelayItemLoading: =false
+            Height: =If(locCurrentCloneProperty="Quantity", 506, App.Height-Self.Y)
+            Items: |-
+              =AddColumns(
+                  ForAll(
+                      Sequence(6),
+                      Text(Value)
+                  ),
+                  ID,
+                  Text(Value)
+              )
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: |-
+              =// show the save button once all selections have been made
+              If(locCurrentCloneProperty="Quantity", UpdateContext({locShowSaveButton: true}););
+
+
+              // add the next window attribute to window properties
+              If(LookUp(colCloneProperties, Attribute=locCurrentCloneProperty, Value)="",
+                  Switch(locCurrentCloneProperty,
+                      "Room", Collect(colCloneProperties, {Attribute: "Quantity",ID: "", Value: ""})
+                  )
+              );
+
+              // change to the next window property
+              UpdateContext({locCurrentCloneProperty:
+                  Switch(locCurrentCloneProperty,
+                      "Room", "Quantity",
+                      "Quantity"
+                  )
+              });
+
+              // write the selection to the window property
+              Patch(colCloneProperties, LookUp(colCloneProperties, Attribute=gal_Clone_Selected.Selected.Attribute), {ID: ThisItem.ID, Value: Substitute(Left(ThisItem.Value, Find("Floor", ThisItem.Value)+4), Char(13),", ")});
+              Reset(gal_Clone_Selected);Reset(gal_Clone_Selection);
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplatePadding: =0
+            TemplateSize: =180
+            Width: =650
+            WrapCount: =3
+            X: =356
+            Y: =140
+          Children:
+            - btn_Clone_Selection:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =gblAppStyles.Card.BorderColor
+                  BorderThickness: =1
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =If(gal_Clone_Selected.Selected.ID=ThisItem.ID, gblAppStyles.Status.Neutral, gblAppStyles.Card.Fill)
+                  FocusedBorderThickness: =1
+                  Font: =Font.'Open Sans'
+                  Height: =Parent.TemplateHeight-(gblAppStyles.Card.MarginLeft*2)
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =Select(Parent)
+                  PaddingLeft: =gblAppStyles.Card.PaddingLeft
+                  PaddingRight: =gblAppStyles.Card.PaddingRight
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =11.24
+                  Text: =
+                  Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                  X: =(Parent.TemplateWidth-Self.Width)/2
+                  Y: =(Parent.TemplateHeight-Self.Height)/2
+            - lbl_Clone_Selection:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =If(gal_Clone_Selected.Selected.ID=ThisItem.ID, gblAppColors.Secondary.White, gblAppStyles.Card.TitleColor)
+                  Fill: =Color.Transparent
+                  Font: =gblAppStyles.Text.TitleFont
+                  FontWeight: =FontWeight.Lighter
+                  Height: =150
+                  LineHeight: =1.3
+                  OnSelect: =Select(Parent)
+                  Size: =If(locCurrentCloneProperty="Quantity", 20, gblAppStyles.Card.TitleSize)
+                  Text: =ThisItem.Value
+                  Width: =186
+                  X: =15
+                  Y: =15
+            - btn_Clone_Overlay:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =Color.Transparent
+                  BorderThickness: =1
+                  Color: =
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =Color.Transparent
+                  FocusedBorderThickness: =1
+                  Font: =Font.'Open Sans'
+                  Height: =Parent.TemplateHeight-(gblAppStyles.Card.MarginLeft*2)
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =If(gal_Clone_Selected.Selected.ID<>ThisItem.ID, gblAppStyles.Card.HoverFill)
+                  OnSelect: =Select(Parent)
+                  PaddingRight: =3.75
+                  PaddingTop: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =If(!ThisItem.IsSelected, gblAppStyles.Card.PressedFill)
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =11.24
+                  Text: =
+                  Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                  X: =(Parent.TemplateWidth-Self.Width)/2*1
+                  Y: =(Parent.TemplateHeight-Self.Height)/2*1
+      - cmp_Clone_AdvanceButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Check}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Secondary.Green
+            NavigateScreen: =App.ActiveScreen
+            Text: ="Clone Window"
+            Visible: =locShowSaveButton And gal_Clone_Selected.Selected.Attribute="Quantity"
+            Width: =248
+            X: =750
+            Y: =670
+      - btn_Clone_AdvanceButton:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =Color.Transparent
+            DisabledBorderColor: =Color.Transparent
+            DisabledColor: =Color.Transparent
+            DisabledFill: =Color.Transparent
+            Fill: =Color.Transparent
+            Font: =Font.'Open Sans'
+            Height: =cmp_Clone_AdvanceButton.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Color.Transparent
+            HoverFill: =Color.Transparent
+            OnSelect: |
+              =// store the job entry GUID to be cloned
+              UpdateContext({locCloneJobEntryGUID: gblRecordJobEntryCurrent_.'Job Entry'});
+              // create new job entry record
+              With(
+                  {
+                      varType: "colCdsJobEntries",
+                      varRecordRef: GUID()
+                  },
+                  Set(
+                      gblRecordJobEntryCurrent_,
+                      Patch(
+                          colCdsJobEntries,
+                          Defaults(colCdsJobEntries),
+                          {
+                              'Job Entry': varRecordRef,
+                              Job: LookUp(
+                                  colCdsJobs,
+                                  appJobIDText = gblRecordJobCurrent.appJobIDText
+                              ),
+                              'Window Choice': gblRecordJobEntryCurrent_.'Window Choice',
+                              appJobIdText: gblRecordJobCurrent.appJobIDText,
+                              'Job Entry Option (Header)': gblRecordJobEntryCurrent_.'Job Entry Option (Header)',
+                              Completed: gblOptionSets.JobEntry.Completed.No,
+                              'Room: Description': gblRecordJobEntryCurrent_.'Room: Description',
+                              'Room: Floor': gblRecordJobEntryCurrent_.'Room: Floor',
+                              'Room: Type': gblRecordJobEntryCurrent_.'Room: Type'
+                          }
+                      )
+                  );
+                  Collect(
+                      colAUDRecords,
+                      {
+                          Type: "colCdsJobEntries",
+                          RecordRef: varRecordRef,
+                          Job: gblRecordJobCurrent.Job,
+                          Operation: "A"
+                      }
+                  )
+              );
+              // add new job entries and job entry selections
+              ForAll(
+                  Filter(
+                      colCdsJobEntrySelections,
+                      'Job Entry'.'Job Entry' = locCloneJobEntryGUID
+                  ) As tblJobEntrySelections,
+                  With(
+                      {
+                          varType: "colCdsJobEntrySelections",
+                          varRecordRef: GUID()
+                      },
+                      Patch(
+                          colCdsJobEntrySelections,
+                          Defaults(colCdsJobEntrySelections),
+                          {
+                              Job: gblRecordJobCurrent,
+                              'Job Entry Selection': varRecordRef,
+                              'Job Entry': gblRecordJobEntryCurrent_,
+                              'Job Entry Option (Attribute)': tblJobEntrySelections[@'Job Entry Option (Attribute)'],
+                              'Job Entry Option (Value)': tblJobEntrySelections[@'Job Entry Option (Value)'],
+                              'Job Entry Option (Value) (Sales)': tblJobEntrySelections[@'Job Entry Option (Value) (Sales)']
+                          }
+                      );
+                      Collect(
+                          colAUDRecords,
+                          {
+                              Type: varType,
+                              RecordRef: varRecordRef,
+                              Job: gblRecordJobCurrent.Job,
+                              Operation: "A"
+                          }
+                      )
+                  )
+              );
+              ForAll(
+                  Sequence(
+                      Value(
+                          LookUp(
+                              colCloneProperties,
+                              Attribute = "Quantity",
+                              Value
+                          )
+                      )
+                  ),
+                  With(
+                      {
+                          varType: "colCdsWindowMeasurements",
+                          varRecordRef: GUID()
+                      },
+                      Patch(
+                          colCdsWindowMeasurements,
+                          Defaults(colCdsWindowMeasurements),
+                          {
+                              Name: $"Tech 0{Char(34)} x 0{Char(34)}",
+                              'Exception?': gblOptionSets.WindowMeasurement.Exception.No,
+                              Height: 0,
+                              Job: gblRecordJobCurrent,
+                              'Job Entry': gblRecordJobEntryCurrent_,
+                              Type: gblOptionSets.WindowMeasurement.Type.Tech,
+                              'United Inches (UI)': 0,
+                              Width: 0,
+                              'Window Measurement': varRecordRef
+                          }
+                      );
+                      Collect(
+                          colAUDRecords,
+                          {
+                              Type: varType,
+                              RecordRef: varRecordRef,
+                              Job: gblRecordJobCurrent.Job,
+                              Operation: "A"
+                          }
+                      )
+                  )
+              );
+              // create project sidebar
+              ClearCollect(
+                  colProjectSidebar,
+                  Ungroup(
+                      Table(
+                          {
+                              varMenuItems: RenameColumns(
+                                  Table(
+                                      {
+                                          ID: gblRecordJobEntryCurrent_.'Job Entry',
+                                          Name: Index(
+                                              ForAll(Split(
+                                                  gblRecordJobEntryCurrent_.'Window Choice'.Name,
+                                                  " > "
+                                              ), {Result: ThisRecord.Value}),
+                                              2
+                                          ).Result,
+                                          Category: "Job Entry",
+                                          Description: Index(
+                                              ForAll(Split(
+                                                  gblRecordJobEntryCurrent_.'Window Choice'.Name,
+                                                  " > "
+                                              ), {Result: ThisRecord.Value}),
+                                              1
+                                          ).Result,
+                                          Screen: 'Windows Screen',
+                                          Type: "Window Choice",
+                                          Image: 'dblhungw-2',
+                                          ImageDisabled: 'dblhungw-2'
+                                      }
+                                  ),
+                                  Name,
+                                  Title
+                              )
+                          },
+                          {
+                              varMenuItems: ShowColumns(
+                                  RenameColumns(
+                                      AddColumns(
+                                          Filter(
+                                              colCdsWindowMeasurements,
+                                              'Job Entry'.'Job Entry' = gblRecordJobEntryCurrent_.'Job Entry',
+                                              Type = gblOptionSets.WindowMeasurement.Type.Tech,
+                                              Status <> gblOptionSets.WindowMeasurement.Status.Inactive
+                                          ),
+                                          Category,
+                                          "Window Measurement",
+                                          Description,
+                                          If(
+                                              And(
+                                                  'United Inches (UI)'=0,
+                                                  !IsBlank(gblRecordJobEntryCurrent_.'Measurement (Sales)')
+                                              ),
+                                              "Sales Measurement",
+                                              "Tech Measurement"
+                                          ),
+                                          Image,
+                                          gblAppIcons.Ruler,
+                                          ImageDisabled,
+                                          gblAppIcons.RulerDisabled,
+                                          Screen,
+                                          'Measure Window Screen',
+                                          Title,
+                                          If(
+                                              And(
+                                                  'United Inches (UI)'=0,
+                                                  !IsBlank(gblRecordJobEntryCurrent_.'Measurement (Sales)')
+                                              ),
+                                              $"{Text(gblRecordJobEntryCurrent_.'Measurement (Sales)'.Width)}"" x {Text(gblRecordJobEntryCurrent_.'Measurement (Sales)'.Height)}""",
+                                              $"{RoundDown(Width, 0)} {Switch(
+                                                  Mod(Width, 1),
+                                                  0, "",
+                                                  0.125, "1/8",
+                                                  0.250, "1/4",
+                                                  0.375, "3/8",
+                                                  0.500, "1/2",
+                                                  0.625, "5/8",
+                                                  0.750, "3/4",
+                                                  0.875, "7/8"
+                                              )}"" x {RoundDown(Height, 0)} {Switch(
+                                                  Mod(Height, 1),
+                                                  0, "",
+                                                  0.125, "1/8",
+                                                  0.250, "1/4",
+                                                  0.375, "3/8",
+                                                  0.500, "1/2",
+                                                  0.625, "5/8",
+                                                  0.750, "3/4",
+                                                  0.875, "7/8"
+                                              )}"""
+                                          )
+                                      ),
+                                      'Window Measurement',
+                                      ID
+                                  ),
+                                  ID,
+                                  Title,
+                                  Category,
+                                  Description,
+                                  Screen,
+                                  Image,
+                                  ImageDisabled
+                              )
+                          }
+                      ),
+                      varMenuItems
+                  )
+              );
+              Set(
+                  gblProjectSidebarItemCurrent,
+                  First(colProjectSidebar)
+              );
+              //save local data
+              If(
+                  gblAppLoadOffline,
+                  SaveData(
+                      colAUDRecords,
+                      "localAUDRecords"
+                  );
+                  SaveData(
+                      colCdsJobEntries,
+                      "localCdsJobEntries"
+                  );
+                  SaveData(
+                      colCdsJobEntrySelections,
+                      "localCdsJobEntrySelections"
+                  );
+                  SaveData(
+                      colCdsWindowMeasurements,
+                      "localCdsWindowMeasurements"
+                  )
+              );
+              // leave the screen and reset
+              Reset(gal_Clone_Selection);
+              // next screen
+              Navigate(
+                  'Windows Screen',
+                  BorderStyle.None
+              );
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Color.Transparent
+            PressedFill: =Color.Transparent
+            Text: =""
+            Visible: =cmp_Clone_AdvanceButton.Visible
+            Width: =cmp_Clone_AdvanceButton.Width
+            X: =cmp_Clone_AdvanceButton.X
+            Y: =cmp_Clone_AdvanceButton.Y
+      - lbl_Clone_Titlebar:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            Size: =20
+            Text: ="Clone Window "&locCurrentCloneProperty
+            Width: =638
+            X: =cmp_Clone_Sidebar.X+cmp_Clone_Sidebar.Width+lbl_Clone_Actions__Background.Width+40
+            Y: =cmp_Clone_Titlebar.Y+cmp_Clone_Titlebar.Height+30
+      - lbl_Clone_Actions__Background:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =ColorValue("#faf9f8")
+            Font: =Font.'Open Sans'
+            Height: =708
+            Text: =""
+            Width: =250
+            X: =80
+            Y: =60
+      - gal_Clone_Selected:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            Default: =LookUp(colCloneProperties, Attribute=locCurrentCloneProperty)
+            DelayItemLoading: =false
+            Fill: =gblAppStyles.ActionsMenu.Fill
+            Height: =708
+            Items: =colCloneProperties
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: =UpdateContext({locCurrentCloneProperty:ThisItem.Attribute})
+            TabIndex: =0
+            TemplateFill: =If(ThisItem.IsSelected, ColorFade(gal_Clone_Selected.Fill, -5%), Color.Transparent)
+            TemplatePadding: =0
+            TemplateSize: =68
+            Width: =250
+            X: =cmp_Clone_Sidebar.X+cmp_Clone_Sidebar.Width
+            Y: =cmp_Clone_Titlebar.Y+cmp_Clone_Titlebar.Height
+          Children:
+            - lbl_Clone_Selected__Value:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.ActionsMenu.Color
+                  Font: =Font.'Open Sans'
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  PaddingLeft: =30
+                  PaddingTop: =15
+                  Size: =gblAppStyles.ActionsMenu.SizeTitle
+                  Text: =Coalesce(ThisItem.Value, "Select An Option")
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =Parent.TemplateWidth
+                  Wrap: =false
+            - lbl_Clone_Selected__Attribute:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.ActionsMenu.Color
+                  Font: =gblAppStyles.Text.Font
+                  Height: =Parent.TemplateHeight
+                  OnSelect: =Select(Parent)
+                  PaddingLeft: =30
+                  PaddingTop: =40
+                  Size: =gblAppStyles.ActionsMenu.SizeSubtitle
+                  Text: =ThisItem.Attribute
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =Parent.TemplateWidth

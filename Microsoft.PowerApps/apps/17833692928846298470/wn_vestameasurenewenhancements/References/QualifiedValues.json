@@ -1,0 +1,342 @@
+{
+  "QualifiedValues": [
+    {
+      "Namespace": "Jobs (Forms)",
+      "Kind": "default.cds_hsl_job_forms",
+      "Values": {
+        "Ava | QV | Sale | Case | Legacy VA": "5a1662cc-5142-f011-b4ca-000d3a10e64b",
+        "AVA | QV | Job | Order Details": "ac3fb3af-f783-f011-b4cc-000d3a135138",
+        "Ava | QV | Sale | Project": "f8498698-3130-f011-8c4e-000d3a155625",
+        "Ava | QV | Case": "f7f101cc-f531-f011-8c4e-000d3a155625",
+        "Ava | QV | Sale | Case | Vendor Acknowledgment": "da7d7c4c-5142-f011-b4cb-000d3a155625",
+        "AVA | Job | Sale": "59e2843b-d7f2-ef11-be20-000d3a1a119b",
+        "Information": "1fa8539d-b259-4f42-996f-7ba54d8cc0b2",
+        "Rehash": "934871f7-4d84-4d8c-bdb2-23df67eb6535",
+        "Ava | QV | Sale | Vendor Acknowledgement": "5a168709-3630-f011-8c4e-6045bda98ba1",
+        "Ava | QV | Sale | Project Age": "9fca7354-2f35-f011-8c4e-7c1e520bc172",
+        "AVA | QV | Job | Work Order": "9520973e-5b1b-f011-998a-7c1e527e692f",
+        "Job": "403fa2f1-17a6-43d2-98e4-a560533a24e9"
+      }
+    },
+    {
+      "Namespace": "Market Segments (Forms)",
+      "Kind": "default.cds_wn_marketsegment_forms",
+      "Values": {
+        "WN | QV Interest | Market Segment": "cc35520f-1adb-ed11-a7c7-000d3a19acbd",
+        "WN | Main | Market Segment": "fcb1a4f6-0cdb-ed11-a7c7-000d3a1c0965",
+        "WN | QV Lead | Market Segment": "c056e97d-19db-ed11-a7c7-000d3a1c0965",
+        "WN | QV Opty | Market Segment": "75aba190-1adb-ed11-a7c7-000d3a1c0965",
+        "Market Segment": "7a73f963-feda-4df8-a159-4b06a88e4af6",
+        "Information": "0a822583-06f2-4504-98e0-dee5dc2f605e"
+      }
+    },
+    {
+      "Namespace": "Job Entries (Forms)",
+      "Kind": "default.cds_hsl_jobentry_forms",
+      "Values": {
+        "Information": "9b9e1753-ad04-4da3-9ea7-bcdfb52ff487",
+        "Job Entry": "8ed54b8a-061a-42bd-b369-eccce7df144f"
+      }
+    },
+    {
+      "Namespace": "Rooms (Forms)",
+      "Kind": "default.cds_wn_room_forms",
+      "Values": {
+        "Information": "69742f91-1c65-41ac-bfbc-0f2f19f29e5c",
+        "Room": "116098bd-0be0-4f80-af7a-0c1fb58eb44b"
+      }
+    },
+    {
+      "Namespace": "Window Choices (Forms)",
+      "Kind": "default.cds_wn_windowchoice_forms",
+      "Values": {
+        "Window Choice": "2ed0af94-86c1-4393-b6c1-8266e3984c74",
+        "Information": "30cb4e47-801f-424e-b048-f934036b5fb1"
+      }
+    },
+    {
+      "Namespace": "Job Entry Options (Forms)",
+      "Kind": "default.cds_hsl_jobentryoption_forms",
+      "Values": {
+        "Job Entry Option": "aaedbda2-2625-4d1e-9724-23a0ba750f1c",
+        "Hierarchy Form": "19e8194e-4c9d-49db-9a8a-c5168884359e",
+        "Information": "55ac7827-4400-4af6-ad6b-d954065700ff"
+      }
+    },
+    {
+      "Namespace": "Job Stages (Forms)",
+      "Kind": "default.cds_hsl_jobstage_forms",
+      "Values": {
+        "Information": "04de935e-a295-4c21-9748-b39919b54cc8",
+        "Job Stage": "dece77df-529c-4480-9700-c627107ea1c2"
+      }
+    },
+    {
+      "Namespace": "Job Entry Selections (Forms)",
+      "Kind": "default.cds_hsl_jobentryselection_forms",
+      "Values": {
+        "Job Entry Selection": "8a900382-1305-4bf2-919e-13747593aba3",
+        "Information": "71318f75-530e-4047-a87b-b30f3c9d660f"
+      }
+    },
+    {
+      "Namespace": "Window Measurements (Forms)",
+      "Kind": "default.cds_wn_windowmeasurement_forms",
+      "Values": {
+        "Information": "f9be5647-67d4-4b64-9855-60a3a853780b",
+        "Window Measurement": "42175a80-f337-4c63-bfad-98dce447cc91"
+      }
+    },
+    {
+      "Namespace": "Window Models (Forms)",
+      "Kind": "default.cds_wn_windowmodel_forms",
+      "Values": {
+        "Information": "31e705f7-37bb-4df1-92b4-a59fb30cd086",
+        "Window Model": "f8b3952f-5892-4e0a-a31b-de92997267e2"
+      }
+    },
+    {
+      "Namespace": "Window Styles (Forms)",
+      "Kind": "default.cds_wn_windowstyle_forms",
+      "Values": {
+        "Information": "fd6bcf88-cb7f-43a9-91f5-ec4534410de2"
+      }
+    },
+    {
+      "Namespace": "Accounts (Forms)",
+      "Kind": "default.cds_account_forms",
+      "Values": {
+        "Account | Sale | QV": "28f777da-760b-f011-bae2-000d3a155625",
+        "WN | QV Address | Account": "e37a6a62-55da-ed11-a7c7-000d3a19acbd",
+        "WN | QV Lead | Property": "88469482-95d5-ed11-a7c7-000d3a1c0c13",
+        "WN | Lead | Property": "3bcb19b3-c9cc-ed11-b597-000d3a1c0c13",
+        "Customer profile cases": "67e6801d-f669-ed11-9561-000d3a36d4e2",
+        "Account form for Customer Card": "f5f9a07e-0f28-ed11-9db1-000d3a8d107a",
+        "Account Summary Card": "894155a3-95d5-4881-b9c3-04444cef1bcc",
+        "Account Hierarchy Tile Form": "69cff312-cfb6-4289-9631-249ab85d2c62",
+        "Social Profiles": "2205c86d-ed88-4a2f-a447-3b86a8781f2e",
+        "Quick View - Home Value and Zillow Link": "b57920b2-8dd1-45fb-8f19-3bbec98f35e9",
+        "Account Card form": "cccff382-2b92-467e-bf1b-3db179512af8",
+        "Cases For Customer": "48028ae0-bf87-48c9-adf6-3dc9f29d7661",
+        "In Context Form": "face3aa6-99c4-4b7e-af07-55f121cdca86",
+        "Account form for Conversation Customer Card": "944bd820-76a0-ed11-aad1-6045bd00698c",
+        "Ava | QV | Case | Customer Details": "0209c82a-df82-f011-b4cc-6045bdd80f02",
+        "TimelineWallControl - Account- Main": "6df8e8ce-7655-468c-925e-660d59aa7f4c",
+        "Ava | QV | Case": "b1f1e924-0432-f011-8c4e-7c1e527e692f",
+        "AVA | Main | Vendor": "5ba349ad-4719-f011-998a-7c1e527e692f",
+        "Account Quick Create - Field Service": "e40cb98a-e5a5-4d22-93fd-7d1f0c0cf060",
+        "App for Outlook Account Card": "fb65cc73-181c-468b-9bb3-82ecde306991",
+        "Account Reference Panel": "098ae145-1567-41ec-8398-86dbaac70c9b",
+        "Account for Multisession experience": "ff49442f-8c60-4877-bdae-8fe51e6f4636",
+        "Recent Cases and Entitlements": "43300723-f867-420b-ab28-976a4d12e6c4",
+        "WN | Lead | Property | Total Windows": "a6dff612-7c47-4f91-8823-98b590afb5f8",
+        "Account for Interactive experience": "a72c7955-442b-4ea4-9499-b10cd18b4256",
+        "Accounts Dashboard": "15915835-b87c-49ec-9ffc-bfac3ac44ef1",
+        "Account - Mobile": "74da4947-5d1d-4400-9f99-c6ed578211bb",
+        "Insights": "1885aec5-9005-417a-a15c-cee2d4ca5752",
+        "account card": "b028db32-3619-48a5-ac51-cf3f947b0ef3",
+        "Zillow link QV Form": "2fcb14e0-8c5e-46da-b598-d42ee868e8d6",
+        "Sales Insights": "cb430327-bcc1-416d-959d-db7592e685af",
+        "Information": "b053a39a-041a-4356-acef-ddf00182762b",
+        "Customer profile": "e9a9c8a9-e94d-47a9-a6c3-ec37ddb83b99",
+        "WN | Main | Account": "3c359ef3-cf08-4707-ad29-ec41bc160bb8",
+        "App for Outlook Account Quick View": "76b81f10-2a08-4f1a-9454-ee38bea94eb5",
+        "Account Quick Create": "c9e7ec2d-efca-4e4c-b3e3-f63c4bba5e4b",
+        "Account": "8448b78f-8f42-454e-8e2a-f8196b0419af"
+      }
+    },
+    {
+      "Namespace": "Job Rooms (Forms)",
+      "Kind": "default.cds_wn_jobroom_forms",
+      "Values": {
+        "Information": "ed552e23-d3a4-45eb-bec7-78a1ca9775d0",
+        "Job Room": "339d6a99-b6a4-4394-a7f9-bc704258f01d"
+      }
+    },
+    {
+      "Namespace": "Contacts (Forms)",
+      "Kind": "default.cds_contact_forms",
+      "Values": {
+        "WN | Main | Contact ": "94f19c9b-84f9-ed11-8849-000d3a1a0098",
+        "Test": "e91e11c9-2954-ee11-be6f-000d3a1c0965",
+        "WN | Lead | Contact": "682f4d23-f1cc-ed11-b597-000d3a1c0c13",
+        "WN | Quick View Lead | Contact": "758932e3-10cf-ed11-b597-000d3a1c0c13",
+        "Customer profile cases": "c621206a-f769-ed11-9561-000d3a36d4e2",
+        "Window Nation Contact Form": "ebac49b8-2c19-eb11-a813-000d3a8ff3da",
+        "Contact form for Customer Card": "edfc131b-8d2d-ed11-9db2-002248285e57",
+        "WN | Quick View Consumer Finance Application | Contact": "083004b1-1bcc-ef11-b8e8-7c1e52168e5d",
+        "App for Outlook Contact Card": "cdbb9298-3b2e-41f3-8f4a-0168d6b09fc4",
+        "Contacts Dashboard": "70ad8b15-e3f3-4d7d-9e4b-16cb4e51b484",
+        "Insights": "7b78aae4-7945-4515-848b-1f86535846d6",
+        "Information": "894cc46a-b0cb-4ab0-8bf6-200544e46a2d",
+        "Contact Reference Panel": "d880c3cf-80e2-42f3-82f9-24d040d09f17",
+        "Portal Contact (Enhanced)": "c1c97961-2d42-4103-abf8-2fe2bdf38224",
+        "Profile Web Form (Enhanced)": "bddc0100-0dbe-4562-aafe-31d08c8ab506",
+        "Invite Web Form": "d6190b35-9474-4098-9698-33f6627eb3bf",
+        "WN | account contact card | Contact": "902782a3-baae-4835-8b57-36789121dd6e",
+        "Contact - Mobile": "28b5b9b6-dfa2-45d6-8a81-3f6ba02a098a",
+        "AI for Sales": "293c878f-f068-40a0-ae48-4297e060871c",
+        "Live Persona Card Form": "449faa0e-f471-48ec-87d0-4719909546d2",
+        "Social Profiles": "7bb87dfd-ec3e-4ed9-8e3e-5725d3067295",
+        "Contact Quick Create": "661157fe-2fc9-4eaa-835f-5bfa2f7b64f7",
+        "zzzWN | Main | Contact": "5d1588d7-6941-4167-a42c-5e1b1390df64",
+        "TimelineWallControl - Contact - Main": "986258b5-2985-4ae0-970a-5e1d108ab793",
+        "Recent Cases and Entitlements": "f3b707fb-3b5f-45f9-9c6b-5e573bb5d19e",
+        "Update Contact": "26843818-6508-4afe-9342-5fae2ebf15ca",
+        "Contact form for Conversation Customer card": "5aab71db-78a0-ed11-aad1-6045bd00698c",
+        "Ava | QV | Case": "52f87e64-c434-f011-8c4d-7c1e5249cb0a",
+        "Contact company view": "5efdc20d-5ae6-47d2-b4ed-8a929d089d7a",
+        "Contact Quick Form": "bdb0ae1c-32fa-4374-b637-8dafe107bc44",
+        "Contact for Multisession experience": "e06af4d1-2812-45c7-a9c2-9fb73fee7bec",
+        "Cases for Customer": "5194a156-576a-4fa1-bf1a-abf7a41b0e8c",
+        "Contact Quick Create - Field Service": "477d15ad-60b2-4d8e-9508-b3d2b87c9868",
+        "Customer profile": "05ea391a-d034-43fe-849b-b4fa3213a2b2",
+        "Account quick view form": "3ace4e34-9f50-4e73-ae49-b595d6b48fa4",
+        "In Context Form": "4c9c89b9-f909-4b34-8f63-b87d7ff2f0c4",
+        "account contact card": "29de27bc-a257-4f29-99cf-bab4a84e688f",
+        "Contact Card form": "bc0f68dd-a4b1-4a8f-bed3-c8f5db2f89cf",
+        "App for Outlook Contact Quick View": "3d22ab88-96c8-4b3f-a533-d4827e2925c9",
+        "contact card": "707fc57b-c5e6-471b-a180-e37ed28a38e2",
+        "Contact for Interactive experience": "cc760212-3eab-4009-b5c3-ea9cf6f3e141",
+        "Profile Web Form (Enhanced) - Japanese": "01124dd8-9bff-4cc0-bb33-ea9d943c3f9f",
+        "Contact": "1fed44d1-ae68-4a41-bd2b-f13acac4acfa",
+        "Contact quick view form on event team member": "5d904496-1ba1-4724-a582-f46732305a7f",
+        "Quick View - Email": "97f3dea3-6963-4baa-9ed7-f80115e04e38"
+      }
+    },
+    {
+      "Namespace": "Job Photos (Forms)",
+      "Kind": "default.cds_wn_jobphoto_forms",
+      "Values": {
+        "Job Photo": "7fd6d64b-8659-45b5-8413-2afbe8e5c66b",
+        "Information": "a4f4d7e1-86cf-427a-8e28-523dd09fec1e"
+      }
+    },
+    {
+      "Namespace": "Labor Items (Forms)",
+      "Kind": "default.cds_wn_laboritem_forms",
+      "Values": {
+        "Labor Item": "711cdce3-f0f9-4361-9c14-5e2e9396e9eb",
+        "Information": "7cfe0944-942e-4c62-8c9e-ffeb1af38855"
+      }
+    },
+    {
+      "Namespace": "Market Material Items (Forms)",
+      "Kind": "default.cds_wn_marketmaterialitem_forms",
+      "Values": {
+        "Information": "f9ab53aa-2843-4583-9ce3-71763cfac3a1",
+        "Market Material Item": "c6935b51-a656-4539-87b2-e00f859851ca"
+      }
+    },
+    {
+      "Namespace": "Documents (Forms)",
+      "Kind": "default.cds_wn_document_forms",
+      "Values": {
+        "Information": "f7e00fbf-7f1e-4869-a7ae-a96b3d04e809"
+      }
+    },
+    {
+      "Namespace": "Job Material Items (Forms)",
+      "Kind": "default.cds_wn_jobmaterialitem_forms",
+      "Values": {
+        "Information": "b5f2035b-736d-4367-ad61-ee87d87732df"
+      }
+    },
+    {
+      "Namespace": "Market Labor Items (Forms)",
+      "Kind": "default.cds_wn_marketlaboritem_forms",
+      "Values": {
+        "Market Labor Item Overhead Multiplier": "f1612ff4-37fe-ed11-8f6e-0022482a4ce6",
+        "Market Labor Item": "0f960173-ff32-41ba-96f4-1749e8e20e23",
+        "Information": "1fa758df-0f24-4c4c-8a57-7eb7cffacf84"
+      }
+    },
+    {
+      "Namespace": "Material Items (Forms)",
+      "Kind": "default.cds_wn_materialitem_forms",
+      "Values": {
+        "Information": "6894cbef-14d4-4009-a80b-d36959f9ae0b",
+        "Material Item": "7d64a610-03ae-48df-8ee7-371d2e16b4e3"
+      }
+    },
+    {
+      "Namespace": "Job Labor Items (Forms)",
+      "Kind": "default.cds_wn_joblaboritem_forms",
+      "Values": {
+        "Job Labor Item quick create form": "5782ac18-0659-ed11-9562-0022482a4894",
+        "Information": "333d0e76-fee6-4a26-94f2-867790ee8a4c",
+        "Job Labor Item": "74ffcd3f-05b3-41c5-8a46-782e90e3ad26"
+      }
+    },
+    {
+      "Namespace": "Window Mulls (Forms)",
+      "Kind": "default.cds_wn_windowmulls_forms",
+      "Values": {
+        "Information": "f9783350-3036-48f0-bc77-fb7bea35c887",
+        "Window Mull": "85c7ccad-4be8-47f1-9987-f97ce49c2bf0"
+      }
+    },
+    {
+      "Namespace": "Job Documents (Forms)",
+      "Kind": "default.cds_wn_jobdocument_forms",
+      "Values": {
+        "Information": "8d058c15-bc64-4f78-bebc-d95de301fd85",
+        "Job Document": "02856afd-11d1-4bc9-a37f-9c1678458da6"
+      }
+    },
+    {
+      "Namespace": "Power App Caches (Forms)",
+      "Kind": "default.cds_wn_powerappcache_forms",
+      "Values": {
+        "Power App Cache": "71a7ad3d-b7d2-4ed0-8318-0d58d4fda9eb",
+        "Information": "5b6f2637-6648-4fa4-b790-a14c5b4ec403"
+      }
+    },
+    {
+      "Namespace": "Employees (Forms)",
+      "Kind": "default.cds_wn_employee_forms",
+      "Values": {
+        "Information": "469d3cb5-3ffa-4655-a345-8f5b2f2696d2"
+      }
+    },
+    {
+      "Namespace": "Material Item Colors (Forms)",
+      "Kind": "default.cds_wn_materialitemcolors_forms",
+      "Values": {
+        "Information": "cc20b1ea-1160-4839-b7c1-c00ad10ab0df"
+      }
+    },
+    {
+      "Namespace": "Data Entry Choices (Forms)",
+      "Kind": "default.cds_wn_dataentrychoice_forms",
+      "Values": {
+        "Information": "ba9d2c01-bb0b-4d60-b2b7-b8e87be226cf"
+      }
+    },
+    {
+      "Namespace": "Vesta Settings (Forms)",
+      "Kind": "default.cds_wn_vestadealsetting_forms",
+      "Values": {
+        "Information": "d9f2e731-13e4-4743-849f-f4e03c6bc08f"
+      }
+    },
+    {
+      "Namespace": "Users (Forms)",
+      "Kind": "default.cds_systemuser_forms",
+      "Values": {
+        "User": "c2cd9e55-d4b4-4b55-9951-16ead79643e5",
+        "Information": "094fb08a-77bb-49e0-b7ea-8dbddfd01294",
+        "User Hierarchy Tile Form": "c68d6c09-d7a7-4959-8d0f-44b8cff9b452",
+        "User form – Business": "c2413504-7eb2-4c59-a087-95d819866114",
+        "Application User": "d26924ef-4d80-46f7-ab1d-e6ae80a54ce8"
+      }
+    },
+    {
+      "Namespace": "Contract Lines (Forms)",
+      "Kind": "default.cds_wn_contractline_forms",
+      "Values": {
+        "Information": "39b38337-3601-4305-abea-dc0a62e59658"
+      }
+    }
+  ]
+}

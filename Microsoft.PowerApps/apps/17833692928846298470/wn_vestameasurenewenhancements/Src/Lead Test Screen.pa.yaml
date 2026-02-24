@@ -1,0 +1,1878 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Lead Test Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |+
+        =// revert to previous job entries & window mulls collections if the user cancels
+        If(
+            !locLeadTestsSave,
+            ClearCollect(
+                colCdsJobEntries,
+                colJobEntriesCancel
+            );
+            ClearCollect(
+                colCdsJobs,
+                colJobsCancel
+            );
+            ClearCollect(
+                colAUDRecords,
+                colAUDRecordsCancel
+            );
+        );
+        // reset variables
+        UpdateContext(
+            {
+                locComponentExteriorInterior: Blank(),
+                locComponentSelected: Blank(),
+                locComponentIsCustomValue: false,
+                locShowLeadTestSummary: false
+            }
+        );
+      OnVisible: |-
+        =// save data to revert if changes cancelled
+        ClearCollect(
+            colJobEntriesCancel,
+            colCdsJobEntries
+        );
+        ClearCollect(
+            colJobsCancel,
+            colCdsJobs
+        );
+        ClearCollect(
+            colAUDRecordsCancel,
+            colAUDRecords
+        );
+        // reset variables
+        UpdateContext({locLeadTestsSave: false});
+    Children:
+      - cmp_LeadTest_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Measure Window Screen'
+            Color: =Color.White
+            Context: |-
+              =$"{gblRecordJobEntryCurrent_.'Room: Type'}, {gblRecordJobEntryCurrent_.'Room: Floor'}"
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - cmp_LeadTest_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Project"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =708
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =60
+      - con_LeadTest_Main:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            BorderColor: =
+            DropShadow: =DropShadow.None
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =694
+            X: =330
+            Y: =60
+          Children:
+            - cmp_LeadTest_AdvanceButton:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.Check}
+                  IconColor: =Color.White
+                  IconFill: =Color.Green
+                  NavigateScreen: =App.ActiveScreen
+                  Text: ="Save Tests"
+                  Width: =221
+                  X: =414
+                  Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+            - cmp_LeadTest_DeleteButton:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.Cancel}
+                  IconColor: =Color.White
+                  IconFill: =gblAppColors.Secondary.Red
+                  NavigateScreen: =App.ActiveScreen
+                  Text: ="Delete Test"
+                  Visible: =!(btn_LeadTest_Exterior__Component.Text="select component" And btn_LeadTest_Interior__Component.Text="select component")
+                  Width: =235
+                  X: =gblAppStyles.Padding.ButtonMargin
+                  Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+            - btn_LeadTest_AdvanceButton:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  AutoDisableOnSelect: =false
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                  DisabledColor: =RGBA(0, 0, 0, 0)
+                  DisabledFill: =Color.Transparent
+                  Fill: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_LeadTest_AdvanceButton.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Color.Transparent
+                  HoverFill: =Color.Transparent
+                  OnSelect: |
+                    =With(
+                        {
+                            varType: "colCdsWindowMeasurements",
+                            varRecordRef: gblRecordWindowMeasurement_Tech.'Window Measurement'
+                        },
+                        If(
+                            IsBlank(
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                )
+                            ),
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "U"
+                                }
+                            )
+                        )
+                    );
+                    // save local data
+                    If(
+                        gblAppLoadOffline,
+                        SaveData(
+                            colAUDRecords,
+                            "localAUDRecords"
+                        );
+                        SaveData(
+                            colCdsJobEntries,
+                            "localCdsWindowMeasurements"
+                        )
+                    );
+                    // enable save
+                    UpdateContext({locLeadTestsSave: true});
+                    // next screen
+                    Back();
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.Transparent
+                  PressedFill: =Color.Transparent
+                  Text: |-
+                    =Blank()//With({wCountRows: CountRows(colAddLaborItems)}, "Add "&wCountRows&" Item"&If(wCountRows>1, "s"))
+                  Visible: =cmp_LeadTest_AdvanceButton.Visible
+                  Width: =cmp_LeadTest_AdvanceButton.Width
+                  X: =cmp_LeadTest_AdvanceButton.X
+                  Y: =cmp_LeadTest_AdvanceButton.Y
+            - btn_LeadTest_DeleteButton:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                  DisabledColor: =RGBA(0, 0, 0, 0)
+                  DisabledFill: =Color.Transparent
+                  Fill: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_LeadTest_DeleteButton.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Color.Transparent
+                  HoverFill: =Color.Transparent
+                  OnSelect: |-
+                    =// update job entry record
+                    With(
+                        {
+                            varType: "colCdsWindowMeasurements",
+                            varRecordRef: gblRecordWindowMeasurement_Tech.'Window Measurement'
+                        },
+                        Set(
+                            gblRecordWindowMeasurement_Tech,
+                            Patch(
+                                colCdsWindowMeasurements,
+                                LookUp(
+                                    colCdsWindowMeasurements,
+                                    'Window Measurement' = varRecordRef
+                                ),
+                                {
+                                    'Lead Test: Exterior Component': Blank(),
+                                    'Lead Test: Exterior Swab Number': Blank(),
+                                    'Lead Test: Exterior Result': Blank(),
+                                    'Lead Test: Interior Component': Blank(),
+                                    'Lead Test: Interior Swab Number': Blank(),
+                                    'Lead Test: Interior Result': Blank()
+                                }
+                            )
+                        );
+                        If(
+                            IsBlank(
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                )
+                            ),
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "U"
+                                }
+                            )
+                        )
+                    );
+                    // save local data
+                    If(
+                        gblAppLoadOffline,
+                        SaveData(
+                            colAUDRecords,
+                            "localAUDRecords"
+                        );
+                        SaveData(
+                            colCdsJobEntries,
+                            "localCdsWindowMeasurements"
+                        )
+                    );
+                    // reset controls
+                    Reset(txt_LeadTest_Exterior__Swab);
+                    Reset(tog_LeadTest_Exterior__Result);
+                    Reset(txt_LeadTest_Interior__Swab);
+                    Reset(tog_LeadTest_Interior__Result);
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.Transparent
+                  PressedFill: =Color.Transparent
+                  Text: |-
+                    =Blank()//With({wCountRows: CountRows(colAddLaborItems)}, "Add "&wCountRows&" Item"&If(wCountRows>1, "s"))
+                  Visible: =cmp_LeadTest_DeleteButton.Visible
+                  Width: =cmp_LeadTest_DeleteButton.Width
+                  X: =cmp_LeadTest_DeleteButton.X
+                  Y: =cmp_LeadTest_DeleteButton.Y
+            - lbl_LeadTest_Subtitle:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppColors.Secondary.GrayMediumDark
+                  Font: =Font.'Segoe UI'
+                  PaddingLeft: =10
+                  Size: =14
+                  Text: |-
+                    =LookUp(
+                        colCdsWindowStyles,
+                        LookUp(
+                            colCdsWindowChoices,
+                            colCdsWindowChoices[@'Window Choice'] = gblRecordJobEntryCurrent_.'Window Choice'.'Window Choice',
+                            Style
+                        ).'Window Style' = colCdsWindowStyles[@'Window Style'],
+                        Name
+                    ) & ", " & LookUp(
+                        colCdsWindowModels,
+                        LookUp(
+                            colCdsWindowChoices,
+                            colCdsWindowChoices[@'Window Choice'] = gblRecordJobEntryCurrent_.'Window Choice'.'Window Choice',
+                            Model
+                        ).'Window Model' = colCdsWindowModels[@'Window Model'],
+                        Name
+                    ) & ", " & LookUp(
+                        colCdsAccounts,
+                        LookUp(
+                            colCdsWindowChoices,
+                            colCdsWindowChoices[@'Window Choice'] = gblRecordJobEntryCurrent_.'Window Choice'.'Window Choice',
+                            Manufacturer
+                        ).Account = colCdsAccounts[@Account],
+                        'Account Name'
+                    )
+                  Visible: =CountRows(gal_LeadTest_Select.AllItems)>0
+                  Width: =664
+                  X: =30
+                  Y: =70
+            - lbl_LeadTest_Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  PaddingLeft: =10
+                  Size: =20
+                  Text: ="Lead Testing"
+                  Visible: =CountRows(gal_LeadTest_Select.AllItems)>0
+                  Width: =664
+                  X: =30
+                  Y: =30
+            - lbl_LeadTest_Component:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Text: ="Component"
+                  Width: =147
+                  X: =38
+                  Y: =206
+            - txt_LeadTest_Exterior__Result:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: ="No"
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="phone number"
+                  HoverBorderColor: =Self.BorderColor
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.BorderColor
+                  Visible: =false
+                  Width: =223
+                  X: =188
+                  Y: =lbl_LeadTest_Swab.Y
+            - lbl_LeadTest_Swab:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Text: ="Swab"
+                  Width: =147
+                  X: =39
+                  Y: =276
+            - txt_LeadTest_Exterior__Swab:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =gblAppStyles.Status.Warning
+                  BorderStyle: =If(Self.DisplayMode=DisplayMode.Edit And IsBlank(Self.Text), BorderStyle.Solid)
+                  Color: =gblAppStyles.Text.Color
+                  Default: |-
+                    =gblRecordWindowMeasurement_Tech.'Lead Test: Exterior Swab Number'
+                  DisabledFill: =gblAppColors.Secondary.GrayMediumLight
+                  DisplayMode: '=If(btn_LeadTest_Exterior__Component.Text="select component", DisplayMode.Disabled, DisplayMode.Edit) '
+                  FocusedBorderThickness: =2
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: |-
+                    =If(Self.DisplayMode=DisplayMode.Edit, "input swab #")
+                  HoverBorderColor: =Self.BorderColor
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnChange: |-
+                    =Set(
+                        gblRecordWindowMeasurement_Tech,
+                        Patch(
+                            colCdsWindowMeasurements,
+                            LookUp(
+                                colCdsWindowMeasurements,
+                                'Window Measurement' = gal_LeadTest_Select.Selected.ID
+                            ),
+                            {'Lead Test: Exterior Swab Number': Self.Text}
+                        )
+                    );
+                    Set(
+                        gblRecordJobCurrent,
+                        Patch(
+                            colCdsJobs,
+                            LookUp(
+                                colCdsJobs,
+                                Job=gblRecordJobCurrent.Job
+                            ),
+                            {'Lead Test: Last Swab Number': Self.Text}
+                        )
+                    );
+                    // track changes
+                    With(
+                        {
+                            varType: "colCdsWindowMeasurements",
+                            varRecordRef: gblRecordWindowMeasurement_Tech.'Window Measurement'
+                        },
+                        If(
+                            IsBlank(
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                )
+                            ),
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "U"
+                                }
+                            )
+                        )
+                    );
+                  PaddingLeft: =20
+                  Width: =223
+                  X: =187
+                  Y: =277
+            - lbl_LeadTest_Result:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Text: ="Result"
+                  Width: =147
+                  X: =39
+                  Y: =349
+            - lbl_LeadTest_Exterior:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Size: =14
+                  Text: ="Exterior"
+                  Width: =220
+                  X: =188
+                  Y: =lbl_LeadTest_Item.Y
+            - txt_LeadTest_Interior__Result:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: ="No"
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="phone number"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  PaddingLeft: =20
+                  Visible: =false
+                  Width: =223
+                  X: =431
+                  Y: =276
+            - txt_LeadTest_Interior__Swab:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =If(Self.DisplayMode=DisplayMode.Edit, gblAppStyles.Status.Warning)
+                  BorderStyle: =If(Self.DisplayMode=DisplayMode.Edit And IsBlank(Self.Text), BorderStyle.Solid)
+                  Color: =gblAppStyles.Text.Color
+                  Default: |-
+                    =gblRecordWindowMeasurement_Tech.'Lead Test: Interior Swab Number'
+                  DisabledFill: =gblAppColors.Secondary.GrayMediumLight
+                  DisplayMode: '=If(btn_LeadTest_Interior__Component.Text="select component", DisplayMode.Disabled, DisplayMode.Edit) '
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: |-
+                    =If(Self.DisplayMode=DisplayMode.Edit, "input swab #")
+                  HoverBorderColor: =Self.BorderColor
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnChange: |-
+                    =Set(
+                        gblRecordWindowMeasurement_Tech,
+                        Patch(
+                            colCdsWindowMeasurements,
+                            LookUp(
+                                colCdsWindowMeasurements,
+                                'Window Measurement' = gal_LeadTest_Select.Selected.ID
+                            ),
+                            {'Lead Test: Interior Swab Number': Self.Text}
+                        )
+                    );
+                    Set(
+                        gblRecordJobCurrent,
+                        Patch(
+                            colCdsJobs,
+                            LookUp(
+                                colCdsJobs,
+                                Job=gblRecordJobCurrent.Job
+                            ),
+                            {'Lead Test: Last Swab Number': Self.Text}
+                        )
+                    );
+                    // track changes
+                    With(
+                        {
+                            varType: "colCdsWindowMeasurements",
+                            varRecordRef: gblRecordWindowMeasurement_Tech.'Window Measurement'
+                        },
+                        If(
+                            IsBlank(
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                )
+                            ),
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "U"
+                                }
+                            )
+                        )
+                    );
+                  PaddingLeft: =20
+                  Width: =223
+                  X: =430
+                  Y: =277
+            - lbl_LeadTest_Interior:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Size: =14
+                  Text: ="Interior"
+                  Width: =220
+                  X: =433
+                  Y: =lbl_LeadTest_Item.Y
+            - lbl_LeadTest_Item:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  Size: =14
+                  Text: ="Item"
+                  Width: =149
+                  X: =39
+                  Y: =134
+            - tog_LeadTest_Exterior__Result:
+                Control: Classic/Toggle@2.1.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =Color.Transparent
+                  Default: |-
+                    =gblRecordWindowMeasurement_Tech.'Lead Test: Exterior Result'=gblOptionSets.JobEntry.LeadTestResult.Yes
+                  DisabledColor: =Color.Transparent
+                  DisplayMode: '=If(btn_LeadTest_Exterior__Component.Text="select component", DisplayMode.Disabled, DisplayMode.Edit) '
+                  FalseText: ="No"
+                  FocusedBorderColor: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =38
+                  LabelPaddingRight: =15
+                  OnCheck: =
+                  OnSelect: |-
+                    =If(
+                        Self.Value,
+                        // When toggle is set to Yes
+                        Set(
+                            gblRecordWindowMeasurement_Tech,
+                            Patch(
+                                colCdsWindowMeasurements,
+                                LookUp(
+                                    colCdsWindowMeasurements,
+                                    'Window Measurement' = gal_LeadTest_Select.Selected.ID
+                                ),
+                                {'Lead Test: Exterior Result': gblOptionSets.WindowMeasurement.LeadTestResult.Yes}
+                            )
+                        ),
+                        // When toggle is set to No
+                        Set(
+                            gblRecordWindowMeasurement_Tech,
+                            Patch(
+                                colCdsWindowMeasurements,
+                                LookUp(
+                                    colCdsWindowMeasurements,
+                                    'Window Measurement' = gal_LeadTest_Select.Selected.ID
+                                ),
+                                {'Lead Test: Exterior Result': gblOptionSets.WindowMeasurement.LeadTestResult.No} 
+                            )
+                        )
+                    );
+                    // track changes
+                    With(
+                        {
+                            varType: "colCdsWindowMeasurements",
+                            varRecordRef: gblRecordWindowMeasurement_Tech.'Window Measurement'
+                        },
+                        If(
+                            IsBlank(
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                )
+                            ),
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "U"
+                                }
+                            )
+                        )
+                    );
+                  OnUncheck: =
+                  PressedBorderColor: =Color.Transparent
+                  TrueFill: =gblAppStyles.Status.Danger
+                  TrueText: ="Yes"
+                  Width: =127
+                  X: =188
+                  Y: =355
+            - lbl_LeadTest_Exterior__Result:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =Color.Black
+                  Font: =Font.'Open Sans'
+                  Text: =If(tog_LeadTest_Exterior__Result.Value, "Yes", "No")
+                  Width: =78
+                  X: =270
+                  Y: =353
+            - tog_LeadTest_Interior__Result:
+                Control: Classic/Toggle@2.1.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =Color.Transparent
+                  Default: |-
+                    =gblRecordWindowMeasurement_Tech.'Lead Test: Interior Result'=gblOptionSets.JobEntry.LeadTestResult.Yes
+                  DisabledColor: =Color.Transparent
+                  DisplayMode: '=If(btn_LeadTest_Interior__Component.Text="select component", DisplayMode.Disabled, DisplayMode.Edit) '
+                  FalseText: ="No"
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Open Sans'
+                  Height: =38
+                  OnChange: =
+                  OnCheck: =
+                  OnSelect: |-
+                    =If(
+                        Self.Value,
+                    // when toggle is set to Yes
+                        Set(
+                            gblRecordWindowMeasurement_Tech,
+                            Patch(
+                                colCdsWindowMeasurements,
+                                LookUp(
+                                    colCdsWindowMeasurements,
+                                    'Window Measurement' = gal_LeadTest_Select.Selected.ID
+                                ),
+                                {'Lead Test: Interior Result': gblOptionSets.WindowMeasurement.LeadTestResult.Yes}
+                            )
+                        ),
+                    // when toggle is set to No
+                        Set(
+                            gblRecordWindowMeasurement_Tech,
+                            Patch(
+                                colCdsWindowMeasurements,
+                                LookUp(
+                                    colCdsWindowMeasurements,
+                                    'Window Measurement' = gal_LeadTest_Select.Selected.ID
+                                ),
+                                {'Lead Test: Interior Result': gblOptionSets.WindowMeasurement.LeadTestResult.No}
+                            )
+                        )
+                    );
+                    // track changes
+                    With(
+                        {
+                            varType: "colCdsWindowMeasurements",
+                            varRecordRef: gblRecordWindowMeasurement_Tech.'Window Measurement'
+                        },
+                        If(
+                            IsBlank(
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                )
+                            ),
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "U"
+                                }
+                            )
+                        )
+                    );
+                  OnUncheck: =
+                  TrueFill: =gblAppStyles.Status.Danger
+                  TrueText: ="Yes"
+                  Width: =117
+                  X: =430
+                  Y: =355
+            - lbl_LeadTest_Interior__Result:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =Color.Black
+                  Font: =Font.'Open Sans'
+                  Text: =If(tog_LeadTest_Interior__Result.Value, "Yes", "No")
+                  Width: =78
+                  X: =512
+                  Y: =353
+            - btn_LeadTest_Exterior__Component:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =
+                  BorderThickness: =0
+                  Color: |-
+                    =If(IsBlank(gblRecordWindowMeasurement_Tech.'Lead Test: Exterior Component'), gblAppColors.Secondary.GrayMediumDark ,gblAppStyles.Text.Color)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =gblAppStyles.Card.Fill
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: |
+                    =UpdateContext(
+                        {
+                            locComponentExteriorInterior: "Exterior",
+                            locComponentSelected: If(Self.Text="select component", Blank(), Self.Text),
+                            locComponentIsCustomValue: (
+                                IsBlank(
+                                    LookUp(
+                                        colCdsDataEntryChoices,
+                                        Value = Self.Text,
+                                        Type=gblOptionSets.Global.DataEntryType.ExteriorWindowComponent
+                                    )
+                                ) And Self.Text <> "select component"
+                            )
+                        }
+                    );
+                  PaddingLeft: =20
+                  PaddingRight: =3.75
+                  PaddingTop: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =13
+                  Text: |-
+                    =Coalesce(gblRecordWindowMeasurement_Tech.'Lead Test: Exterior Component',"select component")
+                  Width: =223
+                  X: =188
+                  Y: =207
+            - btn_LeadTest_Interior__Component:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =
+                  BorderThickness: =0
+                  Color: |-
+                    =If(IsBlank(gblRecordWindowMeasurement_Tech.'Lead Test: Interior Component'), gblAppColors.Secondary.GrayMediumDark ,gblAppStyles.Text.Color)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =gblAppStyles.Card.Fill
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: |+
+                    =UpdateContext(
+                        {
+                            locComponentExteriorInterior: "Interior",
+                            locComponentSelected: If(Self.Text="select component", Blank(), Self.Text),
+                            locComponentIsCustomValue: (
+                                IsBlank(
+                                    LookUp(
+                                        colCdsDataEntryChoices,
+                                        Value = Self.Text,
+                                        Type=gblOptionSets.Global.DataEntryType.InteriorWindowComponent
+                                    )
+                                ) And Self.Text <> "select component"
+                            )
+                        }
+                    );
+                  PaddingLeft: =20
+                  PaddingRight: =3.75
+                  PaddingTop: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =13
+                  Text: |-
+                    =Coalesce(gblRecordWindowMeasurement_Tech.'Lead Test: Interior Component',"select component")
+                  Width: =224
+                  X: =430
+                  Y: =207
+            - lbl_LeadTest_Summary:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Size: =gblAppStyles.Text.SubtitleSize
+                  Text: ="Summary"
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                  Width: =107
+                  X: =547
+                  Y: =32
+            - ico_LeadTest_Summary:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Neutral
+                  FocusedBorderColor: =Color.Transparent
+                  Height: =38
+                  Icon: =Icon.DocumentWithContent
+                  OnSelect: |-
+                    =UpdateContext({locShowLeadTestSummary: true})
+                  PaddingRight: =100
+                  TabIndex: =0
+                  Width: =38+100
+                  X: =500
+                  Y: =32
+      - con_LeadTest_Components:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =gblAppColors.Secondary.GrayLight
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =!IsBlank(locComponentExteriorInterior)
+            Width: =694
+            X: =330
+            Y: =60
+          Children:
+            - cmp_LeadTest_Component__AdvanceButton:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.Check}
+                  IconColor: =Color.White
+                  IconFill: =Color.Green
+                  NavigateScreen: =App.ActiveScreen
+                  Text: ="Select Component"
+                  Visible: |-
+                    =!IsBlank(locComponentSelected)
+                    And (locComponentIsCustomValue Or Len(txt_LeadTest_Components__CustomValue.Text)>0)
+                    Or (!locComponentIsCustomValue And !IsBlank(locComponentSelected))
+                  Width: =287
+                  X: =368
+                  Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+            - btn_LeadTest_Component__AdvanceButton:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                  DisabledColor: =RGBA(0, 0, 0, 0)
+                  DisabledFill: =RGBA(0, 0, 0, 0)
+                  Fill: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_LeadTest_Component__AdvanceButton.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Color.Transparent
+                  HoverFill: =Color.Transparent
+                  OnSelect: |
+                    =// Update the job entry with component selected
+                    Set(
+                        gblRecordWindowMeasurement_Tech,
+                        Patch(
+                            colCdsWindowMeasurements,
+                            gblRecordWindowMeasurement_Tech,
+                            {
+                                'Lead Test: Exterior Component': If(
+                                    locComponentExteriorInterior = "Exterior",
+                                    locComponentSelected,
+                                    gblRecordWindowMeasurement_Tech.'Lead Test: Exterior Component'
+                                ),
+                                'Lead Test: Exterior Swab Number': If(
+                                    locComponentExteriorInterior = "Exterior"
+                                    And IsBlank(gblRecordWindowMeasurement_Tech.'Lead Test: Exterior Swab Number'),
+                                    gblRecordJobCurrent.'Lead Test: Last Swab Number',
+                                    gblRecordWindowMeasurement_Tech.'Lead Test: Exterior Swab Number'
+                                ),
+                                'Lead Test: Exterior Result': If(
+                                    IsBlank(gblRecordWindowMeasurement_Tech.'Lead Test: Exterior Result'),
+                                    gblOptionSets.JobEntry.LeadTestResult.No,
+                                    gblRecordWindowMeasurement_Tech.'Lead Test: Exterior Result'
+                                ),
+                                'Lead Test: Interior Component': If(
+                                    locComponentExteriorInterior = "Interior",
+                                    locComponentSelected,
+                                    gblRecordWindowMeasurement_Tech.'Lead Test: Interior Component'
+                                ),
+                                'Lead Test: Interior Swab Number': If(
+                                    locComponentExteriorInterior = "Interior"
+                                    And IsBlank(gblRecordWindowMeasurement_Tech.'Lead Test: Interior Swab Number'),
+                                    gblRecordJobCurrent.'Lead Test: Last Swab Number',
+                                    gblRecordWindowMeasurement_Tech.'Lead Test: Interior Swab Number'
+                                ),
+                                'Lead Test: Interior Result': If(
+                                    IsBlank(gblRecordWindowMeasurement_Tech.'Lead Test: Interior Result'),
+                                    gblOptionSets.JobEntry.LeadTestResult.No,
+                                    gblRecordWindowMeasurement_Tech.'Lead Test: Interior Result'
+                                )
+                            }
+                        )
+                    );
+                    // track changes
+                    With(
+                        {
+                            varType: "colCdsWindowMeasurements",
+                            varRecordRef: gblRecordWindowMeasurement_Tech.'Window Measurement'
+                        },
+                        If(
+                            IsBlank(
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                )
+                            ),
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "U"
+                                }
+                            )
+                        )
+                    );
+                    // reset variables
+                    UpdateContext(
+                        {
+                            locComponentExteriorInterior: Blank(),
+                            locComponentSelected: Blank(),
+                            locComponentIsCustomValue: false
+                        }
+                    );
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.Transparent
+                  PressedFill: =Color.Transparent
+                  Text: =""
+                  Visible: =cmp_LeadTest_Component__AdvanceButton.Visible
+                  Width: =cmp_LeadTest_Component__AdvanceButton.Width
+                  X: =cmp_LeadTest_Component__AdvanceButton.X
+                  Y: =cmp_LeadTest_Component__AdvanceButton.Y
+            - gal_LeadTest_Selection:
+                Control: Gallery@2.15.0
+                Variant: Vertical
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =Color.Transparent
+                  DelayItemLoading: =false
+                  Height: =If(!locComponentIsCustomValue And !IsBlank(locComponentSelected), 500, 623)
+                  Items: |-
+                    =If(
+                        locComponentExteriorInterior = "Exterior",
+                        Filter(
+                            colCdsDataEntryChoices,
+                            Type = gblOptionSets.Global.DataEntryType.ExteriorWindowComponent
+                        ),
+                        Filter(
+                            colCdsDataEntryChoices,
+                            Type = gblOptionSets.Global.DataEntryType.InteriorWindowComponent
+                        )
+                    )
+                  LoadingSpinner: =LoadingSpinner.None
+                  OnSelect: |
+                    =// write the selection to the window property
+                    UpdateContext({locComponentSelected: ThisItem.Value});
+                    // reset galleries
+                    Reset(gal_LeadTest_Select);
+                    Reset(gal_LeadTest_Selection);
+                  ShowScrollbar: =false
+                  TabIndex: =0
+                  TemplatePadding: =0
+                  TemplateSize: =180
+                  Visible: =!locComponentIsCustomValue
+                  Width: =650
+                  WrapCount: =3
+                  X: =25
+                  Y: =85
+                Children:
+                  - btn_LeadTest_Selection__Base:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        AutoDisableOnSelect: =false
+                        BorderColor: =gblAppColors.Secondary.GrayMedium
+                        BorderThickness: =1
+                        Color: =RGBA(255, 255, 255, 1)
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        Fill: |-
+                          =If(
+                              locComponentSelected = ThisItem.Value,
+                              gblAppStyles.Status.Neutral,
+                              gblAppStyles.Card.Fill
+                          )
+                        FocusedBorderThickness: =1
+                        Font: =Font.'Open Sans'
+                        Height: =Parent.TemplateHeight-(gblAppStyles.Card.MarginLeft*2)
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =Self.Fill
+                        OnSelect: =Select(Parent)
+                        PaddingRight: =3.75
+                        PressedBorderColor: =Self.BorderColor
+                        PressedFill: =Self.Fill
+                        RadiusBottomLeft: =gblAppStyles.Card.Radius
+                        RadiusBottomRight: =gblAppStyles.Card.Radius
+                        RadiusTopLeft: =gblAppStyles.Card.Radius
+                        RadiusTopRight: =gblAppStyles.Card.Radius
+                        Size: =11.24
+                        Text: =
+                        Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                        X: =(Parent.TemplateWidth-Self.Width)/2
+                        Y: =(Parent.TemplateHeight-Self.Height)/2
+                  - lbl_LeadTest_Selection:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =LayoutAlignItems.Center
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =If(locComponentSelected = ThisItem.Value, gblAppColors.Secondary.White,gblAppStyles.Card.TitleColor)
+                        Fill: =Color.Transparent
+                        Font: =gblAppStyles.Text.TitleFont
+                        FontWeight: =FontWeight.Lighter
+                        Height: =btn_LeadTest_Selection__Base.Height
+                        LineHeight: =1.5
+                        OnSelect: =Select(Parent)
+                        PaddingBottom: =10
+                        PaddingLeft: =15
+                        PaddingRight: =15
+                        Size: =16
+                        Text: =ThisItem.Value
+                        Width: =btn_LeadTest_Selection__Base.Width
+                        X: =15
+                        Y: =15
+                  - btn_LeadTest_Selection:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        AutoDisableOnSelect: =false
+                        BorderColor: =Color.Transparent
+                        BorderThickness: =1
+                        Color: =
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        Fill: =Color.Transparent
+                        FocusedBorderThickness: =1
+                        Font: =Font.'Segoe UI'
+                        Height: =Parent.TemplateHeight-(gblAppStyles.Card.MarginLeft*2)
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =If(locComponentSelected<>ThisItem.Value, gblAppStyles.Card.HoverFill)
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =10
+                        PaddingRight: =20
+                        PaddingTop: =3.75
+                        PressedBorderColor: =Self.BorderColor
+                        PressedFill: =If(locComponentSelected<>ThisItem.Name, gblAppStyles.Card.PressedFill)
+                        RadiusBottomLeft: =gblAppStyles.Card.Radius
+                        RadiusBottomRight: =gblAppStyles.Card.Radius
+                        RadiusTopLeft: =gblAppStyles.Card.Radius
+                        RadiusTopRight: =gblAppStyles.Card.Radius
+                        Size: =11.24
+                        Text: =
+                        Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                        X: =(Parent.TemplateWidth-Self.Width)/2*1
+                        Y: =(Parent.TemplateHeight-Self.Height)/2*1
+            - lbl_LeadTest_Components__MaxLength:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =50
+                  Text: =Len(txt_LeadTest_Components__CustomValue.Text) & "/20"
+                  Visible: =locComponentIsCustomValue
+                  X: =505*1
+                  Y: =100*1
+            - txt_LeadTest_Components__CustomValue:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =locComponentSelected
+                  Font: =gblAppStyles.Text.Font
+                  Height: =50
+                  HintText: ="Enter a room description"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  MaxLength: =20
+                  OnChange: |-
+                    =UpdateContext({locComponentSelected: Self.Text});
+                  PaddingLeft: =20
+                  Visible: =locComponentIsCustomValue
+                  Width: =443
+                  X: =40*1
+                  Y: =100*1
+            - tog_LeadTest_Components__CustomValue:
+                Control: Classic/Toggle@2.1.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Default: =locComponentIsCustomValue
+                  FalseText: ="No"
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Segoe UI'
+                  Height: =30
+                  OnChange: =
+                  OnCheck: |-
+                    =UpdateContext({locComponentIsCustomValue: true});
+                  OnUncheck: |-
+                    =UpdateContext({locComponentIsCustomValue: false});
+                  TrueFill: =gblAppStyles.Status.Success
+                  TrueText: ="Yes"
+                  Width: =109
+                  X: =545
+                  Y: =40
+            - lbl_LeadTest_Components__CustomValue:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Text.Color
+                  Font: =gblAppStyles.Text.Font
+                  Size: =gblAppStyles.Text.Size
+                  Text: ="Custom Value?"
+                  X: =395
+                  Y: =35
+            - lbl_LeadTest_Components__Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  PaddingLeft: =10
+                  Size: =20
+                  Text: =locComponentExteriorInterior&" Components"
+                  Visible: =CountRows(gal_LeadTest_Select.AllItems)>0
+                  Width: =365
+                  X: =30
+                  Y: =30
+      - con_LeadTest_NotCertfied:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =gblAppColors.Secondary.GrayLight
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: |-
+              =IsBlank(gblRecordUserCurrent.'Lead Test: Certificate ID') Or gblRecordUserCurrent.'Lead Test: Certificate Expiry Date' < Today()
+            Width: =694
+            X: =330
+            Y: =60
+          Children:
+            - lbl_Windows_NotCertified:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppColors.Secondary.GrayMediumDark
+                  Font: =Font.'Segoe UI'
+                  Size: =20
+                  Text: |-
+                    =If(
+                        IsBlank(gblRecordUserCurrent.'Lead Test: Certificate ID'),
+                        "You do not have the required certificate",
+                        gblRecordUserCurrent.'Lead Test: Certificate Expiry Date' < Today(),
+                        "Your lead test certiciate is expired",
+                        Blank()
+                    )
+                  Width: =692
+                  X: =2
+                  Y: =401
+            - ico_Windows_NotCertified:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Disabled
+                  DisplayMode: =DisplayMode.View
+                  Height: =210
+                  Icon: =Icon.Warning
+                  Width: =210
+                  X: =243
+                  Y: =151
+      - gal_LeadTest_Select:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            Default: =gblProjectSidebarItemCurrent
+            DelayItemLoading: =false
+            Fill: =gblAppStyles.ActionsMenu.Fill
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Height: =708
+            Items: =colProjectSidebar
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: |-
+              =// set current job entry
+              Set(
+                  gblProjectSidebarItemCurrent,
+                  ThisItem
+              );
+              Set(
+                  gblRecordWindowMeasurement_Tech,
+                  LookUp(
+                      colCdsWindowMeasurements,
+                      'Window Measurement' = ThisItem.ID
+                  )
+              );
+              // reset controls
+              Reset(txt_LeadTest_Exterior__Swab);
+              Reset(txt_LeadTest_Exterior__Result);
+              Reset(txt_LeadTest_Interior__Swab);
+              Reset(txt_LeadTest_Interior__Result);
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplateFill: =If(gblProjectSidebarItemCurrent.ID=ThisItem.ID, ColorFade(gal_LeadTest_Select.Fill, -5%), Color.Transparent)
+            TemplatePadding: =0
+            TemplateSize: =72
+            Width: =250
+            X: =80
+            Y: =60
+          Children:
+            - con_LeadTest_Select:
+                Control: GroupContainer@1.3.0
+                Variant: AutoLayout
+                Properties:
+                  BorderColor: =Color.DarkGray
+                  BorderStyle: =BorderStyle.None
+                  DropShadow: =DropShadow.None
+                  Height: =72
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutJustifyContent: =LayoutJustifyContent.Center
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =250
+                Children:
+                  - lbl_LeadTest_Select__Title:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =If(ThisItem.Category="Window Measurement", DisplayMode.Edit, DisplayMode.Disabled)
+                        Font: =Font.'Open Sans'
+                        Height: =22
+                        PaddingLeft: =66
+                        Size: =12
+                        Text: =ThisItem.Title
+                        Width: =Parent.Width
+                  - lbl_LeadTest_Select__Description:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =If(ThisItem.Category="Window Measurement", DisplayMode.Edit, DisplayMode.Disabled)
+                        Font: =Font.'Open Sans'
+                        Height: =18
+                        PaddingLeft: =66
+                        Size: =9
+                        Text: =ThisItem.Description
+                        Visible: =!IsBlank(ThisItem.Description)
+                        Width: =Parent.Width
+                        Y: =22
+                  - lbl_LeadTest_Select__Lead:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =If(ThisItem.Category="Window Measurement", DisplayMode.Edit, DisplayMode.Disabled)
+                        Font: =Font.'Open Sans'
+                        Height: =18
+                        PaddingLeft: =66
+                        Size: =9
+                        Text: |-
+                          =With(
+                              {
+                                  varRecordWindowMeasurement: If(
+                                      ThisItem.Category="Window Measurement",
+                                      LookUp(
+                                          colCdsWindowMeasurements,
+                                          'Window Measurement'=ThisItem.ID
+                                      ),
+                                      Blank()
+                                  )
+                              },
+                              If(
+                                  !IsBlank(varRecordWindowMeasurement.'Window Mull'.'Sequence Number'),
+                                  "Mull " & varRecordWindowMeasurement.'Window Mull'.'Sequence Number'
+                              )
+                              &
+                              If(
+                                  !IsBlank(varRecordWindowMeasurement.'Window Mull'.'Sequence Number')
+                                  And !IsBlank(varRecordWindowMeasurement.'Lead Test: Exterior Result'),
+                                  ", "
+                              )
+                              &
+                              If(
+                                  varRecordWindowMeasurement.'Lead Test: Exterior Result'=gblOptionSets.JobEntry.LeadTestResult.Yes
+                                  Or varRecordWindowMeasurement.'Lead Test: Interior Result'=gblOptionSets.JobEntry.LeadTestResult.Yes,
+                                  "Contains Lead",
+                                  varRecordWindowMeasurement.'Lead Test: Exterior Result'=gblOptionSets.JobEntry.LeadTestResult.No
+                                  Or varRecordWindowMeasurement.'Lead Test: Interior Result'=gblOptionSets.JobEntry.LeadTestResult.No,
+                                  "No Lead",
+                                  Blank()
+                              )
+                          )
+                        Visible: |-
+                          =With(
+                              {
+                                  varRecordWindowMeasurement: If(
+                                      ThisItem.Category="Window Measurement",
+                                      LookUp(
+                                          colCdsWindowMeasurements,
+                                          'Window Measurement'=ThisItem.ID
+                                      ),
+                                      Blank()
+                                  )
+                              },
+                              Or(
+                                  !IsBlank(varRecordWindowMeasurement.'Window Mull'.'Sequence Number'),
+                                  !IsBlank(varRecordWindowMeasurement.'Lead Test: Exterior Result')
+                              )
+                          )
+                        Width: =Parent.Width
+                        Y: =39
+            - ico_LeadTest_Select__Image:
+                Control: Image@2.2.3
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DisabledFill: =Color.Transparent
+                  Height: =64
+                  Image: |-
+                    =ThisItem.Image
+                    /*
+                    LookUp(
+                        colCdsWindowStyles,
+                        LookUp(
+                            colCdsWindowChoices,
+                            colCdsWindowChoices[@'Window Choice'] = ThisItem.'Window Choice'.'Window Choice',
+                            Style
+                        ).'Window Style' = colCdsWindowStyles[@'Window Style']
+                    ).Thumbnail.Value
+                    */
+                  PaddingBottom: =If(ThisItem.Type="Window Choice", 6, 15)
+                  PaddingLeft: =If(ThisItem.Type="Window Choice", 6, 15)
+                  PaddingRight: =If(ThisItem.Type="Window Choice", 6, 15)
+                  PaddingTop: =If(ThisItem.Type="Window Choice", 6, 15)
+                  Width: =64
+                  X: =0*1
+                  Y: =(Parent.TemplateHeight-Self.Height)/2
+            - btn_LeadTest_Select__Status:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =gblAppStyles.ActionsMenu.QuantityBorderThickness
+                  Color: =Color.White//If(ThisItem.Completed, gblAppColors.Secondary.White,gblAppStyles.ActionsMenu.Color)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisabledFill: =gblAppStyles.Status.Success
+                  Fill: =gblAppStyles.Status.Success
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =gblAppStyles.ActionsMenu.QuantityFontWeight
+                  Height: =17
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =Select(Parent)
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =180
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =8
+                  Text: =Blank()//ThisItem.Quantity
+                  Visible: |-
+                    =And(
+                        ThisItem.Category="Window Measurement",
+                        LookUp(
+                            colCdsWindowMeasurements,
+                            'Window Measurement'=ThisItem.ID,
+                            Completed
+                        ) = gblOptionSets.WindowMeasurement.Completed.Yes
+                    )
+                  Width: =17
+                  X: =35
+                  Y: =gblAppStyles.ActionsMenu.QuantityY*1+3
+            - img_LeadTest_Select__Status:
+                Control: Image@2.2.3
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Height: =14
+                  Image: ='icons8-checkmark'
+                  Visible: |-
+                    =And(
+                        ThisItem.Category="Window Measurement",
+                        LookUp(
+                            colCdsWindowMeasurements,
+                            'Window Measurement'=ThisItem.ID,
+                            Completed
+                        ) = gblOptionSets.WindowMeasurement.Completed.Yes
+                    )
+                  Width: =18
+                  X: =35
+                  Y: =45*1
+            - btn_LeadTest_Select__Overlay:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =Color.Transparent
+                  DisabledColor: =Color.Transparent
+                  DisabledFill: =Color.Transparent
+                  DisplayMode: =If(ThisItem.Category="Window Measurement", DisplayMode.Edit, DisplayMode.View)
+                  Fill: =Color.Transparent
+                  Font: =Font.'Open Sans'
+                  Height: =72
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Color.Transparent
+                  HoverFill: =Color.Transparent
+                  OnSelect: =Select(Parent)
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Color.Transparent
+                  PressedFill: =Color.Transparent
+                  Text: =""
+                  Width: =250
+      - con_LeadTest_Summary:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =gblAppColors.Secondary.GrayLight
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locShowLeadTestSummary
+            Width: =944
+            X: =80
+            Y: =60
+          Children:
+            - cvs_LeadTest_Summary:
+                Control: FluidGrid@2.3.0
+                Properties:
+                  BorderThickness: =0
+                  Height: =681
+                  Visible: =false
+                  Width: =888
+                  X: =33
+                  Y: =27
+                Children:
+                  - crd_LeadTest_Summary__Verbiage:
+                      Control: DataCard@1.0.2
+                      Properties:
+                        Fill: =gblAppColors.Secondary.White
+                        Height: =100
+                        Width: =888
+                        X: =0
+                        Y: =1
+                      Children:
+                        - htm_LeadTest_Summary_Verbiage:
+                            Control: HtmlViewer@2.1.0
+                            Properties:
+                              AutoHeight: =true
+                              DisabledBorderColor: =RGBA(56, 56, 56, 1)
+                              Font: =Font.'Open Sans'
+                              Height: =768
+                              HtmlText: "=/*\r\n    wCompanyName: \"Window Nation\",\r\n    wCompanyAddress: \"8110 Maple Lawn Boulevard\",\r\n    wCompanyCityStateZip: \"Fulton, MD, 20759\",\r\n    wCompanyPhone: \"(443) 577-3165\",\r\n    wCompanyCertificate: \"NAT-21505-3\",\r\n    wCompanyCertExpiry: \"4/16/2025\",\r\n    wTestKitCompany: \"Hybrivet\",\r\n    wTestKitType: \"Lead Test Swabs\",\r\n    wTestKitCatalog: \"PB-2M96\"\r\n*/\r\n\r\nWith({\r\n    wCompanyName: \"Window Nation\",\r\n    wCompanyAddress: \"(shown only on pdf document)\",\r\n    wCompanyCityStateZip: \"(shown only on pdf document)\",\r\n    wCompanyPhone: \"(shown only on pdf document)\",\r\n    wCompanyCertificate: \"(shown only on pdf document)\",\r\n    wCompanyCertExpiry: \"(shown only on pdf document)\",\r\n    wTestKitCompany: \"(shown only on pdf document)\",\r\n    wTestKitType: \"(shown only on pdf document)\",\r\n    wTestKitCatalog: \"(shown only on pdf document)\"\r\n},\r\n\"<html xmlns:v=\"\"urn:schemas-microsoft-com:vml\"\"\r\nxmlns:o=\"\"urn:schemas-microsoft-com:office:office\"\"\r\nxmlns:w=\"\"urn:schemas-microsoft-com:office:word\"\"\r\nxmlns:x=\"\"urn:schemas-microsoft-com:office:excel\"\"\r\nxmlns:dt=\"\"uuid:C2F41010-65B3-11d1-A29F-00AA00C14882\"\"\r\nxmlns:m=\"\"http://schemas.microsoft.com/office/2004/12/omml\"\"\r\nxmlns=\"\"http://www.w3.org/TR/REC-html40\"\">\r\n\r\n<head>\r\n<meta http-equiv=Content-Type content=\"\"text/html; charset=windows-1252\"\">\r\n<meta name=ProgId content=Word.Document>\r\n<meta name=Generator content=\"\"Microsoft Word 15\"\">\r\n<meta name=Originator content=\"\"Microsoft Word 15\"\">\r\n<style>\r\n<!--\r\n /* Font Definitions */\r\n @font-face\r\n	{font-family:\"\"Cambria Math\"\";\r\n	panose-1:2 4 5 3 5 4 6 3 2 4;\r\n	mso-font-charset:0;\r\n	mso-generic-font-family:roman;\r\n	mso-font-pitch:variable;\r\n	mso-font-signature:3 0 0 0 1 0;}\r\n@font-face\r\n	{font-family:Calibri;\r\n	panose-1:2 15 5 2 2 2 4 3 2 4;\r\n	mso-font-charset:0;\r\n	mso-generic-font-family:swiss;\r\n	mso-font-pitch:variable;\r\n	mso-font-signature:-469750017 -1073732485 9 0 511 0;}\r\n /* Style Definitions */\r\n p.MsoNormal, li.MsoNormal, div.MsoNormal\r\n	{mso-style-unhide:no;\r\n	mso-style-qformat:yes;\r\n	mso-style-parent:\"\"\"\";\r\n	margin-top:0in;\r\n	margin-right:0in;\r\n	margin-bottom:8.0pt;\r\n	margin-left:0in;\r\n	line-height:107%;\r\n	mso-pagination:widow-orphan;\r\n	font-size:11.0pt;\r\n	font-family:\"\"Calibri\"\",sans-serif;\r\n	mso-ascii-font-family:Calibri;\r\n	mso-ascii-theme-font:minor-latin;\r\n	mso-fareast-font-family:Calibri;\r\n	mso-fareast-theme-font:minor-latin;\r\n	mso-hansi-font-family:Calibri;\r\n	mso-hansi-theme-font:minor-latin;\r\n	mso-bidi-font-family:\"\"Times New Roman\"\";\r\n	mso-bidi-theme-font:minor-bidi;}\r\nspan.SpellE\r\n	{mso-style-name:\"\"\"\";\r\n	mso-spl-e:yes;}\r\n.MsoChpDefault\r\n	{mso-style-type:export-only;\r\n	mso-default-props:yes;\r\n	font-family:\"\"Calibri\"\",sans-serif;\r\n	mso-ascii-font-family:Calibri;\r\n	mso-ascii-theme-font:minor-latin;\r\n	mso-fareast-font-family:Calibri;\r\n	mso-fareast-theme-font:minor-latin;\r\n	mso-hansi-font-family:Calibri;\r\n	mso-hansi-theme-font:minor-latin;\r\n	mso-bidi-font-family:\"\"Times New Roman\"\";\r\n	mso-bidi-theme-font:minor-bidi;}\r\n.MsoPapDefault\r\n	{mso-style-type:export-only;\r\n	margin-bottom:8.0pt;\r\n	line-height:107%;}\r\n /* Page Definitions */\r\n @page\r\n	{mso-footnote-separator:url(\"\"myleadtest897_files/header.htm\"\") fs;\r\n	mso-footnote-continuation-separator:url(\"\"myleadtest897_files/header.htm\"\") fcs;\r\n	mso-endnote-separator:url(\"\"myleadtest897_files/header.htm\"\") es;\r\n	mso-endnote-continuation-separator:url(\"\"myleadtest897_files/header.htm\"\") ecs;}\r\n@page WordSection1\r\n	{size:8.5in 11.0in;\r\n	margin:1.0in 1.0in 1.0in 1.0in;\r\n	mso-header-margin:.5in;\r\n	mso-footer-margin:.5in;\r\n	mso-paper-source:0;}\r\ndiv.WordSection1\r\n	{page:WordSection1;}\r\n-->\r\n</style>\r\n<!--[if gte mso 10]>\r\n<style>\r\n /* Style Definitions */\r\n table.MsoNormalTable\r\n	{mso-style-name:\"\"Table Normal\"\";\r\n	mso-tstyle-rowband-size:0;\r\n	mso-tstyle-colband-size:0;\r\n	mso-style-noshow:yes;\r\n	mso-style-priority:99;\r\n	mso-style-parent:\"\"\"\";\r\n	mso-padding-alt:0in 5.4pt 0in 5.4pt;\r\n	mso-para-margin-top:0in;\r\n	mso-para-margin-right:0in;\r\n	mso-para-margin-bottom:8.0pt;\r\n	mso-para-margin-left:0in;\r\n	line-height:107%;\r\n	mso-pagination:widow-orphan;\r\n	font-size:11.0pt;\r\n	font-family:\"\"Calibri\"\",sans-serif;\r\n	mso-ascii-font-family:Calibri;\r\n	mso-ascii-theme-font:minor-latin;\r\n	mso-hansi-font-family:Calibri;\r\n	mso-hansi-theme-font:minor-latin;\r\n	mso-bidi-font-family:\"\"Times New Roman\"\";\r\n	mso-bidi-theme-font:minor-bidi;}\r\n</style>\r\n<![endif]--><!--[if gte mso 9]><xml>\r\n <o:shapedefaults v:ext=\"\"edit\"\" spidmax=\"\"2050\"\"/>\r\n</xml><![endif]--><!--[if gte mso 9]><xml>\r\n <o:shapelayout v:ext=\"\"edit\"\">\r\n  <o:idmap v:ext=\"\"edit\"\" data=\"\"2\"\"/>\r\n </o:shapelayout></xml><![endif]-->\r\n</head>\r\n\r\n<body lang=EN-US style='tab-interval:.5in;word-wrap:break-word'>\r\n\r\n<div class=WordSection1>\r\n\r\n<table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width=533\r\n style='width:400.0pt;border-collapse:collapse;mso-yfti-tbllook:1184;\r\n mso-padding-alt:0in 5.4pt 0in 5.4pt'>\r\n <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;height:18.75pt'>\r\n  <td width=369 nowrap colspan=2 style='width:277.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'><span\r\n  style='font-size:14.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:\r\n  \"\"Times New Roman\"\";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;\r\n  color:black'>Owner/Occupant Information<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 nowrap style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:1;height:18.75pt'>\r\n  <td width=179 nowrap style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:2;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;mso-border-alt:\r\n  solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Name<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border:solid windowtext 1.0pt;\r\n  border-left:none;mso-border-top-alt:solid windowtext .5pt;mso-border-bottom-alt:\r\n  solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;padding:\r\n  0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&gblRecordJobCurrent.'Primary Contact'.'Full Name'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:3;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Address<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&gblRecordJobCurrent.'Primary Contact'.'Address 1: Street 1'&gblRecordJobCurrent.'Primary Contact'.'Address 2'&gblRecordJobCurrent.'Primary Contact'.'Address 3'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:4;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>City, State, ZIP<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&gblRecordJobCurrent.City&\", \"&gblRecordJobCurrent.State&\", \"&gblRecordJobCurrent.'Zip Code'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:5;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-Left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Phone<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&gblRecordJobCurrent.'Phone (1)'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:6;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Alt. Phone<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&gblRecordJobCurrent.'Phone (2)'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:7;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:8;height:18.75pt'>\r\n  <td width=369 nowrap colspan=2 style='width:277.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'><span\r\n  style='font-size:14.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:\r\n  \"\"Times New Roman\"\";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;\r\n  color:black'>Renovation Address<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 nowrap style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:9;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:10;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;mso-border-alt:\r\n  solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Address<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border:solid windowtext 1.0pt;\r\n  border-left:none;mso-border-top-alt:solid windowtext .5pt;mso-border-bottom-alt:\r\n  solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;padding:\r\n  0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&gblRecordJobCurrent.'Address Street 1'&gblRecordJobCurrent.'Address Street 2'&gblRecordJobCurrent.'Address Street 3'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:11;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>City, State, ZIP<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&gblRecordJobCurrent.City&\", \"&gblRecordJobCurrent.State&\", \"&gblRecordJobCurrent.'Zip Code'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:12;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:13;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:14;height:18.75pt'>\r\n  <td width=369 nowrap colspan=2 style='width:277.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'><span\r\n  style='font-size:14.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:\r\n  \"\"Times New Roman\"\";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;\r\n  color:black'>Certified Renovator performing test(s)<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 nowrap style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:15;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:16;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;mso-border-alt:\r\n  solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Name<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border:solid windowtext 1.0pt;\r\n  border-left:none;mso-border-top-alt:solid windowtext .5pt;mso-border-bottom-alt:\r\n  solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;padding:\r\n  0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&gblRecordUserCurrent.Name&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:17;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Certificate #<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&gblRecordUserCurrent.'Lead Test: Certificate ID'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:18;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Date Certified<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&Text(gblRecordUserCurrent.'Lead Test: Certificate Expiry Date', DateTimeFormat.ShortDate)&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:19;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:20;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:21;height:18.75pt'>\r\n  <td width=369 nowrap colspan=2 style='width:277.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'><span\r\n  style='font-size:14.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:\r\n  \"\"Times New Roman\"\";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;\r\n  color:black'>Certified Firm Information<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 nowrap style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:22;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:23;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;mso-border-alt:\r\n  solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Name<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border:solid windowtext 1.0pt;\r\n  border-left:none;mso-border-top-alt:solid windowtext .5pt;mso-border-bottom-alt:\r\n  solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;padding:\r\n  0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&wCompanyName&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:24;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Address<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&wCompanyAddress&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:25;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>City, State, ZIP<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&wCompanyCityStateZip&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:26;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Phone<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&wCompanyPhone&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:27;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Certificate #<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&wCompanyCertificate&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:28;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Expiry Date<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&wCompanyCertExpiry&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:29;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'></td>\r\n  <td width=191 style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'></td>\r\n  <td width=164 style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:30;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:31;height:18.75pt'>\r\n  <td width=369 nowrap colspan=2 style='width:277.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'><span\r\n  style='font-size:14.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:\r\n  \"\"Times New Roman\"\";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;\r\n  color:black'>Test Kit Information<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 nowrap style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:18.75pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:32;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:33;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;mso-border-alt:\r\n  solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Company<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border:solid windowtext 1.0pt;\r\n  border-left:none;mso-border-top-alt:solid windowtext .5pt;mso-border-bottom-alt:\r\n  solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;padding:\r\n  0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span class=SpellE><span style='mso-ascii-font-family:\r\n  Calibri;mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&wTestKitCompany&\"</span></span><span\r\n  style='mso-ascii-font-family:Calibri;mso-fareast-font-family:\"\"Times New Roman\"\";\r\n  mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;color:black'>\r\n  <o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:34;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Type<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&wTestKitType&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:35;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Catalog<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=355 colspan=2 style='width:266.0pt;border-top:none;border-left:\r\n  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-top-alt:solid windowtext .5pt;mso-border-top-alt:solid windowtext .5pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&wTestKitCatalog&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:36;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:37;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:38;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:39;height:21.0pt'>\r\n  <td width=369 nowrap colspan=2 valign=bottom style='width:277.0pt;padding:\r\n  0in 5.4pt 0in 5.4pt;height:21.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'><span\r\n  style='font-size:16.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:\r\n  \"\"Times New Roman\"\";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;\r\n  color:black'>Lead Test Results<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:21.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:40;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\"&\r\n \r\nConcat(\r\n    Filter(\r\n        colCdsJobEntries,\r\n        appJobIdText=gblRecordJobCurrent.appJobIDText,\r\n         !IsBlank('Lead Test: Exterior Component') Or !IsBlank('Lead Test: Interior Component')),\"\r\n \r\n <tr style='mso-yfti-irow:41;height:21.0pt'>\r\n  <td width=369 nowrap colspan=2 style='width:277.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:21.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'><span\r\n  style='font-size:14.0pt;mso-ascii-font-family:Calibri;mso-fareast-font-family:\r\n  \"\"Times New Roman\"\";mso-hansi-font-family:Calibri;mso-bidi-font-family:Calibri;\r\n  color:black'>Test Location - \"\r\n  \r\n  &'Job Room'.Name&\", \"&If(\r\n    'Job Room'.Floor = \"0\",\r\n    \"Basement\",\r\n    'Job Room'.Floor & If(\r\n        'Job Room'.Floor = \"1\",\r\n        \"st\",\r\n        'Job Room'.Floor = \"2\",\r\n        \"nd\",\r\n        'Job Room'.Floor = \"3\",\r\n        \"rd\",\r\n        \"th\"\r\n    ) & \" Floor\")&\r\n  \r\n\"<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 nowrap style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:21.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:42;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:43;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;mso-border-alt:\r\n  solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Item<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=191 style='width:143.0pt;border:solid windowtext 1.0pt;border-left:\r\n  none;mso-border-top-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Exterior<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 style='width:123.0pt;border:solid windowtext 1.0pt;border-left:\r\n  none;mso-border-top-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Interior<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:44;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Component<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=191 style='width:143.0pt;border-top:none;border-left:none;\r\n  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&'Lead Test: Exterior Component'&\"<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 style='width:123.0pt;border-top:none;border-left:none;\r\n  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&'Lead Test: Interior Component'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:45;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Swab #<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=191 style='width:143.0pt;border-top:none;border-left:none;\r\n  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&'Lead Test: Exterior Swab Number'&\"<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 style='width:123.0pt;border-top:none;border-left:none;\r\n  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&'Lead Test: Interior Swab Number'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:46;height:15.0pt'>\r\n  <td width=179 style='width:134.0pt;border:solid windowtext 1.0pt;border-top:\r\n  none;mso-border-left-alt:solid windowtext .5pt;mso-border-bottom-alt:solid windowtext .5pt;\r\n  mso-border-right-alt:solid windowtext .5pt;background:#EDEDED;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>Result<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=191 style='width:143.0pt;border-top:none;border-left:none;\r\n  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&'Lead Test: Exterior Result'&\"<o:p></o:p></span></p>\r\n  </td>\r\n  <td width=164 style='width:123.0pt;border-top:none;border-left:none;\r\n  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;\r\n  mso-border-bottom-alt:solid windowtext .5pt;mso-border-right-alt:solid windowtext .5pt;\r\n  padding:0in 5.4pt 0in 5.4pt;height:15.0pt'>\r\n  <p class=MsoNormal style='margin-bottom:0in;text-indent:11.0pt;mso-char-indent-count:\r\n  1.0;line-height:normal'><span style='mso-ascii-font-family:Calibri;\r\n  mso-fareast-font-family:\"\"Times New Roman\"\";mso-hansi-font-family:Calibri;\r\n  mso-bidi-font-family:Calibri;color:black'>\"&'Lead Test: Interior Result'&\"<o:p></o:p></span></p>\r\n  </td>\r\n </tr>\r\n <tr style='mso-yfti-irow:47;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:48;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\r\n <tr style='mso-yfti-irow:49;height:15.0pt'>\r\n  <td width=179 nowrap valign=bottom style='width:134.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=191 nowrap valign=bottom style='width:143.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n  <td width=164 nowrap valign=bottom style='width:123.0pt;padding:0in 5.4pt 0in 5.4pt;\r\n  height:15.0pt'></td>\r\n </tr>\")&\"\r\n</table>\r\n\r\n<p class=MsoNormal><o:p>&nbsp;</o:p></p>\r\n\r\n</div>\r\n\r\n</body>\r\n\r\n</html>\r\n\")"
+                              Visible: =false
+                              Width: =640
+                              X: =40
+                  - crd_LeadTest_Summary__Title:
+                      Control: DataCard@1.0.2
+                      Variant: BlankCard
+                      Properties:
+                        Fill: =gblAppColors.Secondary.White
+                        Height: =lbl_LeadTest_Summary_Title.Height+10
+                        Width: =888
+                        X: =0
+                        Y: =0
+                      Children:
+                        - lbl_LeadTest_Summary_Title:
+                            Control: Label@2.5.1
+                            Properties:
+                              AutoHeight: =true
+                              BorderColor: =RGBA(0, 18, 107, 1)
+                              Font: =Font.'Segoe UI'
+                              Height: =40//Coalesce(locResetScrollable, 40)
+                              PaddingLeft: =50
+                              PaddingRight: =20
+                              PaddingTop: =25
+                              Size: =gblAppStyles.Text.TitleSize
+                              Text: ="Lead Test Kit Documentation"
+                              VerticalAlign: =VerticalAlign.Top
+                              Width: =Parent.Width
+            - lbl_Rooms_LeadTest__Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =43
+                  Size: =gblAppStyles.Text.TitleSize
+                  Text: ="Lead Test Summary"
+                  Width: =420
+                  X: =40
+                  Y: =30
+            - lbl_Rooms_LeadTest__BackToLeadTest:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =Color.Transparent
+                  FocusedBorderThickness: =2
+                  Font: =Font.'Segoe UI'
+                  OnSelect: |-
+                    =UpdateContext({locShowLeadTestSummary: false})
+                  Size: =gblAppStyles.Text.SubtitleSize
+                  TabIndex: =0
+                  Text: ="Back to Lead Test"
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                  Width: =180
+                  X: =735
+                  Y: =32
+            - ico_Rooms_LeadTest__BackToLeadTest:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: |-
+                    =If(
+                        !IsBlank(
+                            LookUp(
+                                colCdsWindowMeasurements,
+                                'Window Measurement' = gblRecordWindowMeasurement_Tech.'Window Measurement',
+                                Notes
+                            )
+                        ),
+                        gblAppStyles.Status.Info,
+                        gblAppStyles.Status.Neutral
+                    )
+                  FocusedBorderColor: =Color.Transparent
+                  Height: =38
+                  Icon: =Icon.Filter
+                  OnSelect: |-
+                    =UpdateContext({locShowLeadTestSummary: false})
+                  Rotation: =180
+                  TabIndex: =0
+                  Width: =45
+                  X: =680
+                  Y: =32
+            - gal_LeadTest_Table:
+                Control: Gallery@2.15.0
+                Variant: Vertical
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DelayItemLoading: =false
+                  Fill: =Color.White
+                  Height: =606
+                  Items: |-
+                    =Filter(
+                        colCdsWindowMeasurements,
+                        Job.Job = gblRecordJobCurrent.Job,
+                        !IsBlank('Lead Test: Exterior Component') Or !IsBlank('Lead Test: Interior Component')
+                    )
+                  LoadingSpinner: =LoadingSpinner.None
+                  TabIndex: =0
+                  TemplatePadding: =0
+                  TemplateSize: =257
+                  Visible: =locShowLeadTestSummary
+                  Width: =864
+                  X: =45
+                  Y: =102
+                Children:
+                  - gal_LeadTest_Table__Item:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =RGBA(237, 237, 237, 1)
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: ="Item"
+                        Width: =200
+                        X: =44
+                        Y: =76
+                  - gal_LeadTest_Table__Exterior:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =RGBA(237, 237, 237, 1)
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: ="Exterior"
+                        Width: =200
+                        X: =243
+                        Y: =76
+                  - gal_LeadTest_Table__Interior:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =RGBA(237, 237, 237, 1)
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: ="Interior"
+                        Width: =200
+                        X: =442
+                        Y: =76
+                  - gal_LeadTest_Table__Component:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =RGBA(237, 237, 237, 1)
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: ="Component"
+                        Width: =200
+                        X: =44
+                        Y: =115
+                  - gal_LeadTest_Table__CompExt:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =Color.White
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: |-
+                          =ThisItem.'Lead Test: Exterior Component'
+                        Width: =200
+                        X: =243
+                        Y: =115
+                  - gal_LeadTest_Table__CompInt:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =Color.White
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: |-
+                          =ThisItem.'Lead Test: Interior Component'
+                        Width: =200
+                        X: =442
+                        Y: =115
+                  - gal_LeadTest_Table__Swab:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =RGBA(237, 237, 237, 1)
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: |-
+                          ="Swab #"
+                        Width: =200
+                        X: =44
+                        Y: =154
+                  - gal_LeadTest_Table__SwabExt:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =Color.White
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: |-
+                          =ThisItem.'Lead Test: Exterior Swab Number'
+                        Width: =200
+                        X: =243
+                        Y: =154
+                  - gal_LeadTest_Table__SwabInt:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =Color.White
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: |-
+                          =ThisItem.'Lead Test: Interior Swab Number'
+                        Width: =200
+                        X: =442
+                        Y: =154
+                  - gal_LeadTest_Table__Result:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =RGBA(237, 237, 237, 1)
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: ="Result"
+                        Width: =200
+                        X: =44
+                        Y: =193
+                  - gal_LeadTest_Table__ResultExt:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =Color.White
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: |-
+                          =ThisItem.'Lead Test: Exterior Result'
+                        Width: =200
+                        X: =243
+                        Y: =193
+                  - gal_LeadTest_Table__ResultInt:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderThickness: =1
+                        Fill: =Color.White
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =15
+                        Size: =gblAppStyles.Text.Size
+                        Text: |-
+                          =ThisItem.'Lead Test: Interior Result'
+                        Width: =200
+                        X: =442
+                        Y: =193
+                  - gal_LeadTest_Table__Title:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.Black
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =1
+                        Font: =gblAppStyles.Text.Font
+                        OnSelect: =Select(Parent)
+                        Size: =gblAppStyles.Text.Size
+                        Text: |-
+                          =$"Test Location - {ThisItem.'Job Entry'.'Room: Type'} {ThisItem.'Job Entry'.'Room: Floor'}"
+                        Width: =400
+                        X: =44
+                        Y: =21
+            - lbl_LeadTest_NoLeadTest:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppColors.Secondary.GrayMediumDark
+                  Font: =Font.'Segoe UI'
+                  Size: =20
+                  Text: |-
+                    ="No lead tests have been added to this job
+                    "
+                  Visible: |-
+                    =IsEmpty(
+                        Filter(
+                            colCdsWindowMeasurements,
+                            Job.Job = gblRecordJobCurrent.Job,
+                            !IsBlank('Lead Test: Exterior Component') Or !IsBlank('Lead Test: Interior Component')
+                        )
+                    )
+                  Width: =692
+                  X: =131
+                  Y: =476
+            - ico_LeadTest_NoLeadTest:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Disabled
+                  DisplayMode: =DisplayMode.View
+                  Height: =210
+                  Icon: =Icon.Information
+                  Visible: |-
+                    =IsEmpty(
+                        Filter(
+                            colCdsWindowMeasurements,
+                            Job.Job = gblRecordJobCurrent.Job,
+                            !IsBlank('Lead Test: Exterior Component') Or !IsBlank('Lead Test: Interior Component')
+                        )
+                    )
+                  Width: =210
+                  X: =372
+                  Y: =218

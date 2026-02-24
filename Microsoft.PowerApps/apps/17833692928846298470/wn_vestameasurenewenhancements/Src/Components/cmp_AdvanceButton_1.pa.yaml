@@ -1,0 +1,139 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+ComponentDefinitions:
+  cmp_AdvanceButton_1:
+    DefinitionType: CanvasComponent
+    CustomProperties:
+      ButtonFill:
+        PropertyKind: Input
+        DisplayName: ButtonFill
+        Description: A custom property
+        DataType: Color
+        Default: =Color.White
+      Color:
+        PropertyKind: Input
+        DisplayName: Color
+        Description: A custom property
+        DataType: Color
+        Default: =Color.Black
+      Icon:
+        PropertyKind: Input
+        DisplayName: Icon
+        Description: A custom property
+        DataType: Record
+        Default: |-
+          ={Value: Icon.Check}
+      IconColor:
+        PropertyKind: Input
+        DisplayName: IconColor
+        Description: A custom property
+        DataType: Color
+        Default: =Color.White
+      IconFill:
+        PropertyKind: Input
+        DisplayName: IconFill
+        Description: A custom property
+        DataType: Color
+        Default: =Color.Green
+      NavigateScreen:
+        PropertyKind: Input
+        DisplayName: NavigateScreen
+        Description: A custom property
+        DataType: Screen
+        Default: =App.ActiveScreen
+      Text:
+        PropertyKind: Input
+        DisplayName: Text
+        Description: A custom property
+        DataType: Text
+        Default: ="Text"
+    Properties:
+      Fill: =Color.Transparent
+      Height: =60
+      Width: =280
+    Children:
+      - btn_AdvanceButton_Base_1:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =Color.Transparent
+            BorderThickness: =0
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =cmp_AdvanceButton_1.ButtonFill
+            Font: =Font.'Open Sans'
+            Height: =60
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =Self.Fill
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Fill
+            RadiusBottomLeft: =180
+            RadiusBottomRight: =Self.RadiusBottomLeft
+            RadiusTopLeft: =Self.RadiusBottomLeft
+            RadiusTopRight: =Self.RadiusBottomLeft
+            Text: =""
+            Width: =cmp_AdvanceButton_1.Width
+      - btn_AdvanceButton_IconFill_1:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =Blank()
+            BorderThickness: =0
+            Color: =
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =cmp_AdvanceButton_1.IconFill
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Open Sans'
+            Height: =cmp_AdvanceButton_1.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =Self.Fill
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Fill
+            RadiusBottomLeft: =180
+            RadiusBottomRight: =Self.RadiusBottomLeft
+            RadiusTopLeft: =Self.RadiusBottomLeft
+            RadiusTopRight: =Self.RadiusBottomLeft
+            Text: =""
+            Width: =Self.Height
+      - ico_AdvanceButton_Icon_1:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =cmp_AdvanceButton_1.IconColor
+            Height: =39
+            Icon: =cmp_AdvanceButton_1.Icon.Value
+            Width: =39
+            X: =10
+            Y: =10
+      - lbl_AdvanceButton_Text_1:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =cmp_AdvanceButton_1.Color
+            Font: =Font.'Segoe UI'
+            Size: =16
+            Text: =cmp_AdvanceButton_1.Text
+            Width: =cmp_AdvanceButton_1.Width-Self.X
+            X: =75
+            Y: =10
+      - lbl_AdvanceButton_Overlay_1:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Font: =Font.'Open Sans'
+            Height: =60
+            OnSelect: =Navigate(cmp_AdvanceButton_1.NavigateScreen, BorderStyle.None)
+            TabIndex: =0
+            Text: =""
+            Width: =280

@@ -1,0 +1,112 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+ComponentDefinitions:
+  cmp_Titlebar:
+    DefinitionType: CanvasComponent
+    CustomProperties:
+      BackScreen:
+        PropertyKind: Input
+        DisplayName: BackScreen
+        Description: A custom property
+        DataType: Screen
+        Default: =App.ActiveScreen
+      Color:
+        PropertyKind: Input
+        DisplayName: Color
+        Description: A custom property
+        DataType: Color
+        Default: =Color.White
+      Context:
+        PropertyKind: Input
+        DisplayName: Context
+        Description: A custom property
+        DataType: Text
+        Default: =Blank()
+      Font:
+        PropertyKind: Input
+        DisplayName: Font
+        Description: A custom property
+        DataType: Record
+        Default: |-
+          ={Value: Font.'Segoe UI'}
+      Size:
+        PropertyKind: Input
+        DisplayName: Size
+        Description: A custom property
+        DataType: Number
+        Default: =20
+      Title:
+        PropertyKind: Input
+        DisplayName: Title
+        Description: A custom property
+        DataType: Text
+        Default: ="Vesta Measure"
+    Properties:
+      Fill: =Color.DarkBlue
+      Height: =60
+      Width: =1024
+    Children:
+      - ico_Titlebar_Base:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =cmp_Titlebar.Color
+            Fill: =cmp_Titlebar.Fill
+            Font: =cmp_Titlebar.Font.Value
+            FontWeight: =FontWeight.Lighter
+            Height: =60
+            PaddingRight: =3.75
+            PaddingTop: =3.75
+            Size: =cmp_Titlebar.Size
+            Text: =cmp_Titlebar.Title
+            Width: =1024.00
+            X: =0.00
+      - lbl_Titlebar_Context:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(255, 255, 255, 1)
+            Fill: =Color.Transparent
+            Font: =Font.'Segoe UI'
+            Height: =60
+            OnSelect: =
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =3.75
+            Size: =12
+            Text: =cmp_Titlebar.Context
+            Width: =250
+            X: =70
+      - img_Titlebar_Logo:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =60
+            Image: ='window-nation-footer-logo-cds'
+            Width: =90
+            X: =918
+      - ico_Titlebar_Back:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.None
+            Color: =Color.White
+            FocusedBorderColor: =Color.Transparent
+            FocusedBorderThickness: =0.01
+            Height: =60
+            Icon: =Icon.ChevronLeft
+            OnSelect: =Navigate(cmp_Titlebar.BackScreen)
+            PaddingBottom: =20
+            PaddingTop: =20
+            TabIndex: =0
+            Visible: =!IsBlank(cmp_Titlebar.BackScreen)
+            Width: =80

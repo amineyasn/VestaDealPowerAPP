@@ -1,0 +1,377 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Hidden Screen 7:
+    Properties:
+      Fill: =RGBA(255, 255, 255, 1)
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+    Children:
+      - gal_Hidden_Measurements:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            DelayItemLoading: =false
+            Height: =678
+            Items: =colCdsWindowMeasurements
+            LoadingSpinner: =LoadingSpinner.None
+            TabIndex: =0
+            TemplateSize: =277
+            Width: =360
+            X: =335
+            Y: =90
+          Children:
+            - Label7_41:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Name
+                  Width: =224
+                  X: =117
+            - Label7_50:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Window Measurement'
+                  Width: =224
+                  X: =117
+                  Y: =40
+            - Label7_51:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Job Entry'.'Job Entry'
+                  Width: =224
+                  X: =117
+                  Y: =80
+            - Label4_63:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: |-
+                    ="ID
+                    "
+                  Width: =117
+                  Y: =40
+            - Label4_54:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Name"
+                  Width: =117
+            - Label4_64:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Entry"
+                  Width: =117
+                  Y: =85
+            - Label7_52:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Width
+                  Width: =224
+                  X: =117
+                  Y: =125
+            - Label4_65:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Width"
+                  Width: =117
+                  Y: =130
+            - Label7_53:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Height
+                  Width: =224
+                  X: =117
+                  Y: =170
+            - Label4_66:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Height"
+                  Width: =117
+                  Y: =175
+            - Label7_55:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Exception?'
+                  Width: =224
+                  X: =126
+                  Y: =215
+            - Label4_68:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Exception"
+                  Width: =117
+                  X: =9
+                  Y: =220
+      - gal_Hidden_Measurements_1:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            DelayItemLoading: =false
+            Height: =678
+            Items: =Filter(colCdsJobPhotos,IsBlankOrError('Created On'))
+            LoadingSpinner: =LoadingSpinner.None
+            TabIndex: =0
+            TemplateSize: =277
+            Width: =329
+            X: =695
+            Y: =90
+          Children:
+            - Label7_82:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Name
+                  Width: =224
+                  X: =117
+            - Label7_83:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Job Photo'
+                  Width: =224
+                  X: =117
+                  Y: =40
+            - Label4_93:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: |-
+                    ="ID
+                    "
+                  Width: =117
+                  Y: =40
+            - Label4_92:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Name"
+                  Width: =117
+            - Label4_94:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Entry"
+                  Width: =117
+                  Y: =85
+            - Image4:
+                Control: Image@2.2.3
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Height: =161
+                  Image: =ThisItem.Image.Full
+                  OnSelect: =Select(Parent)
+                  Width: =161
+                  X: =117
+                  Y: =97
+      - Label5:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Text: ="filtering to 0"
+            Width: =220
+            X: =726
+            Y: =36
+      - gal_Hidden_Measurements_2:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            DelayItemLoading: =false
+            Height: =678
+            Items: =Table(gblRecordUserCurrent)
+            LoadingSpinner: =LoadingSpinner.None
+            TabIndex: =0
+            TemplateSize: =277
+            Width: =360
+            Y: =90
+          Children:
+            - Label7_90:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Name
+                  Width: =224
+                  X: =117
+            - Label7_91:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.Employee
+                  Width: =224
+                  X: =117
+                  Y: =40
+            - Label7_92:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: |-
+                    =ThisItem.'Lead Test: Certificate Expiry Date'
+                  Width: =224
+                  X: =117
+                  Y: =80
+            - Label4_102:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: |-
+                    ="ID
+                    "
+                  Width: =117
+                  Y: =40
+            - Label4_101:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Name"
+                  Width: =117
+            - Label4_103:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Expiry"
+                  Width: =117
+                  Y: =85
+            - Label7_93:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: |-
+                    =ThisItem.'Lead Test: Certificate ID'
+                  Width: =224
+                  X: =117
+                  Y: =125
+            - Label4_104:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Cert ID"
+                  Width: =117
+                  Y: =130
+            - Label7_94:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  Height: =45
+                  OnSelect: =Select(Parent)
+                  Text: =ThisItem.'Job Title'
+                  Width: =224
+                  X: =117
+                  Y: =170
+            - Label4_105:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Semibold
+                  OnSelect: =Select(Parent)
+                  Text: ="Job"
+                  Width: =117
+                  Y: =175

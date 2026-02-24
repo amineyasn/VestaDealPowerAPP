@@ -1,0 +1,990 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Photos Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |+
+        =// reset screen
+        UpdateContext(
+            {
+                locModeDefault: true,
+                locModeWindow: false,
+                locModeElevation: false,
+                locShowTypes: false,
+                locShowReview: false,
+                locShowDelete: false,
+                locShowPhotos: true,
+                locPhotoRecord: Blank(),
+                locPhotoFullScreen: false,
+                locReturnScreen: App.ActiveScreen
+            }
+        );
+      OnVisible: "=If(\n    IsBlankOrError(locModeDefault),\n    UpdateContext(\n        {\n            locModeDefault: true,\n            locModeWindow: false,\n            locModeElevation: false,\n            locShowTypes: false,\n            locShowReview: false,\n            locShowDelete: false,\n            locShowPhotos: true,\n            locPhotoRecord: Blank(),\n            locPhotoFullScreen: false\n        }\n    );\n    \n);\nUpdateContext({locAddPhotoLabel: \"\"});\n"
+    Children:
+      - cmp_Photos_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: |-
+              =If(
+                  locReturnScreen='Window Photos Screen',
+                  "Project",
+                  "Photos"
+              )
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =App.Height-cmp_Photos_Titlebar.Height
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =cmp_Photos_Titlebar.Y+cmp_Photos_Titlebar.Height
+      - cmp_Photos_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: =locReturnScreen
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - lbl_Photos_NoPhotos:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppColors.Secondary.GrayMediumDark
+            Font: =Font.'Segoe UI'
+            Size: =20
+            Text: ="Click button above to take photo"
+            Visible: =IsEmpty(gal_Photos_Review.AllItems) And !locShowTypes
+            Width: =692
+            X: =206*1
+            Y: =496*1
+      - ico_Photos_NoPhotos:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppStyles.Status.Disabled
+            DisplayMode: =DisplayMode.View
+            Height: =210
+            Icon: =Icon.Information
+            Visible: =IsEmpty(gal_Photos_Review.AllItems) And !locShowTypes
+            Width: =210
+            X: =447*1
+            Y: =238*1
+      - cmp_Photos_Done:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Check}
+            IconColor: =Color.White
+            IconFill: =gblAppStyles.Status.Success
+            NavigateScreen: =locReturnScreen
+            Text: ="Done"
+            Visible: =!locModeDefault
+            Width: =200
+            X: =Parent.Width-Self.Width-gblAppStyles.Padding.ButtonMargin
+            Y: =Parent.Height-Self.Height-gblAppStyles.Padding.ButtonMargin
+      - con_Photos_Type&Gallery:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =500
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locShowPhotos Or locShowTypes Or locModeWindow
+            Width: =Parent.Width - Self.X
+            X: =100
+            Y: =160
+          Children:
+            - gal_Photos_Review:
+                Control: Gallery@2.15.0
+                Variant: Horizontal
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =Color.Transparent
+                  DelayItemLoading: =false
+                  Height: =Parent.Height
+                  Items: |-
+                    =SortByColumns(
+                        If(
+                            locModeWindow,
+                            Filter(
+                                colCdsJobPhotos,
+                                Job.Job = gblRecordJobCurrent.Job,
+                                'Window Measurement'.'Window Measurement' = gblRecordWindowMeasurement_Tech.'Window Measurement'
+                            ),
+                            locModeElevation,
+                            Filter(
+                                colCdsJobPhotos,
+                                Job.Job = gblRecordJobCurrent.Job,
+                                Type in [
+                                    gblOptionSets.Global.PhotoType.ElevationFront,
+                                    gblOptionSets.Global.PhotoType.ElevationRear,
+                                    gblOptionSets.Global.PhotoType.ElevationSide
+                                ]
+                            ),
+                            Filter(
+                                colCdsJobPhotos,
+                                Job.Job = gblRecordJobCurrent.Job,
+                                Status <> gblOptionSets.JobPhoto.Status.Inactive
+                            )
+                        ),
+                        "createdon",
+                        SortOrder.Descending
+                    )
+                  LoadingSpinner: =LoadingSpinner.None
+                  OnSelect: |
+                    =Reset(txt_Photos_Focus_Notes);
+                    UpdateContext(
+                        {
+                            locShowReview: true,
+                            locPhotoRecord: ThisItem
+                        }
+                    );
+                  ShowNavigation: =true
+                  ShowScrollbar: =false
+                  TabIndex: =0
+                  TemplateFill: =Color.Transparent
+                  TemplatePadding: =20
+                  TemplateSize: =400
+                  Visible: =locShowPhotos Or locModeWindow
+                  Width: =Parent.Width
+                  X: =0*0
+                  Y: =0*0
+                Children:
+                  - btn_gal_Photos_Background:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderColor: =ColorFade(Self.Fill, -15%)
+                        BorderThickness: =0
+                        Color: =RGBA(255, 255, 255, 1)
+                        DisabledBorderColor: =RGBA(255, 255, 255, 1)
+                        DisabledColor: =RGBA(255, 255, 255, 1)
+                        DisabledFill: =RGBA(255, 255, 255, 1)
+                        Fill: =RGBA(255, 255, 255, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =430
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =Self.Fill
+                        OnSelect: =Select(Parent)
+                        PressedBorderColor: =Self.Fill
+                        PressedFill: =Self.Fill
+                        Text: =""
+                        Width: =Parent.TemplateWidth
+                        X: =0*0
+                        Y: =0*0
+                  - img_gal_Photos_Image:
+                      Control: Image@2.2.3
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Height: =Self.Width * (3/4)
+                        Image: =ThisItem.Image.Full
+                        OnSelect: =Select(Parent)
+                        Width: =Parent.TemplateWidth - (2*Self.X)
+                  - lbl_gal_Photos_Type:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =52
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =gblAppStyles.Card.MarginLeft+10
+                        PaddingRight: =20
+                        PaddingTop: =25
+                        Size: =gblAppStyles.Card.TitleSize
+                        Text: =ThisItem.Type
+                        VerticalAlign: =VerticalAlign.Top
+                        Width: =400
+                        Y: =300
+                  - lbl_gal_Photos_Notes:
+                      Control: Label@2.5.1
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Lighter
+                        Height: =60
+                        OnSelect: =Select(Parent)
+                        PaddingLeft: =gblAppStyles.Card.MarginLeft+10
+                        PaddingRight: =20
+                        PaddingTop: =10
+                        Size: =gblAppStyles.Card.SubtitleSize
+                        Text: =Coalesce(ThisItem.Notes,If(gblRecordJobCurrent.Completed='Completed (Jobs)'.No,"Add a note","No notes for this photo"))
+                        VerticalAlign: =VerticalAlign.Top
+                        Width: =400
+                        Y: =357
+            - gal_Photos_Type:
+                Control: Gallery@2.15.0
+                Variant: Vertical
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =Color.Transparent
+                  DelayItemLoading: =false
+                  Height: =Parent.Height - Self.Y
+                  Items: |-
+                    =If(
+                        locModeElevation,
+                        [
+                            gblOptionSets.Global.PhotoType.ElevationFront,
+                            gblOptionSets.Global.PhotoType.ElevationSide,
+                            gblOptionSets.Global.PhotoType.ElevationRear
+                        ],
+                        [
+                            gblOptionSets.Global.PhotoType.ElevationFront,
+                            gblOptionSets.Global.PhotoType.ElevationSide,
+                            gblOptionSets.Global.PhotoType.ElevationRear,
+                            gblOptionSets.Global.PhotoType.Other
+                        ]
+                    )
+                  LoadingSpinner: =LoadingSpinner.None
+                  OnSelect: =
+                  ShowScrollbar: =false
+                  TabIndex: =0
+                  TemplatePadding: =0
+                  TemplateSize: =240
+                  Visible: =locShowTypes
+                  Width: =Parent.Width * .975
+                  WrapCount: =3
+                  X: =0*0
+                  Y: |-
+                    =If(
+                        locModeElevation,
+                        125,
+                        0 * 0
+                    )
+                Children:
+                  - btn_Gal_Photos_Background:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        BorderColor: =gblAppColors.Secondary.GrayMedium
+                        BorderThickness: =1
+                        Color: =
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblAppColors.Primary.White
+                        FocusedBorderThickness: =1
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Normal
+                        Height: =Parent.TemplateHeight-(gblAppStyles.Card.MarginLeft*2)
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =Self.Color
+                        HoverFill: =ColorFade(Self.Fill,-20%)
+                        OnSelect: =Select(Parent)
+                        PaddingRight: =3.75
+                        PaddingTop: =3.75
+                        PressedBorderColor: =Self.BorderColor
+                        PressedFill: =ColorFade(Self.Fill,-40%)
+                        RadiusBottomLeft: =gblAppStyles.Card.Radius
+                        RadiusBottomRight: =gblAppStyles.Card.Radius
+                        RadiusTopLeft: =gblAppStyles.Card.Radius
+                        RadiusTopRight: =gblAppStyles.Card.Radius
+                        Size: =gblAppStyles.Card.TitleSize
+                        Text: =ThisItem.Value
+                        Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                        X: =(Parent.TemplateWidth-Self.Width)/2*1
+                        Y: =(Parent.TemplateHeight-Self.Height)/2*1
+                  - add_Gal_Photos_ByType:
+                      Control: AddMedia@2.2.1
+                      Properties:
+                        AccessibleLabel: ="abc"
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        ChangePictureText: =""
+                        FocusedBorderColor: =Color.Transparent
+                        FocusedBorderThickness: =0.01
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Normal
+                        Height: =Parent.TemplateHeight
+                        OnChange: |-
+                          =If(
+                              !IsBlankOrError(Self.Media),
+                              With(
+                                  {
+                                      varType: "colCdsJobPhotos",
+                                      varRecordRef: GUID()
+                                  },
+                                  Patch(
+                                      colCdsJobPhotos,
+                                      Defaults(colCdsJobPhotos),
+                                      {
+                                          'Job Photo': varRecordRef,
+                                          Name: Self.FileName,
+                                          Job: gblRecordJobCurrent,
+                                          'Job Entry': gblRecordJobEntryCurrent_,
+                                          Type: ThisItem.Value,
+                                          Notes: "",
+                                          Image: {
+                                              Name: Self.FileName,
+                                              Value: Self.Media,
+                                              Full: Self.Media
+                                          }
+                                      }
+                                  );
+                                  UpdateContext(
+                                      {
+                                          locShowPhotos: true,
+                                          locShowTypes: false
+                                      }
+                                  );
+                                  // add photo to the AUD records collection
+                                  Collect(
+                                      colAUDRecords,
+                                      {
+                                          Type: varType,
+                                          RecordRef: varRecordRef,
+                                          Job: gblRecordJobCurrent.Job,
+                                          Operation: "A"
+                                      }
+                                  );
+                              )
+                          );
+                          /*
+                          // Save local data
+                          If(
+                              gblAppLoadOffline,
+                              SaveData(
+                                  colAUDRecords,
+                                  "localAUDRecords"
+                              );
+                              SaveData(
+                                  colCdsJobPhotos,
+                                  "localCdsJobPhotos"
+                              )
+                          );
+                          */
+                        Size: =16
+                        Text: =locAddPhotoLabel
+                        Width: =Parent.TemplateWidth
+                        X: =0*0
+                        Y: =0*0
+      - con_Photos_Actions:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Height: =85
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =Parent.Width - Self.X
+            X: =80
+            Y: =60
+          Children:
+            - lbl_Photos_Title:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Font: =Font.'Segoe UI'
+                  Height: =49
+                  PaddingLeft: =25
+                  Size: =gblAppStyles.Text.TitleSize
+                  Text: ="Photos"
+                  Width: =427
+                  X: =92
+                  Y: =25
+            - cmp_Photos_Add:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =add_Photos_Window.Height
+                  Icon: |-
+                    ={Value: Icon.Camera}
+                  IconColor: =Color.White
+                  IconFill: =gblAppColors.Primary.Blue
+                  NavigateScreen: =App.ActiveScreen
+                  Text: ="Add Photo"
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No And !locShowTypes
+                  Width: =add_Photos_Window.Width
+                  X: =add_Photos_Window.X
+                  Y: =add_Photos_Window.Y
+            - btn_Photos_Add:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  AutoDisableOnSelect: =false
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                  DisabledColor: =RGBA(0, 0, 0, 0)
+                  DisabledFill: =RGBA(0, 0, 0, 0)
+                  Fill: =Color.Transparent
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Open Sans'
+                  Height: =add_Photos_Window.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: |
+                    =If(
+                        locModeDefault,
+                        UpdateContext(
+                            {
+                                locShowTypes: true,
+                                locShowPhotos: false
+                            }
+                        ),
+                        locModeElevation,
+                        UpdateContext(
+                            {
+                                locShowTypes: true,
+                                locShowPhotos: false,
+                                locAddPhotoLabel: ""
+                            }
+                        )
+                    );
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  Text: =""
+                  Visible: =cmp_Photos_Add.Visible
+                  Width: =add_Photos_Window.Width
+                  X: =add_Photos_Window.X
+                  Y: =add_Photos_Window.Y
+            - add_Photos_Window:
+                Control: AddMedia@2.2.1
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  ChangePictureText: =Coalesce(locAddPhotoLabel,"")
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Segoe UI'
+                  FontWeight: =FontWeight.Normal
+                  Height: =60
+                  OnChange: |
+                    =UpdateContext({locBlockUserInput: true});
+                    With(
+                        {
+                            varType: "colCdsJobPhotos",
+                            varRecordRef: GUID()
+                        },
+                        If(
+                            !IsBlankOrError(Self.Media),
+                            // Set GUID and add to New Records Collection; match collection
+                            Patch(
+                                colCdsJobPhotos,
+                                Defaults(colCdsJobPhotos),
+                                {
+                                    'Job Photo': varRecordRef,
+                                    Name: Self.FileName,
+                                    Job: gblRecordJobCurrent,
+                                    'Job Entry': gblRecordJobEntryCurrent_,
+                                    'Window Measurement': gblRecordWindowMeasurement_Tech,
+                                    Type: gblOptionSets.Global.PhotoType.Window,
+                                    Notes: "",
+                                    Image: {
+                                        Name: Self.FileName,
+                                        Value: Self.Media,
+                                        Full: Self.Media
+                                    }
+                                }
+                            );
+                            UpdateContext(
+                                {
+                                    locShowPhotos: true,
+                                    locShowTypes: false
+                                }
+                            );
+                            // add photo to the AUD records collection
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "A"
+                                }
+                            );
+                        )
+                    );
+                    /*
+                    // Save Local data
+                    If(
+                        gblAppLoadOffline,
+                        SaveData(
+                            colAUDRecords,
+                            "localAUDRecords"
+                        );
+                        SaveData(
+                            colCdsJobPhotos,
+                            "localCdsJobPhotos"
+                        )
+                    );
+                    */
+                    UpdateContext({locBlockUserInput: false});
+                  Size: =16
+                  Text: =
+                  Visible: =locModeWindow
+                  Width: =200
+                  X: =Parent.Width - Self.Width - gblAppStyles.Padding.ButtonMargin
+                  Y: =25
+            - ico_Photos_Title:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =gblAppStyles.Status.Disabled
+                  DisplayMode: =DisplayMode.View
+                  Height: =49
+                  Icon: =Icon.Camera
+                  Width: =49
+                  X: =43*1
+                  Y: =25
+      - con_Photos_Focus:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =gblAppStyles.Background.Fill
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locShowReview
+            Width: =944
+            X: =80
+            Y: =60
+          Children:
+            - cmp_Photo_Focus_Done:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =btn_Photos_Focus_Save.Height
+                  Icon: |-
+                    ={Value: Icon.Check}
+                  IconColor: =Color.White
+                  IconFill: =gblAppStyles.Status.Success
+                  NavigateScreen: =App.ActiveScreen
+                  Text: ="Done"
+                  Width: =btn_Photos_Focus_Save.Width
+                  X: =btn_Photos_Focus_Save.X
+                  Y: =btn_Photos_Focus_Save.Y
+            - txt_Photos_Focus_Notes_1:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =locPhotoRecord.Notes
+                  DisplayMode: =DisplayMode.View
+                  Font: =gblAppStyles.Text.Font
+                  Height: =505
+                  HintText: =
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  MaxLength: =100
+                  OnChange: |
+                    =UpdateIf(
+                        colCdsJobPhotos,
+                        colCdsJobPhotos[@'Job Photo'] = locPhotoRecord.'Job Photo',
+                        {Notes: Self.Text}
+                    );
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  Width: =674
+                  X: =130
+                  Y: =20
+            - img_Photos_Preview:
+                Control: Image@2.2.3
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Fill: =Color.White
+                  Height: =Self.Width * (3/4)
+                  Image: =locPhotoRecord.Image.Full
+                  OnSelect: |-
+                    =UpdateContext({locPhotoFullScreen: true})
+                  TabIndex: =0
+                  Width: =txt_Photos_Focus_Notes_1.Width-8
+                  X: =134
+                  Y: =22
+            - txt_Photos_Focus_Notes:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  AccessibleLabel: ="abc"
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  BorderStyle: =BorderStyle.None
+                  Color: =gblAppStyles.Text.Color
+                  Default: =locPhotoRecord.Notes
+                  DisplayMode: |-
+                    =If(
+                        gblRecordJobCurrent.Completed = 'Completed (Jobs)'.No,
+                        DisplayMode.Edit,
+                        DisplayMode.View
+                    )
+                  Font: =gblAppStyles.Text.Font
+                  Height: =60
+                  HintText: ="Tap here to enter a note about the photo"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  MaxLength: =100
+                  OnChange: |
+                    =UpdateContext({locBlockUserInput: true});
+                    With(
+                        {
+                            varType: "colCdsJobPhotos",
+                            varRecordRef: locPhotoRecord.'Job Photo'
+                        },
+                        UpdateIf(
+                            colCdsJobPhotos,
+                            colCdsJobPhotos[@'Job Photo'] = varRecordRef,
+                            {Notes: Self.Text}
+                        );
+                        If(
+                            IsBlank(
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                )
+                            ),
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "U"
+                                }
+                            )
+                        )
+                    );
+
+                    IfError( // This line of code is added to hide the errors
+                    If(
+                        gblAppLoadOffline,
+                        SaveData(
+                            colCdsJobPhotos,
+                            "localCdsJobPhotos"
+                        );
+                        SaveData(
+                            colAUDRecords,
+                            "localAUDRecords"
+                        );
+                    )
+                    ,Blank())  // This line of code is added to hide the errors
+
+                    ;
+                    UpdateContext({locBlockUserInput: false});
+                  PaddingBottom: =15
+                  PaddingLeft: =20
+                  PaddingRight: =20
+                  Size: =14
+                  Width: =674
+                  X: =130
+                  Y: =521
+            - btn_Photos_Focus_Save:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  AutoDisableOnSelect: =false
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                  DisabledColor: =RGBA(0, 0, 0, 0)
+                  DisabledFill: =RGBA(0, 0, 0, 0)
+                  Fill: =Color.Transparent
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Open Sans'
+                  Height: =60
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: |-
+                    =If(
+                        gblRecordJobCurrent.Completed = 'Completed (Jobs)'.Yes,
+                        Back() // <---- fix this
+                    );
+                    UpdateContext({locShowReview: false});
+                    Reset(txt_Photos_Focus_Notes);
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  Text: =""
+                  Width: =180
+                  X: =Parent.Width - Self.Width - 20
+                  Y: =610*1
+            - cmp_Photo_Focus_Done_1:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.Trash}
+                  IconColor: =Color.White
+                  IconFill: =gblAppStyles.Status.Danger
+                  NavigateScreen: =App.ActiveScreen
+                  Text: ="Delete"
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                  Width: =190
+                  X: =30
+                  Y: =610
+            - btn_Photos_Focus_Save_1:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =Color.Transparent
+                  DisabledColor: =Color.Transparent
+                  DisabledFill: =Color.Transparent
+                  Fill: =Color.Transparent
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_Photo_Focus_Done_1.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: |-
+                    =UpdateContext({locShowDelete: true});
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  Text: =""
+                  Width: =cmp_Photo_Focus_Done_1.Width
+                  X: =cmp_Photo_Focus_Done_1.X
+                  Y: =cmp_Photo_Focus_Done_1.Y
+      - con_Photos_Remove:
+          Control: GroupContainer@1.3.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =gblAppColors.Secondary.GrayLight
+            Height: =708
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =locShowDelete
+            Width: =1024
+            Y: =60
+          Children:
+            - cmp_PhotoDelete_Delete:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.Trash}
+                  IconColor: =Color.White
+                  IconFill: =gblAppStyles.Status.Danger
+                  NavigateScreen: =
+                  Text: ="Delete"
+                  Width: =180
+                  X: =587
+                  Y: =20
+            - btn_PhotoDelete_Delete:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =Color.Transparent
+                  DisabledColor: =Color.Transparent
+                  DisabledFill: =Color.Transparent
+                  Fill: =Color.Transparent
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_PhotoDelete_Delete.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: |-
+                    =UpdateContext({locBlockUserInput: true});
+                    With(
+                        {
+                            varType: "colCdsJobPhotos",
+                            varRecordRef: locPhotoRecord.'Job Photo'
+                        },
+                        If(
+                            varRecordRef in Filter(
+                                colAUDRecords,
+                                Type = "colCdsJobPhotos"
+                            ).RecordRef,
+                            // if photo was created on local device
+                            Remove(
+                                colCdsJobPhotos,
+                                LookUp(
+                                    colCdsJobPhotos,
+                                    'Job Photo' = varRecordRef
+                                )
+                            );
+                            Remove(
+                                colAUDRecords,
+                                LookUp(
+                                    colAUDRecords,
+                                    Type = varType
+                                    And RecordRef = varRecordRef
+                                    And Operation = "A"
+                                )
+                            ),
+                            // if photo was downloaded from the server
+                            Collect(
+                                colAUDRecords,
+                                {
+                                    Type: varType,
+                                    RecordRef: varRecordRef,
+                                    Job: gblRecordJobCurrent.Job,
+                                    Operation: "D"
+                                }
+                            );
+                            UpdateIf(
+                                colCdsJobPhotos,
+                                'Job Photo' in Filter(
+                                    colAUDRecords,
+                                    Type = varType,
+                                    Operation = "D").RecordRef,
+                                {
+                                    Status: gblOptionSets.JobPhoto.Status.Inactive,
+                                    'Status Reason': gblOptionSets.JobPhoto.StatusReason.Inactive
+                                }
+                            )
+                        )
+                    );
+                    // save local data
+                    If(
+                        gblAppLoadOffline,
+                        SaveData(
+                            colCdsJobPhotos,
+                            "localCdsJobPhotos"
+                        );
+                        SaveData(
+                            colAUDRecords,
+                            "localAUDRecords"
+                        );
+                    );
+                    UpdateContext(
+                        {
+                            locShowDelete: false,
+                            locShowReview: false,
+                            locBlockUserInput: false
+                        }
+                    )
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  Text: =""
+                  Width: =180
+                  X: =587
+                  Y: =20
+            - cmp_PhotoDelete_Cancel:
+                Control: CanvasComponent
+                ComponentName: cmp_AdvanceButton
+                Properties:
+                  ButtonFill: =Color.White
+                  Color: =Color.Black
+                  Fill: =Color.Transparent
+                  Height: =60
+                  Icon: |-
+                    ={Value: Icon.Cancel}
+                  IconColor: =Color.White
+                  IconFill: =gblAppStyles.Status.Disabled
+                  NavigateScreen: =
+                  Text: ="Cancel"
+                  Width: =180
+                  X: =256
+                  Y: =20
+            - btn_PhotoRemove_Cancel:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =Color.Transparent
+                  DisabledBorderColor: =Color.Transparent
+                  DisabledColor: =Color.Transparent
+                  DisabledFill: =Color.Transparent
+                  Fill: =Color.Transparent
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =Font.'Open Sans'
+                  Height: =cmp_PhotoDelete_Cancel.Height
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: |-
+                    =UpdateContext({locShowDelete: false})
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  Text: =""
+                  Width: =180
+                  X: =256
+                  Y: =20
+            - img_PhotoRemove_Preview:
+                Control: Image@2.2.3
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Height: =500
+                  Image: =locPhotoRecord.Image.Full
+                  Width: =666.67
+                  X: =179
+                  Y: =100
+      - img_Photos_FullScreen:
+          Control: Image@2.2.3
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =RGBA(0, 0, 0, 1)
+            Height: =Parent.Height
+            Image: =locPhotoRecord.Image.Full
+            OnSelect: |-
+              =UpdateContext({locPhotoFullScreen: false})
+            TabIndex: =0
+            Visible: =locPhotoFullScreen
+            Width: =Parent.Width
+            X: =0*0
+            Y: =0*0
+      - lbl_Photos_Clickshield:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            Height: =App.Height
+            Text: =
+            Visible: =locBlockUserInput
+            Width: =App.Width

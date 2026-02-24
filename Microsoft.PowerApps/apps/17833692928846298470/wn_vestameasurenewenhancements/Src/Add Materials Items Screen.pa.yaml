@@ -1,0 +1,391 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Add Materials Items Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: =Clear(colAddMaterialItems)
+      OnVisible: |-
+        =Reset(gal_MaterialAddItems__Filter); 
+        Reset(txt_search_material_items)
+    Children:
+      - cmp_MaterialAddItems__AdvanceButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_MaterialAddItems_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Check}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Secondary.Green
+            NavigateScreen: ='Rooms Screen'
+            Text: |-
+              =With({wCountRows: CountRows(colAddMaterialItems)}, "Add "&wCountRows&" Item"&If(wCountRows>1, "s"))
+            Visible: =CountRows(colAddMaterialItems)>0
+            Width: =225
+            X: =774*1
+            Y: =670*1
+      - btn_MaterialAddItems__AdvanceButton:
+          Control: Classic/Button@2.2.0
+          Group: grp_MaterialAddItems_Main
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =Color.Transparent
+            DisabledBorderColor: =Color.Transparent
+            DisabledColor: =Color.Transparent
+            DisabledFill: =Color.Transparent
+            Fill: =Color.Transparent
+            Font: =Font.'Open Sans'
+            Height: =cmp_MaterialAddItems__AdvanceButton.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Color.Transparent
+            HoverFill: =Color.Transparent
+            OnSelect: |-
+              =// add selected material items to the job
+              ForAll(
+                  colAddMaterialItems,
+                  With(
+                      {
+                          varType: "colCdsJobMaterialItems",
+                          varRecordRef: GUID()
+                      },
+                      Patch(
+                          colCdsJobMaterialItems,
+                          Defaults(colCdsJobMaterialItems),
+                          {
+                              appJobIDText: gblRecordJobCurrent.appJobIDText,
+                              Job: LookUp(
+                                  colCdsJobs,
+                                  appJobIDText = gblRecordJobCurrent.appJobIDText
+                              ),
+                              'Job Material Item': varRecordRef,
+                              'Market Material Item': LookUp(
+                                  colCdsMarketMaterialItems,
+                                  'Market Material Item' = colAddMaterialItems[@'Market Material Item']
+                              ),
+                              Name: colAddMaterialItems[@Name],
+                              Quantity: Blank()
+                          }
+                      );
+                      // add labor items to the AUD records collection
+                      Collect(
+                          colAUDRecords,
+                          {
+                              Type: varType,
+                              RecordRef: varRecordRef,
+                              Job: gblRecordJobCurrent.Job,
+                              Operation: "A"
+                          }
+                      );
+                  )
+              );
+              // save local data
+              IfError( // This line of code is added to hide the errors
+              If(
+                  gblAppLoadOffline,
+                  SaveData(
+                      colAUDRecords,
+                      "localAUDRecords"
+                  );
+                  SaveData(
+                      colCdsJobMaterialItems,
+                      "localCdsJobMaterialItems"
+                  );
+              )
+              ,Blank())  // This line of code is added to hide the errors
+              ;
+              // navigate back to materials screen
+              Reset(gal_MaterialAddItems__Filter);
+              Navigate('Materials Screen');
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Color.Transparent
+            PressedFill: =Color.Transparent
+            Text: |-
+              =With({wCountRows: CountRows(colAddMaterialItems)}, "Add "&wCountRows&" Item"&If(wCountRows>1, "s"))
+            Visible: =CountRows(colAddMaterialItems)>0
+            Width: =cmp_MaterialAddItems__AdvanceButton.Width
+            X: =cmp_MaterialAddItems__AdvanceButton.X*1
+            Y: =cmp_MaterialAddItems__AdvanceButton.Y*1
+      - cmp_MaterialAddItems__CancelButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_MaterialAddItems_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.ArrowLeft}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Secondary.GrayMedium
+            NavigateScreen: ='Materials Screen'
+            Text: ="Back to Items"
+            Width: =240
+            X: =110*1
+            Y: =670*1
+      - btn_MaterialAddItems__CancelButton:
+          Control: Classic/Button@2.2.0
+          Group: grp_MaterialAddItems_Main
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =Color.Transparent
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =RGBA(0, 0, 0, 0)
+            Font: =Font.'Open Sans'
+            Height: =cmp_MaterialAddItems__CancelButton.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Color.Transparent
+            HoverFill: =Color.Transparent
+            OnSelect: |-
+              =Reset(gal_MaterialAddItems__Filter);
+              Navigate('Materials Screen');
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Color.Transparent
+            PressedFill: =Color.Transparent
+            Width: =cmp_MaterialAddItems__CancelButton.Width
+            X: =cmp_MaterialAddItems__CancelButton.X
+            Y: =cmp_MaterialAddItems__CancelButton.X
+      - gal_MaterialAddItems:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Group: grp_MaterialAddItems_Main
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            DelayItemLoading: =false
+            Fill: =Color.Transparent
+            Height: =511
+            Items: |-
+              =/*Filter(
+                  colCdsMarketMaterialItems,
+                  'Market Segment'.'Market Segment' = gblRecordJobCurrent.'Market Segment'.'Market Segment','Material Item'.Type = gal_MaterialAddItems__Filter.Selected.Value
+              )*/
+
+              If(tgl_material_items.Checked ,
+
+
+              Filter(
+                  colCdsMarketMaterialItems,
+                  'Market Segment'.'Market Segment' = gblRecordJobCurrent.'Market Segment'.'Market Segment',
+                  'Material Item'.Type = gal_MaterialAddItems__Filter.Selected.Value,
+                  IsBlank(txt_search_material_items.Value) || 
+                  txt_search_material_items.Value in Lower('Material Item'.Name)
+              ),
+              Filter(
+                  colCdsMarketMaterialItems,
+                  'Market Segment'.'Market Segment' = gblRecordJobCurrent.'Market Segment'.'Market Segment',
+               IsBlank(txt_search_material_items.Value) || 
+                  txt_search_material_items.Value in Lower('Material Item'.Name)
+              ))
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: =
+            ShowNavigation: =true
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplateFill: =Color.Transparent//If(txt_Homeowner_Dealer_1.Text=ThisItem.Value, gblAppStyles.Status.Neutral, gblAppStyles.Rolodex.Fill)
+            TemplateSize: =64
+            Width: =664
+            X: =335
+            Y: =136
+          Children:
+            - btn_MaterialAddItems_Selection:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =gblAppColors.Secondary.GrayMedium
+                  BorderThickness: =1
+                  Color: =If(ThisItem.'Market Material Item' in colAddMaterialItems.'Market Material Item', gblAppColors.Secondary.White,gblAppStyles.Card.TitleColor)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =If(ThisItem.'Market Material Item' in colAddMaterialItems.'Market Material Item', gblAppStyles.Status.Neutral, gblAppStyles.Card.Fill)
+                  FocusedBorderThickness: =1
+                  Font: =gblAppStyles.Text.TitleFont
+                  FontWeight: =FontWeight.Normal
+                  Height: =Parent.TemplateHeight-((gblAppStyles.Card.MarginLeft-10)*2)-4
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: |+
+                    =If(IsBlank(LookUp(colAddMaterialItems, 'Market Material Item'=ThisItem.'Market Material Item')), Collect(colAddMaterialItems, LookUp(colCdsMarketMaterialItems, 'Market Material Item'=ThisItem.'Market Material Item')), Remove(colAddMaterialItems, LookUp(colCdsMarketMaterialItems, 'Market Material Item'=ThisItem.'Market Material Item')))
+                  PaddingRight: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =gblAppStyles.Text.Size
+                  Text: =ThisItem.'Material Item'.Name
+                  Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                  X: =(Parent.TemplateWidth-Self.Width)/2
+                  Y: =(Parent.TemplateHeight-Self.Height)/2
+      - gal_MaterialAddItems__Filter:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Group: grp_MaterialAddItems_Main
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            DelayItemLoading: =false
+            Fill: =Color.Transparent
+            Height: =511
+            Items: =Choices(colCdsMaterialItems.Type)
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: |-
+              =//UpdateContext({locSelectedType: ThisItem.Value})
+            ShowNavigation: =true
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplateFill: =Color.Transparent//If(txt_Homeowner_Dealer_1.Text=ThisItem.Value, gblAppStyles.Status.Neutral, gblAppStyles.Rolodex.Fill)
+            TemplateSize: =64
+            Width: =255
+            X: =95*1
+            Y: =136*1
+          Children:
+            - btn_MaterialAddItems_Filter__Number:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =gblAppColors.Secondary.GrayMedium
+                  BorderThickness: =1
+                  Color: =If(ThisItem.IsSelected, gblAppColors.Secondary.White,gblAppStyles.Card.TitleColor)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =If(ThisItem.IsSelected, gblAppStyles.Status.Neutral, gblAppStyles.Card.Fill)
+                  FocusedBorderThickness: =1
+                  Font: =gblAppStyles.Text.TitleFont
+                  FontWeight: =FontWeight.Normal
+                  Height: =Parent.TemplateHeight-((gblAppStyles.Card.MarginLeft-10)*2)-4
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =ThisItem.Value
+                  PaddingRight: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =gblAppStyles.Card.Radius
+                  RadiusBottomRight: =gblAppStyles.Card.Radius
+                  RadiusTopLeft: =gblAppStyles.Card.Radius
+                  RadiusTopRight: =gblAppStyles.Card.Radius
+                  Size: =gblAppStyles.Text.Size
+                  Text: =ThisItem.Value
+                  Width: =Parent.TemplateWidth-(gblAppStyles.Card.MarginLeft*2)
+                  X: =(Parent.TemplateWidth-Self.Width)/2
+                  Y: =(Parent.TemplateHeight-Self.Height)/2
+            - btn_MaterialAddItems_Filter__Quantity:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =gblAppColors.Secondary.GrayMedium
+                  BorderThickness: =0
+                  Color: =If(ThisItem.IsSelected, gblAppColors.Secondary.White, gblAppStyles.Card.TitleColor)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =Color.Transparent
+                  FocusedBorderThickness: =1
+                  Font: =gblAppStyles.Text.TitleFont
+                  Height: =30
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingRight: =3.75
+                  PressedBorderColor: =Self.BorderColor
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =Self.RadiusTopLeft
+                  RadiusBottomRight: =Self.RadiusTopLeft
+                  RadiusTopLeft: =180
+                  RadiusTopRight: =Self.RadiusTopLeft
+                  Size: =16
+                  Text: =CountRows(Filter(colAddMaterialItems, ThisItem.Value in Text('Material Item'.Type)))
+                  Visible: =Value(Self.Text)>0
+                  Width: =Self.Height
+                  X: =30
+                  Y: =17
+      - lbl_MaterialAddItems_Title:
+          Control: Label@2.5.1
+          Group: grp_MaterialAddItems_Main
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            Size: =gblAppStyles.Text.TitleSize
+            Text: ="Add Material Items"
+            Width: =664
+            X: =cmp_MaterialAddItems_Sidebar.X+cmp_MaterialAddItems_Sidebar.Width+30*1
+            Y: =cmp_MaterialAddItems_Titlebar.Y+cmp_MaterialAddItems_Titlebar.Height+30*1
+      - cmp_MaterialAddItems_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Materials"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =App.Height-cmp_MaterialAddItems_Titlebar.Height
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =cmp_MaterialAddItems_Titlebar.Y+cmp_MaterialAddItems_Titlebar.Height
+      - cmp_MaterialAddItems_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Materials Screen'
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - lbl_count_materials:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(39, 113, 194, 1)
+            Font: =Font.'Open Sans'
+            Height: =38
+            Text: =CountRows(gal_MaterialAddItems.AllItems) & " Material Items"
+            Width: =191
+            X: =506
+            Y: =681
+      - txt_search_material_items:
+          Control: TextInput@0.0.54
+          Properties:
+            Appearance: ='TextInputCanvas.Appearance'.Outline
+            BorderRadius: =10
+            FontColor: =RGBA(0, 0, 0, 1)
+            FontSize: =14
+            FontWeight: =FontWeight.Semibold
+            Height: =40
+            Placeholder: ="Search Materials"
+            TriggerOutput: ='TextInputCanvas.TriggerOutput'.Keypress
+            Type: ='TextInputCanvas.Type'.Search
+            Width: =350
+            X: =456
+            Y: =90
+      - tgl_material_items:
+          Control: Toggle@1.1.5
+          Properties:
+            BasePaletteColor: =RGBA(227, 106, 244, 1)
+            FontColor: =RGBA(0, 0, 0, 1)
+            FontWeight: =FontWeight.Bold
+            Height: =38
+            Label: =If(Self.Checked,"Type","All")
+            LabelPosition: ='Toggle.LabelPosition'.Before
+            Width: =120
+            X: =887
+            Y: =90

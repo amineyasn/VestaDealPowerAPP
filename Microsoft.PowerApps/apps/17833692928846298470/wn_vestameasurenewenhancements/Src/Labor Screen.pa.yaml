@@ -1,0 +1,538 @@
+# ************************************************************************************************
+# Warning: YAML source code for Canvas Apps should only be used to review changes made within Power Apps Studio and for minor edits (Preview).
+# Use the maker portal to create and edit your Power Apps.
+# 
+# The schema file for Canvas Apps is available at https://go.microsoft.com/fwlink/?linkid=2304907
+# 
+# For more information, visit https://go.microsoft.com/fwlink/?linkid=2292623
+# ************************************************************************************************
+Screens:
+  Labor Screen:
+    Properties:
+      Fill: =gblAppColors.Secondary.GrayLight
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnHidden: |-
+        =// eliminate any items selected for deletion where 'delete items' button was not pressed
+        Clear(colDeleteLaborItems);
+        // hide the calculator
+        UpdateContext({locShowCalculator: false});
+        Reset(gal_Labor_Items)
+      OnVisible: |-
+        =UpdateContext({locShowCalculator: false})
+    Children:
+      - cmp_Labor_AdvanceButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_Labor_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Check}
+            IconColor: =Color.White
+            IconFill: =gblAppColors.Secondary.Green
+            NavigateScreen: ='Materials Screen'
+            Text: ="Go To Materials"
+            Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+            Width: =263
+            X: =Parent.Width - Self.Width - gblAppStyles.Padding.ButtonMargin
+            Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+      - cmp_Labor_List__AddItemsButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_Labor_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Add}
+            IconColor: =Color.White
+            IconFill: =gblAppStyles.Status.Neutral
+            NavigateScreen: ='Add Labor Items Screen'
+            Text: ="Add Items"
+            Visible: =!cmp_Labor_List__DeleteItemsButton.Visible And gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+            Width: =225
+            X: =cmp_Labor_Sidebar.Width + gblAppStyles.Padding.ButtonMargin
+            Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+      - cmp_Labor_List__DeleteItemsButton:
+          Control: CanvasComponent
+          ComponentName: cmp_AdvanceButton
+          Group: grp_Labor_Main
+          Properties:
+            ButtonFill: =Color.White
+            Color: =Color.Black
+            Fill: =Color.Transparent
+            Height: =60
+            Icon: |-
+              ={Value: Icon.Trash}
+            IconColor: =Color.White
+            IconFill: =gblAppStyles.Status.Danger
+            NavigateScreen: ='Add Labor Items Screen'
+            Text: ="Delete Items"
+            Visible: =CountRows(Filter(gal_Labor_Items.AllItems, 'Job Labor Item' in colDeleteLaborItems.'Job Labor Item'))>0
+            Width: =225
+            X: =cmp_Labor_Sidebar.Width + gblAppStyles.Padding.ButtonMargin
+            Y: =Parent.Height - Self.Height - gblAppStyles.Padding.ButtonMargin
+      - btn_Labor_List__DeleteItemsButton:
+          Control: Classic/Button@2.2.0
+          Group: grp_Labor_Main
+          Properties:
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =Color.Transparent
+            DisabledBorderColor: =Color.Transparent
+            DisabledColor: =Color.Transparent
+            DisabledFill: =Color.Transparent
+            Fill: =Color.Transparent
+            Font: =Font.'Open Sans'
+            Height: =cmp_Labor_List__DeleteItemsButton.Height
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =Color.Transparent
+            HoverFill: =Color.Transparent
+            OnSelect: |-
+              =// Remove each record from the local job labor collection
+              ForAll(
+                  colDeleteLaborItems,
+                  // If record was added by app then also remove from new records and deletions list
+                  With(
+                      {
+                          varType: "colCdsJobLaborItems",
+                          varRecordRef: colDeleteLaborItems[@'Job Labor Item']
+                      },
+                      If(
+                          varRecordRef in Filter(
+                              colAUDRecords,
+                              Type = "colCdsJobLaborItems"
+                              And Operation = "A"
+                          ).RecordRef,
+                          // if labor item was created on local device
+                          Remove(
+                              colCdsJobLaborItems,
+                              LookUp(
+                                  colCdsJobLaborItems,
+                                  'Job Labor Item' = varRecordRef
+                              )
+                          );
+                          Remove(
+                              colAUDRecords,
+                              LookUp(
+                                  colAUDRecords,
+                                  Type = "colCdsJobLaborItems"
+                                  And RecordRef = varRecordRef
+                                  And Operation = "A"
+                              )
+                          ),
+                          // if labor item was downloaded from the server
+                          Collect(
+                              colAUDRecords,
+                              {
+                                  Type: varType,
+                                  RecordRef: varRecordRef,
+                                  Job: gblRecordJobCurrent.Job,
+                                  Operation: "D"
+                              }
+                          )
+                      )
+                  )
+              );
+              UpdateIf(
+                  colCdsJobLaborItems,
+                  'Job Labor Item' in Filter(
+                      colAUDRecords,
+                      Type = "colCdsJobLaborItems",
+                      Operation = "D").RecordRef,
+                  {
+                      Status: gblOptionSets.JobLaborItem.Status.Inactive,
+                      'Status Reason': gblOptionSets.JobLaborItem.StatusReason.Inactive
+                  }
+              );
+              // save local data
+              If(
+                  gblAppLoadOffline,
+                  SaveData(
+                      colAUDRecords,
+                      "localAUDRecords"
+                  );
+                  SaveData(
+                      colCdsJobLaborItems,
+                      "localCdsJobLaborItems"
+                  );
+              );
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Color.Transparent
+            PressedFill: =Color.Transparent
+            Text: =""
+            Visible: =cmp_Labor_List__DeleteItemsButton.Visible
+            Width: =cmp_Labor_List__DeleteItemsButton.Width
+            X: =cmp_Labor_List__DeleteItemsButton.X
+            Y: =cmp_Labor_List__DeleteItemsButton.Y
+      - gal_Labor_Items:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Group: grp_Labor_Main
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =Color.Transparent
+            DelayItemLoading: =false
+            Fill: =Color.Transparent
+            Height: =440
+            Items: |-
+              =Filter(
+                  colCdsJobLaborItems,
+                  appJobIDText = gblRecordJobCurrent.appJobIDText,
+                  Status <> gblOptionSets.JobLaborItem.Status.Inactive
+              )
+            LoadingSpinner: =LoadingSpinner.None
+            OnSelect: =
+            ShowScrollbar: =false
+            TabIndex: =0
+            TemplateFill: =Color.Transparent//If(txt_Homeowner_Dealer_1.Text=ThisItem.Value, gblAppStyles.Status.Neutral, gblAppStyles.Rolodex.Fill)
+            TemplateSize: =64
+            Visible: =!IsEmpty(gal_Labor_Items.AllItems)
+            Width: =871
+            X: =113*1
+            Y: =203
+          Children:
+            - btn_Labor_Items__Quantity:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =LayoutAlignItems.Center
+                  BorderColor: |-
+                    =If(
+                        ThisItem.Quantity = 0,
+                        gblAppStyles.Status.Danger,
+                        Color.Transparent
+                    )
+                  BorderThickness: |-
+                    =If(
+                        ThisItem.Quantity = 0,
+                        3,
+                       0
+                    )
+                  Color: =gblAppStyles.Text.Color
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: =If(gblRecordJobCurrent.Completed='Completed (Jobs)'.No, DisplayMode.Edit, DisplayMode.View)
+                  Fill: =gblAppColors.Primary.White
+                  FocusedBorderThickness: =Self.BorderThickness
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  Italic: =IsBlank(ThisItem.Quantity)
+                  OnSelect: |-
+                    =UpdateContext({locShowCalculator: true})
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: =If(IsBlank(ThisItem.Quantity), "tap to select", ThisItem.Quantity)
+                  Width: =140
+                  X: =16
+                  Y: =7
+            - btn_Labor_Items__Description:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  Align: =TextPosition.Left
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  BorderThickness: =0
+                  Color: =gblAppStyles.Text.Color
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  DisplayMode: |-
+                    =If(
+                        IsBlank(
+                            LookUp(
+                                colAUDRecords,
+                                Type = "colCdsJobLaborItems" And RecordRef = ThisItem.'Job Labor Item' And Operation = "D"
+                            )
+                        ),
+                        DisplayMode.Edit,
+                        DisplayMode.View
+                    )
+                  Fill: =Color.White
+                  FocusedBorderColor: =Color.Transparent
+                  FocusedBorderThickness: =0.01
+                  Font: =gblAppStyles.Text.Font
+                  FontWeight: =FontWeight.Normal
+                  Height: =50
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =Self.Color
+                  HoverFill: =Self.Fill
+                  OnSelect: =
+                  PaddingLeft: =20
+                  PressedBorderColor: =Self.Fill
+                  PressedFill: =Self.Fill
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =Self.RadiusBottomLeft
+                  RadiusTopLeft: =Self.RadiusBottomLeft
+                  RadiusTopRight: =Self.RadiusBottomLeft
+                  Size: =gblAppStyles.Text.Size
+                  Text: =ThisItem.Name
+                  Width: =637
+                  X: =btn_Labor_Items__Quantity.X+btn_Labor_Items__Quantity.Width+15
+                  Y: =7
+            - ico_Labor_Items__Actions:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: |-
+                    =If(
+                        ThisItem.'Job Labor Item' in colDeleteLaborItems.'Job Labor Item',
+                        gblAppStyles.Status.Danger,
+                        gblAppColors.Secondary.GrayMedium
+                    )
+                  FocusedBorderColor: =Color.Transparent
+                  Height: =28
+                  Icon: =Icon.Trash
+                  OnSelect: |
+                    =If(
+                        ThisItem.'Job Labor Item' in colDeleteLaborItems.'Job Labor Item',
+                        Remove(
+                            colDeleteLaborItems,
+                            LookUp(
+                                colDeleteLaborItems,
+                                'Job Labor Item' = ThisItem.'Job Labor Item'
+                            )
+                        ),
+                        Collect(
+                            colDeleteLaborItems,
+                            ThisItem
+                        )
+                    );
+                  TabIndex: =0
+                  Visible: =gblRecordJobCurrent.Completed='Completed (Jobs)'.No
+                  Width: =28
+                  X: =770
+                  Y: =18
+            - ico_Labor_Items__Note:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AccessibleLabel: ="abc"
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: |-
+                    =If(
+                        !IsBlank(ThisItem.Notes),
+                        gblAppStyles.Status.Info,
+                        gblAppStyles.Status.Neutral
+                    )
+                  Fill: =Color.Transparent
+                  FocusedBorderColor: =Color.Transparent
+                  Height: =44
+                  Icon: =If(!IsBlank(ThisItem.Notes), Icon.Post, Icon.Note)
+                  OnSelect: |-
+                    =Navigate(
+                        'Add Note Screen',
+                        ScreenTransition.None,
+                        {
+                            locRecordNoteCurrent: {
+                                TableName: "Job Labor Items",
+                                GUID: ThisItem.'Job Labor Item',
+                                BackScreen: App.ActiveScreen,
+                                Notes: ThisItem.Notes
+                            }
+                        }
+                    );
+                  PaddingBottom: =6
+                  PaddingRight: =6
+                  PaddingTop: =6
+                  TabIndex: =0
+                  Width: =Self.Height
+                  X: =820*1
+                  Y: =10*1
+      - lbl_Labor_Title:
+          Control: Label@2.5.1
+          Group: grp_Labor_Main
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Segoe UI'
+            Height: =49
+            PaddingLeft: =25
+            Size: =gblAppStyles.Text.TitleSize
+            Text: ="Labor"
+            Width: =681
+            X: =172
+            Y: =85
+      - tog_Labor_Calculator:
+          Control: Classic/Toggle@2.1.0
+          Group: grp_Labor_Calculator
+          Properties:
+            AccessibleLabel: ="abc"
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Default: =locShowCalculator And !cmp_Labor_Calculator.OK
+            Font: =Font.'Open Sans'
+            OnUncheck: |
+              =With(
+                  {
+                      varType: "colCdsJobLaborItems",
+                      varRecordRef: gal_Labor_Items.Selected.'Job Labor Item'
+                  },
+                  Patch(
+                      colCdsJobLaborItems,
+                      LookUp(
+                          colCdsJobLaborItems,
+                          'Job Labor Item' = varRecordRef
+                      ),
+                      {Quantity: cmp_Labor_Calculator.Value}
+                  );
+                  If(
+                      IsBlank(
+                          LookUp(
+                              colAUDRecords,
+                              Type = varType
+                              And RecordRef = varRecordRef
+                          )
+                      ),
+                      Collect(
+                          colAUDRecords,
+                          {
+                              Type: varType,
+                              RecordRef: varRecordRef,
+                              Job: gblRecordJobCurrent.Job,
+                              Operation: "U"
+                          }
+                      )
+                  )
+              );
+              // save local changes
+              IfError( // This line of code is added to hide the errors
+              If(
+                  gblAppLoadOffline,
+                  SaveData(
+                      colCdsJobLaborItems,
+                      "localCdsJobLaborItems"
+                  );
+                  SaveData(
+                      colAUDRecords,
+                      "localAUDRecords"
+                  );
+              )
+              ,Blank())  // This line of code is added to hide the errors
+              ;
+              // Hide and reset calculator
+              UpdateContext(
+                  {
+                      locShowCalculator: false,
+                      locResetCalculator: true
+                  }
+              );
+              UpdateContext({locResetCalculator: false})
+            TrueFill: =RGBA(56, 96, 178, 1)
+            Visible: =false
+            X: =932
+            Y: =740
+      - gal_Labor_Items__Header:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Font: =Font.'Open Sans'
+            OnSelect: =
+            Text: ="       Quantity               Item"
+            Visible: =!IsEmpty(gal_Labor_Items.AllItems)
+            Width: =853
+            X: =131*1
+            Y: =163*1
+      - lbl_Labor_Calculator:
+          Control: Label@2.5.1
+          Group: grp_Labor_Calculator
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =RGBA(230, 230, 230, 0.5)
+            Font: =Font.'Open Sans'
+            Height: =708
+            Text: =""
+            Visible: =locShowCalculator
+            Width: =944
+            X: =80
+            Y: =60
+      - cmp_Labor_Calculator:
+          Control: CanvasComponent
+          ComponentName: cmp_Calculator
+          Group: grp_Labor_Calculator
+          Properties:
+            Default: =gal_Labor_Items.Selected.Quantity
+            Height: =600
+            Reset: =locResetCalculator
+            Text: =gal_Labor_Items.Selected.Name
+            Visible: =locShowCalculator
+            Width: =380
+            X: =322
+            Y: =90
+      - cmp_Labor_Sidebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Sidebar
+          Properties:
+            Color: =gblAppColors.Secondary.White
+            Default: ="Labor"
+            Fill: =gblAppColors.Primary.BlueDark
+            Height: =App.Height-cmp_Labor_Titlebar.Height
+            HoverFill: =gblAppStyles.Sidebar.HoverFill
+            IconSize: =35
+            Items: =colSidebarItems
+            SelectedColor: =gblAppStyles.Sidebar.SelectedColor
+            SelectedFill: =gblAppStyles.Sidebar.SelectedFill
+            TemplateSize: =80
+            TitleSize: =9
+            Width: =80
+            X: =0.00
+            Y: =cmp_Labor_Titlebar.Y+cmp_Labor_Titlebar.Height
+      - cmp_Labor_Titlebar:
+          Control: CanvasComponent
+          ComponentName: cmp_Titlebar
+          Properties:
+            BackScreen: ='Jobs Screen'
+            Color: =Color.White
+            Context: =Blank()
+            Fill: =gblAppStyles.Titlebar.Fill
+            Font: |-
+              ={Value: Font.'Segoe UI'}
+            Height: =60
+            Size: =gblAppStyles.Text.TitleSize
+            Title: ="Vesta Measure"
+            Width: =1024
+      - lbl_Labor_NoLabor:
+          Control: Label@2.5.1
+          Properties:
+            Align: =LayoutAlignItems.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppColors.Secondary.GrayMediumDark
+            Font: =Font.'Segoe UI'
+            Size: =20
+            Text: |-
+              ="No labor items have been added to this job
+              "
+            Visible: =IsEmpty(gal_Labor_Items.AllItems)
+            Width: =692
+            X: =206*1
+            Y: =496*1
+      - ico_Labor_NoLabor:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppStyles.Status.Disabled
+            DisplayMode: =DisplayMode.View
+            Height: =210
+            Icon: =Icon.Information
+            Visible: =IsEmpty(gal_Labor_Items.AllItems)
+            Width: =210
+            X: =447*1
+            Y: =238*1
+      - ico_Labor_Title:
+          Control: Classic/Icon@2.5.0
+          Group: grp_Labor_Main
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =gblAppStyles.Status.Disabled
+            DisplayMode: =DisplayMode.View
+            Height: =49
+            Icon: =Icon.ToolsWrench
+            Width: =49
+            X: =123*1
+            Y: =85*1
