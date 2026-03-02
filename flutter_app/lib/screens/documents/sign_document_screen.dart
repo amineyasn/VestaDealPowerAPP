@@ -61,10 +61,10 @@ class _SignDocumentScreenState extends State<SignDocumentScreen> {
                           fontSize: 20, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 12),
                   // Document content
-                  Card(
+                  const Card(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: const Text(
+                      padding: EdgeInsets.all(16),
+                      child: Text(
                         'This Measurement Agreement ("Agreement") is entered into by and between '
                         'Vesta Home Solutions ("Company") and the Homeowner identified above. '
                         'By signing below, the Homeowner acknowledges that the measurements '

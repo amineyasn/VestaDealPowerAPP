@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:math' show pi;
 import 'package:flutter/material.dart';
 import '../../theme/vesta_theme.dart';
@@ -62,7 +64,7 @@ class _MeasureWindowScreenState extends State<MeasureWindowScreen> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<int>(
-                          value: _widthIn,
+                          initialValue: _widthIn,
                           decoration:
                               const InputDecoration(labelText: 'Inches'),
                           items: List.generate(
@@ -77,7 +79,7 @@ class _MeasureWindowScreenState extends State<MeasureWindowScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _widthFrac,
+                          initialValue: _widthFrac,
                           decoration:
                               const InputDecoration(labelText: 'Fraction'),
                           items: _fractions
@@ -104,7 +106,7 @@ class _MeasureWindowScreenState extends State<MeasureWindowScreen> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<int>(
-                          value: _heightIn,
+                          initialValue: _heightIn,
                           decoration:
                               const InputDecoration(labelText: 'Inches'),
                           items: List.generate(
@@ -119,7 +121,7 @@ class _MeasureWindowScreenState extends State<MeasureWindowScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _heightFrac,
+                          initialValue: _heightFrac,
                           decoration:
                               const InputDecoration(labelText: 'Fraction'),
                           items: _fractions
@@ -136,7 +138,7 @@ class _MeasureWindowScreenState extends State<MeasureWindowScreen> {
                   const SizedBox(height: 16),
                   // Wall thickness
                   DropdownButtonFormField<String>(
-                    value: _wallThickness,
+                    initialValue: _wallThickness,
                     decoration:
                         const InputDecoration(labelText: 'Wall Thickness'),
                     items: _wallOptions
@@ -169,6 +171,8 @@ class _MeasureWindowScreenState extends State<MeasureWindowScreen> {
                             RadioListTile<String>(
                               title: const Text('Negative'),
                               value: 'Negative',
+                              // ignore: duplicate_ignore
+                              // ignore: deprecated_member_use
                               groupValue: _leadResult,
                               onChanged: (v) =>
                                   setState(() => _leadResult = v!),

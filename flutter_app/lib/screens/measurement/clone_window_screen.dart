@@ -63,7 +63,7 @@ class _CloneWindowScreenState extends State<CloneWindowScreen> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _room,
+                  initialValue: _room,
                   decoration: const InputDecoration(labelText: 'Target Room'),
                   items: _rooms
                       .map((r) => DropdownMenuItem(value: r, child: Text(r)))

@@ -5,13 +5,12 @@ class _MarketItem {
   final String name;
   final String category;
   final String unit;
-  bool selected;
+  bool selected = false;
 
   _MarketItem(
       {required this.name,
       required this.category,
-      required this.unit,
-      this.selected = false});
+      required this.unit});
 }
 
 class AddLaborItemsScreen extends StatefulWidget {

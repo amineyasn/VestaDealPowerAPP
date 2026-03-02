@@ -60,27 +60,27 @@ class JobDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   // Property card
-                  _InfoCard(
+                  const _InfoCard(
                     title: '📍 Property',
-                    items: const [
+                    items: [
                       _InfoRow('Address', '123 Oak St'),
                       _InfoRow('City', 'Austin, TX 78701'),
                       _InfoRow('Job Type', 'Window Replacement'),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _InfoCard(
+                  const _InfoCard(
                     title: '👤 Homeowner',
-                    items: const [
+                    items: [
                       _InfoRow('Name', 'Robert Thompson'),
                       _InfoRow('Email', 'r.thompson@email.com'),
                       _InfoRow('Phone', '(512) 555-0142'),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _InfoCard(
+                  const _InfoCard(
                     title: '📅 Appointment',
-                    items: const [
+                    items: [
                       _InfoRow('Date', 'Mar 5, 2026'),
                       _InfoRow('Technician', 'Jake Williams'),
                       _InfoRow('Stage', 'In Progress'),

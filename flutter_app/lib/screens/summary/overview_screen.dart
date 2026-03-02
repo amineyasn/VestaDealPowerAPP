@@ -6,83 +6,83 @@ class OverviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: VestaColors.grayLight,
-      appBar: const VestaTitlebar(showBack: true),
+      appBar: VestaTitlebar(showBack: true),
       body: Row(
         children: [
-          const VestaSidebar(selectedRoute: '/overview'),
+          VestaSidebar(selectedRoute: '/overview'),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _SectionCard(
                     title: 'Job Info',
                     child: Column(
-                      children: const [
+                      children: [
                         _OverviewRow('Customer', 'Robert Thompson'),
                         _OverviewRow('Address', '123 Oak St, Austin TX'),
                         _OverviewRow('Stage', 'In Progress'),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _SectionCard(
                     title: 'Rooms',
                     child: Column(
-                      children: const [
+                      children: [
                         _OverviewRow('Total Rooms', '5'),
                         _OverviewRow('Complete', '1 / 5'),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _SectionCard(
                     title: 'Windows',
                     child: Column(
-                      children: const [
+                      children: [
                         _OverviewRow('Total Windows', '3'),
                         _OverviewRow('Measured', '2 / 3'),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _SectionCard(
                     title: 'Labor Items',
                     child: Column(
-                      children: const [
+                      children: [
                         _OverviewRow('Window Removal', 'Qty: 3'),
                         _OverviewRow('Window Installation', 'Qty: 3'),
                         _OverviewRow('Trim Installation', 'Qty: 6'),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _SectionCard(
                     title: 'Materials',
                     child: Column(
-                      children: const [
+                      children: [
                         _OverviewRow('2x4 Pine (Grade A)', 'Qty: 10'),
                         _OverviewRow('Vinyl Sill (White)', 'Qty: 3'),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _SectionCard(
                     title: 'Documents',
                     child: Column(
-                      children: const [
+                      children: [
                         _OverviewRow('Signed', '1 / 3'),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _SectionCard(
                     title: 'Photos',
                     child: Column(
-                      children: const [
+                      children: [
                         _OverviewRow('Photos taken', '3'),
                       ],
                     ),

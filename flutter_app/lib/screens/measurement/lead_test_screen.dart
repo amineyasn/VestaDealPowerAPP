@@ -33,11 +33,11 @@ class _LeadTestScreenState extends State<LeadTestScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Window info
-                  Card(
+                  const Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12),
                       child: Row(
-                        children: const [
+                        children: [
                           Icon(Icons.window_outlined,
                               color: VestaColors.blueDark),
                           SizedBox(width: 12),

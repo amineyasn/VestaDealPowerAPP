@@ -43,9 +43,9 @@ class IncorrectVersionScreen extends StatelessWidget {
                     child: const Text('Update App', style: TextStyle(fontSize: 16)),
                   ),
                   const SizedBox(height: 24),
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(Icons.arrow_forward,
                           color: VestaColors.statusInfo, size: 20),
                       SizedBox(width: 8),

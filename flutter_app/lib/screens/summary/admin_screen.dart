@@ -50,12 +50,12 @@ class _AdminScreenState extends State<AdminScreen> {
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             children: [
-                              _AdminRow('App Version', '1.62'),
-                              _AdminRow('Environment',
+                              const _AdminRow('App Version', '1.62'),
+                              const _AdminRow('Environment',
                                   'wn-dev-r3.crm.dynamics.com'),
-                              _AdminRow(
+                              const _AdminRow(
                                   'User', 'jake.williams@vestahome.com'),
-                              _AdminRow('AUD Queue Count', '0'),
+                              const _AdminRow('AUD Queue Count', '0'),
                               const Divider(),
                               Row(
                                 mainAxisAlignment:
